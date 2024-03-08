@@ -32,6 +32,7 @@ epicsConfiguration:
   scanserver: "scanserver"
   jupyter: "jupyter"
   mysql: "mysql"
+  alarmserver: "alarmserver"
 
 gatewayReplica: "2"
 consoleReplica: "1"
