@@ -3,7 +3,7 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: "{{ .Values.beamline }}-{{.Values.configCA.gatewayName}}"
+  name: "{{ .Values.beamline }}-{{.Values.epicsConfiguration.gateway}}"
   namespace: argocd
   labels:
     rootapp: {{ .Chart.Name }}

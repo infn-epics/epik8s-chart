@@ -3,7 +3,7 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: "{{ .Values.beamline }}-{{ .Values.alarmserver }}"
+  name: "{{ .Values.beamline }}-{{ .Values.epicsConfiguration.alarmserver }}"
   namespace: argocd
   labels:
     rootapp: {{ .Chart.Name }}
@@ -23,7 +23,7 @@ spec:
           phoebusservice: "alarmserver"
           epicsConfiguration:
             name: {{ .Values.epicsConfiguration.name | quote}}
-            gateway: {{ .Values.epicsConfiguration.gateway }} ## override with gateway
+            gateway: {{ .Values.epicsConfiguration.gateway }}.{{ .Values.namespace }}.svc.cluster.local ## override with gateway
           kafka:
             host: {{ .Values.backend.kafka.host}}.{{ .Values.backend.namespace}}.svc.cluster.local
             port: {{ .Values.backend.kafka.port}}

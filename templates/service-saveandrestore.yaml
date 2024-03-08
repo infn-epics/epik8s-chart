@@ -3,7 +3,7 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: "{{ .Values.beamline}}-{{ .Values.saveandrestore }}"
+  name: "{{ .Values.beamline}}-{{ .Values.epicsConfiguration.saveandrestore }}"
   namespace: argocd
   labels:
     rootapp: {{ .Chart.Name }}
@@ -26,7 +26,7 @@ spec:
             port: 80 
           epicsConfiguration:
             name: {{ .Values.epicsConfiguration.name | quote}}
-            gateway: {{ .Values.epicsConfiguration.gateway }} ## override with gateway
+            gateway: {{ .Values.epicsConfiguration.gateway }}.{{ .Values.namespace }}.svc.cluster.local ## override with gateway
           elasticsearch:
             network:
               host: {{ .Values.backend.elasticsearch.host}}.{{ .Values.backend.namespace}}.svc.cluster.local

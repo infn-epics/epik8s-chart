@@ -1,6 +1,6 @@
 #empty
-beamline:
-namespace:
+beamline: nobeamline
+namespace: nonamespace
 epik8namespace: "apps.okd-datest.lnf.infn.it"
 targetRevision: "devel"
 epicsConfiguration:

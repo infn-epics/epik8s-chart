@@ -3,7 +3,7 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: "{{ .Values.beamline }}-{{ .Values.scanserver }}"
+  name: "{{ .Values.beamline }}-{{ .Values.epicsConfiguration.scanserver }}"
   namespace: argocd
   labels:
     rootapp: {{ .Chart.Name }}
@@ -24,7 +24,7 @@ spec:
           phoebusservice: "scanserver"
           epicsConfiguration:
             name: {{ .Values.epicsConfiguration.name | quote}}
-            gateway: {{ .Values.epicsConfiguration.gateway }} ## override with gateway
+            gateway: {{ .Values.epicsConfiguration.gateway }}.{{ .Values.namespace }}.svc.cluster.local ## override with gateway
           ingress:
             enabled: true
             hosts:
