@@ -22,7 +22,7 @@ data:
   JUPYTER: 'http://{{- include "jupyter-url" . }}'
   CONSOLE: 'http://{{- include "console-url" . }}'
   phoebus_settings.ini: |
-    {{- if and ( .Values.epicsConfiguration.gateway .Values.epicsConfiguration.address_list) -}}
+    {{- if and  .Values.epicsConfiguration.gateway .Values.epicsConfiguration.address_list -}}
     org.phoebus.pv.ca/addr_list={{ .Values.epicsConfiguration.gateway }}.{{ .Values.namespace }}.svc.cluster.local ## balancer {{.Values.gatewaybalancer}}
     org.phoebus.pv.ca/auto_addr_list=false
     {{- else if .Values.epicsConfiguration.address_list }}
