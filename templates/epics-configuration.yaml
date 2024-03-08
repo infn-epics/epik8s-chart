@@ -58,7 +58,7 @@ data:
     org.csstudio.scan.client/port=4810
     {{- end}}
     {{- if .Values.epicsConfiguration.alarmserver -}}
-    org.phoebus.applications.alarm/server={{backend.kafka.host}}:{{backend.kafka.port}}
+    org.phoebus.applications.alarm/server={{.Values.backend.kafka.host}}:{{.Values.backend.kafka.port}}
     org.phoebus.applications.alarm/config_name=Accelerator-{{ .Values.beamline }}
     # A file to configure the properties of kafka clients
     # org.phoebus.applications.alarm/kafka_properties=
