@@ -10,26 +10,169 @@ data:
   
   EPICS_CA_AUTO_ADDR_LIST: "NO"
   EPICS_MAX_ARRAY_BYTES: "{{ .Values.epicsConfiguration.max_array_bytes }}"
-  EPICS_GATEWAY: "{{ .Values.epicsConfiguration.gateway }}"
+  EPICS_GATEWAY: "{{ .Values.epicsConfiguration.gateway }}.{{ .Values.namespace }}.svc.cluster.local"
   EPICS_ARCHIVER: '{{- include "archiver-url" . }}'
+  {{- if .Values.epicsConfiguration.channelfinder -}}
+
   CHANNEL_FINDER: '{{- include "channelfinder-url" . }}'
+  {{- end}}
   PHOEBUS_SAVE_AND_RESTORE: '{{- include "saveandrestore-url" . }}'
   PHOEBUS_SCAN_SERVER: '{{- include "scanserver-url" . }}'
   PHOEBUS_OLOG: '{{- include "olog-url" . }}'
   JUPYTER: 'http://{{- include "jupyter-url" . }}'
   CONSOLE: 'http://{{- include "console-url" . }}'
   phoebus_settings.ini: |
-    org.phoebus.pv.ca/addr_list={{ .Values.epicsConfiguration.gateway }} ## balancer {{.Values.gatewaybalancer}}
+    {{-if and ( .Values.epicsConfiguration.gateway .Values.epicsConfiguration.address_list) -}}
+    org.phoebus.pv.ca/addr_list={{ .Values.epicsConfiguration.gateway }}.{{ .Values.namespace }}.svc.cluster.local ## balancer {{.Values.gatewaybalancer}}
     org.phoebus.pv.ca/auto_addr_list=false
+    {{- else if .Values.epicsConfiguration.address_list }}
+    org.phoebus.pv.ca/addr_list={{ .Values.epicsConfiguration.address_list }}
+    org.phoebus.pv.ca/auto_addr_list=false
+
+    {{- else }}
+      org.phoebus.pv.ca/auto_addr_list=true
+    {{- end -}}
+    {{- if .Values.epicsConfiguration.archiver -}}
     org.csstudio.trends.databrowser3/urls=pbraw://{{- include "archiver-url" . }}/retrieval
     org.csstudio.trends.databrowser3/archives=pbraw://{{- include "archiver-url" . }}/retrieval
+    {{- end }}
+    {{- if .Values.epicsConfiguration.olog -}}
     org.phoebus.olog.es.api/olog_url=http://{{- include "olog-url" . }}/Olog
     org.phoebus.olog.api/olog_url=http://{{- include "olog-url" . }}/Olog
     org.phoebus.logbook/logbook_factory=olog-es
     org.phoebus.olog.api/username=epics
     org.phoebus.olog.api/password=epics
+    {{- end }}
+    {{- if .Values.epicsConfiguration.channelfinder -}}
     org.phoebus.channelfinder/channelfinder.serviceURL=http://{{- include "channelfinder-url" . }}/ChannelFinder
+    {{- end}}
+    {{- if .Values.epicsConfiguration.saveandrestore -}}
     org.phoebus.applications.saveandrestore.client/jmasar.service.url=http://{{- include "saveandrestore-url" . }}/save-restore
+    {{- end}}
+    {{- if .Values.epicsConfiguration.scanserver -}}
     org.csstudio.scan.client/host=http://{{- include "scanserver-url" . }}
     org.csstudio.scan.client/port=4810
+    {{- end}}
+    {{- if .Values.epicsConfiguration.scanserver -}}
+    org.csstudio.scan.client/host=http://{{- include "scanserver-url" . }}
+    org.csstudio.scan.client/port=4810
+    {{- end}}
+    {{- if .Values.epicsConfiguration.alarmserver -}}
+    org.phoebus.applications.alarm/server={{backend.kafka.host}}:{{backend.kafka.port}}
+    org.phoebus.applications.alarm/config_name=Accelerator-{{ .Values.beamline }}
+    # A file to configure the properties of kafka clients
+    # org.phoebus.applications.alarm/kafka_properties=
+    org.phoebus.applications.alarm/config_names=Accelerator-{{ .Values.beamline }}, Demo
+
+    # Timeout in seconds for initial PV connection
+    org.phoebus.applications.alarm/connection_timeout=30
+
+    # Timeout in seconds for "sevrpv:" updates
+    org.phoebus.applications.alarm/severity_pv_timeout=5
+
+    ## Area Panel
+
+    # Item level for alarm area view:
+    # 1 - Root element
+    # 2 - Top-level "area" elements just below root
+    # 3 - Show all the items at level 3
+    org.phoebus.applications.alarm/alarm_area_level=2
+
+    # Number of columns in the alarm area view
+    org.phoebus.applications.alarm/alarm_area_column_count=3
+
+    # Gap between alarm area panel items
+    org.phoebus.applications.alarm/alarm_area_gap=5
+
+    # Font size for the alarm area view
+    org.phoebus.applications.alarm/alarm_area_font_size=15
+
+    # Limit for the number of context menu items.
+    # Separately applied to the number of 'guidance',
+    # 'display' and 'command' menu entries.
+    org.phoebus.applications.alarm/alarm_menu_max_items=10
+    org.phoebus.applications.alarm/alarm_tree_startup_ms=2000
+
+    # Order of columns in alarm table
+    # Allows re-ordering as well as omitting columns
+    org.phoebus.applications.alarm/alarm_table_columns=Icon, PV, Description, Alarm Severity, Alarm Status, Alarm Time, Alarm Value, PV Severity, PV Status
+
+    # By default, the alarm table uses the common alarm severity colors
+    # for both the text color and the background of cells in the "Severity" column.
+    #
+    # Older implementations always used the background to indicate alarm severity,
+    # and this options emulates that by using the alarm severity text(!) color
+    # for the background, automatically using black or white for the text
+    # based on brightness.
+    # org.phoebus.applications.alarm/alarm_table_color_legacy_background=true
+
+    # Alarm table row limit
+    # If there are more rows, they're suppressed
+    # org.phoebus.applications.alarm/alarm_table_max_rows=2500
+
+    # Directory used for executing commands
+    # May use Java system properties like this: $(prop_name)
+    # org.phoebus.applications.alarm/command_directory=$(user.home)
+
+    # The threshold of messages that must accumulate before the annunciator begins to simply state: "There are X Alarm messages."
+    # org.phoebus.applications.alarm/annunciator_threshold=3
+
+    # The number of messages the annunciator will retain before popping messages off the front of the message queue.
+    # org.phoebus.applications.alarm/annunciator_retention_count=100
+
+    # Timeout in seconds at which server sends idle state updates
+    # for the 'root' element if there's no real traffic.
+    # Client will wait 3 times this long and then declare a timeout.
+    # org.phoebus.applications.alarm/idle_timeout=10
+
+    # Name of the sender, the 'from' field of automated email actions
+    # org.phoebus.applications.alarm/automated_email_sender=Alarm Notifier <alarm_server@example.org>
+
+    # Comma-separated list of automated actions on which to follow up
+    # Options include mailto:, cmd:
+    # org.phoebus.applications.alarm/automated_action_followup=mailto:, cmd:
+
+    # Optional heartbeat PV
+    # When defined, alarm server will set it to 1 every heartbeat_secs
+    # org.phoebus.applications.alarm/heartbeat_pv=Demo:AlarmServerHeartbeat
+    # org.phoebus.applications.alarm/heartbeat_pv=
+
+    # Heartbeat PV period in seconds
+    # org.phoebus.applications.alarm/heartbeat_secs=10
+
+    # Period for repeated annunciation
+    #
+    # If there are active alarms, i.e. alarms that have not been acknowleded,
+    # a message "There are 47 active alarms" will be issued
+    #
+    # Format is HH:MM:SS, for example 00:15:00 to nag every 15 minutes.
+    # Set to 0 to disable
+    # org.phoebus.applications.alarm/nag_period=00:15:00
+
+    # Connection validation period in seconds
+    #
+    # Server will check the Kafka connection at this period.
+    # After re-establishing the connection, it will
+    # re-send the state of every alarm tree item.
+    # Set to 0 to disable.
+    # org.phoebus.applications.alarm/connection_check_secs=5
+
+    # To turn on disable notifications feature, set the value to true
+    # org.phoebus.applications.alarm/disable_notify_visible=false
+
+    # Options for the "Disable until.." shortcuts in the PV config dialog
+    #
+    # Comma separated, each option needs to comply with TimeParser.parseTemporalAmount():
+    # 30 seconds, 5 minutes, 1 hour, 6 hours, 1 day, 30 days, ...
+    # org.phoebus.applications.alarm/shelving_options=1 hour, 6 hours, 12 hours, 1 day, 7 days, 30 days
+
+    # Macros for UI display, command or web links
+    #
+    # org.phoebus.applications.alarm/Format: M1=Value1, M2=Value2
+    # org.phoebus.applications.alarm/macros=TOP=/home/controls/displays,WEBROOT=http://localhost/controls/displays
+    s
+    # Max time in ms a producer call will block.
+    # org.phoebus.applications.alarm/max_block_ms=10000
+
+    {{- end}}
 
