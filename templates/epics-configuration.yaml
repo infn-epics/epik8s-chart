@@ -6,11 +6,11 @@ metadata:
     beamline: {{ .Values.beamline }}
     revision:  {{.Values.targetRevision}}
 data:
-  EPICS_CA_ADDR_LIST: "{{ .Values.configCA.address_list }}"
+  EPICS_CA_ADDR_LIST: "{{ .Values.epicsConfiguration.address_list }}"
   
   EPICS_CA_AUTO_ADDR_LIST: "NO"
-  EPICS_MAX_ARRAY_BYTES: "{{ .Values.configCA.max_array_bytes }}"
-  EPICS_GATEWAY: "{{ .Values.configCA.gatewayName }}"
+  EPICS_MAX_ARRAY_BYTES: "{{ .Values.epicsConfiguration.max_array_bytes }}"
+  EPICS_GATEWAY: "{{ .Values.epicsConfiguration.gateway }}"
   EPICS_ARCHIVER: '{{- include "archiver-url" . }}'
   CHANNEL_FINDER: '{{- include "channelfinder-url" . }}'
   PHOEBUS_SAVE_AND_RESTORE: '{{- include "saveandrestore-url" . }}'
@@ -19,7 +19,7 @@ data:
   JUPYTER: 'http://{{- include "jupyter-url" . }}'
   CONSOLE: 'http://{{- include "console-url" . }}'
   phoebus_settings.ini: |
-    org.phoebus.pv.ca/addr_list={{ .Values.configCA.gatewayName }} ## balancer {{.Values.gatewaybalancer}}
+    org.phoebus.pv.ca/addr_list={{ .Values.epicsConfiguration.gateway }} ## balancer {{.Values.gatewaybalancer}}
     org.phoebus.pv.ca/auto_addr_list=false
     org.csstudio.trends.databrowser3/urls=pbraw://{{- include "archiver-url" . }}/retrieval
     org.csstudio.trends.databrowser3/archives=pbraw://{{- include "archiver-url" . }}/retrieval

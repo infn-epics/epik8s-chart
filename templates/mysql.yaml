@@ -40,4 +40,4 @@ spec:
     timeout:
       seconds: 600
 
-{{-end }}
+{{- end }}
