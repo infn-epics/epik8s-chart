@@ -1,0 +1,56 @@
+{{- if .Values.epicsConfiguration.olog -}}
+
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: "{{ .Values.beamline}}-{{ .Values.olog }}"
+  namespace: argocd
+  labels:
+    rootapp: {{ .Chart.Name }}
+    rootappver: {{ .Chart.Version }}
+    beamline: {{ .Values.beamline | quote }}
+    revision: {{.Values.targetRevision}}
+
+spec:
+  project: default
+  source:
+    repoURL: 'https://baltig.infn.it/epics-containers/phoebus-services-chart.git'
+    path: .
+    targetRevision: {{.Values.targetRevision}}
+    helm:
+      values: |
+          beamline: {{ .Values.beamline | quote }}
+          replicaCount: {{ .Values.consoleReplica }}
+          phoebusservice: "olog"
+          service:
+            port: 80
+            loglevel: DEBUG
+            http:
+              enable: true
+              port: 8080
+          configCA:
+            existingConfigMap: {{ .Values.configCA.configName | quote}}
+            address_list: {{ .Values.configCA.gatewayName }} ## override with gateway
+          elasticsearch:
+            network:
+              host: elasticsearch.backend.svc.cluster.local
+          mongo:
+            host: {{ .Values.backend.mongo.host}}.{{ .Values.backend.namespace}}.svc.cluster.local
+            database: "{{.Values.beamline}}-ologAttachments"
+          ingress:
+            enabled: true
+            hosts:
+              - host: '{{- include "olog-url" . }}'
+                paths:
+                  - path: /
+                    pathType: ImplementationSpecific
+
+    
+  destination:
+    server: 'https://kubernetes.default.svc'
+    namespace: {{ .Values.namespace | quote }}
+  syncPolicy:
+    automated:
+      prune: true  # Optional: Automatically remove resources not specified in Helm chart
+      selfHeal: true
+{{-end -}}

@@ -1,0 +1,38 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Values.epicsConfiguration.configName }}
+  labels:
+    beamline: {{ .Values.beamline }}
+    revision:  {{.Values.targetRevision}}
+data:
+  EPICS_CA_ADDR_LIST: "{{ .Values.configCA.address_list }}"
+  
+  EPICS_CA_AUTO_ADDR_LIST: "NO"
+  EPICS_MAX_ARRAY_BYTES: "{{ .Values.configCA.max_array_bytes }}"
+  EPICS_GATEWAY: "{{ .Values.configCA.gatewayName }}"
+  EPICS_ARCHIVER: '{{- include "archiver-url" . }}'
+  CHANNEL_FINDER: '{{- include "channelfinder-url" . }}'
+  PHOEBUS_SAVE_AND_RESTORE: '{{- include "saveandrestore-url" . }}'
+  PHOEBUS_SCAN_SERVER: '{{- include "scanserver-url" . }}'
+  PHOEBUS_OLOG: '{{- include "olog-url" . }}'
+  JUPYTER: 'http://{{- include "jupyter-url" . }}'
+  CONSOLE: 'http://{{- include "console-url" . }}'
+  elasticsearch.cluster.name: "{{ .Values.elasticsearchClusterName }}"
+  elasticsearch.network.host: "{{ .Values.elasticsearchNetworkHost }}"
+  elasticsearch.http.port: "{{ .Values.elasticsearchHttpPort }}"
+  phoebus_settings.ini: |
+    org.phoebus.pv.ca/addr_list={{ .Values.configCA.gatewayName }} ## balancer {{.Values.gatewaybalancer}}
+    org.phoebus.pv.ca/auto_addr_list=false
+    org.csstudio.trends.databrowser3/urls=pbraw://{{- include "archiver-url" . }}/retrieval
+    org.csstudio.trends.databrowser3/archives=pbraw://{{- include "archiver-url" . }}/retrieval
+    org.phoebus.olog.es.api/olog_url=http://{{- include "olog-url" . }}/Olog
+    org.phoebus.olog.api/olog_url=http://{{- include "olog-url" . }}/Olog
+    org.phoebus.logbook/logbook_factory=olog-es
+    org.phoebus.olog.api/username=epics
+    org.phoebus.olog.api/password=epics
+    org.phoebus.channelfinder/channelfinder.serviceURL=http://{{- include "channelfinder-url" . }}/ChannelFinder
+    org.phoebus.applications.saveandrestore.client/jmasar.service.url=http://{{- include "saveandrestore-url" . }}/save-restore
+    org.csstudio.scan.client/host=http://{{- include "scanserver-url" . }}
+    org.csstudio.scan.client/port=4810
+

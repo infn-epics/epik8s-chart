@@ -1,0 +1,50 @@
+{{- if .Values.epicsConfiguration.console -}}
+
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: "{{ .Values.beamline }}-{{ .Values.console }}"
+  namespace: argocd
+  labels:
+    rootapp: {{ .Chart.Name }}
+    rootappver: {{ .Chart.Version }}
+    beamline: {{ .Values.beamline | quote }}
+    revision: {{.Values.targetRevision}}
+
+spec:
+  project: default
+  source:
+    repoURL: 'https://baltig.infn.it/epics-containers/epics-console-chart.git'
+    path: .
+    targetRevision: {{.Values.targetRevision}}
+    helm:
+      values: |
+          beamline: {{ .Values.beamline | quote }}
+          replicaCount: {{ .Values.consoleReplica }}  
+          configCA:
+            existingConfigMap: {{ .Values.configCA.configName | quote}}
+            address_list: {{ .Values.configCA.gatewayName }} ## override with gateway
+    
+          ingress:
+            enabled: true
+            hosts:
+              - host: '{{- include "console-url" . }}'
+                paths:
+                  - path: /
+                    pathType: ImplementationSpecific
+          opi:
+            url: https://baltig.infn.it/lnf-da-control/sparc-k8s-ecs.git
+            path: opi
+            branch: main
+            init: true
+    
+        
+    
+  destination:
+    server: 'https://kubernetes.default.svc'
+    namespace: {{ .Values.namespace | quote }}
+  syncPolicy:
+    automated:
+      prune: true  # Optional: Automatically remove resources not specified in Helm chart
+      selfHeal: true
+{{-end -}}

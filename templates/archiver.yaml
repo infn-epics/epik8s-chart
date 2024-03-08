@@ -1,0 +1,46 @@
+{{- if .Values.epicsConfiguration.archiver -}}
+
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: "{{ .Values.beamline }}-{{.Values.archiver}}"
+  namespace: argocd
+  labels:
+    rootapp: {{ .Chart.Name }}
+    rootappver: {{ .Chart.Version }}
+    beamline: {{ .Values.beamline | quote }}
+    revision: {{.Values.targetRevision}}
+spec:
+  project: default
+  source:
+    repoURL: 'https://baltig.infn.it/epics-containers/epics-archiver-chart.git'
+    path: .
+    targetRevision: {{.Values.targetRevision}}
+    helm:
+      values: |
+          beamline: {{ .Values.beamline | quote }}
+          configCA:
+            existingConfigMap: {{ .Values.configCA.configName | quote}}
+            address_list: {{ .Values.configCA.gatewayName }} ## override with gateway
+          mysql:
+            host: {{ .Values.mysqlServer }}.{{ .Values.namespace }}.svc.cluster.local
+            dbname: arcappl
+            user: arcappl
+            pass: arcappl
+          ingress:
+            enabled: true
+            hosts:
+              - host: '{{- include "archiver-url" . }}'
+                paths:
+                  - path: /
+                    pathType: ImplementationSpecific
+    
+    
+  destination:
+    server: 'https://kubernetes.default.svc'
+    namespace: {{ .Values.namespace | quote }}
+  syncPolicy:
+    automated:
+      prune: true  # Optional: Automatically remove resources not specified in Helm chart
+      selfHeal: true
+{{-end }}

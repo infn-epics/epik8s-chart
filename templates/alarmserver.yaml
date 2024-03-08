@@ -1,0 +1,42 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: "{{ .Values.beamline }}-{{ .Values.alarmserver }}"
+  namespace: argocd
+  labels:
+    rootapp: {{ .Chart.Name }}
+    rootappver: {{ .Chart.Version }}
+    beamline: {{ .Values.beamline | quote }}
+
+spec:
+  project: default
+  source:
+    repoURL: 'https://baltig.infn.it/epics-containers/phoebus-services-chart.git'
+    path: .
+    targetRevision: {{.Values.targetRevision}}
+    helm:
+      values: |
+          beamline: {{ .Values.beamline | quote }}
+          replicaCount: {{ .Values.consoleReplica }}
+          phoebusservice: "alarmserver"
+          configCA:
+            existingConfigMap: {{ .Values.configCA.configName | quote}}
+            address_list: {{ .Values.configCA.gatewayName }} ## override with gateway
+          kafka:
+            host: {{ .Values.backend.kafka.host}}.{{ .Values.backend.namespace}}.svc.cluster.local
+            port: {{ .Values.backend.kafka.port}}
+          ingress:
+            enabled: true
+            hosts:
+              - host: '{{- include "alarmserver-url" . }}'
+                paths:
+                  - path: /
+                    pathType: ImplementationSpecific
+    
+  destination:
+    server: 'https://kubernetes.default.svc'
+    namespace: {{ .Values.namespace | quote }}
+  syncPolicy:
+    automated:
+      prune: true  # Optional: Automatically remove resources not specified in Helm chart
+      selfHeal: true

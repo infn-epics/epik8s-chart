@@ -1,0 +1,50 @@
+{{- if .Values.epicsConfiguration.cagateway -}}
+
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: "{{ .Values.beamline }}-{{.Values.configCA.gatewayName}}"
+  namespace: argocd
+  labels:
+    rootapp: {{ .Chart.Name }}
+    rootappver: {{ .Chart.Version }}
+    beamline: {{ .Values.beamline | quote }}
+    revision: {{.Values.targetRevision}}
+
+spec:
+  project: default
+  source:
+    repoURL: 'https://baltig.infn.it/epics-containers/ca-gateway-chart.git'
+    path: .
+    targetRevision:  {{.Values.targetRevision}}
+    helm:
+      parameters:
+        - name: beamline
+          value: {{ .Values.beamline | quote }}
+        - name: configCA.existingConfigMap
+          value: {{ .Values.configCA.configName | quote }}
+        - name: gitRepoConfig.url
+          value: 'https://baltig.infn.it/lnf-da-control/sparc-k8s-ecs.git'
+        - name: gitRepoConfig.branch
+          value: 'main'
+        - name: gitRepoConfig.path
+          value: 'config/services/ca-gateway' ## use DLS ibek there is a ioc.yaml f
+        - name: gitRepoConfig.exec
+          value: 'start.sh'
+        - name: replicaCount
+          value: "{{ .Values.gatewayReplica }}"
+        - name: service.type
+          value: "LoadBalancer"
+        - name: service.loadBalancerIP ## 192.168.36.201 fino al .253.
+          value: {{ .Values.gatewaybalancer }}
+
+        
+    
+  destination:
+    server: 'https://kubernetes.default.svc'
+    namespace: {{ .Values.namespace | quote }}
+  syncPolicy:
+    automated:
+      prune: true  # Optional: Automatically remove resources not specified in Helm chart
+      selfHeal: true
+{{-end }}

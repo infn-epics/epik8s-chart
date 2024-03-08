@@ -1,0 +1,60 @@
+#empty
+beamline: sparc
+namespace: sparc
+epik8namespace: "apps.okd-datest.lnf.infn.it"
+targetRevision: "devel"
+epicsConfiguration:
+  configName: "epics-configuration" # name of existing configMap that set CA parameters
+  address_list: |
+    plsparcmrf001.lnf.infn.it
+    bdsparcplxbpm007
+    bdsparcplxbpm001
+    bdsparcac3bpm001
+    bdsparcptlbpm001
+    bdsparcutlbpm001
+    bdsparcdlgbpm001
+    bdsparcdlgbpm002
+    bdsparcdlgbpm003
+    bdsparcplxbpm002
+    bdsparcplxbpm003
+    bdsparcplxbpm004
+    bdsparcplxbpm005
+    bdsparcplxbpm006
+    rdsparcpitaia001.lnf.infn.it
+    rdsparcpitaya002.lnf.infn.it
+  max_array_bytes: "10000000"
+  gateway: "cagateway"
+  archiver: "archiver"
+  channelfinder: "channelfinder"
+  saveandrestore: "saveandrestore"
+  console: "console"
+  olog: "olog"
+  scanserver: "scanserver"
+  jupyter: "jupyter"
+  mysql: "mysql"
+elasticsearchNetworkHost: "elasticsearch-master.backend.svc.cluster.local"
+elasticsearchHttpPort: "9200"
+elasticsearchClusterName: "elasticsearch"
+gatewayReplica: "2"
+consoleReplica: "1"
+gatewaybalancer: "192.168.36.201"
+
+backend:
+  namespace: "backend"
+  mongo:
+    host: mongodb
+    port: 27017
+    user:
+    pwd:
+  elasticsearch:
+    host: elasticsearch
+    clusterName: elasticsearch
+    port:
+  kafka:
+    host: kafka-controller-headless
+    port: 9092
+
+olog:
+  database:
+
+    

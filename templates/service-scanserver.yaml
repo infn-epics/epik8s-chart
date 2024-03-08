@@ -1,0 +1,43 @@
+{{- if .Values.epicsConfiguration.scanserver -}}
+
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: "{{ .Values.beamline }}-{{ .Values.scanserver }}"
+  namespace: argocd
+  labels:
+    rootapp: {{ .Chart.Name }}
+    rootappver: {{ .Chart.Version }}
+    beamline: {{ .Values.beamline | quote }}
+    revision: {{.Values.targetRevision}}
+
+spec:
+  project: default
+  source:
+    repoURL: 'https://baltig.infn.it/epics-containers/phoebus-services-chart.git'
+    path: .
+    targetRevision: {{.Values.targetRevision}}
+    helm:
+      values: |
+          beamline: {{ .Values.beamline | quote }}
+          replicaCount: {{ .Values.consoleReplica }}
+          phoebusservice: "scanserver"
+          configCA:
+            existingConfigMap: {{ .Values.configCA.configName | quote}}
+            address_list: {{ .Values.configCA.gatewayName }} ## override with gateway
+          ingress:
+            enabled: true
+            hosts:
+              - host: '{{- include "scanserver-url" . }}'
+                paths:
+                  - path: /
+                    pathType: ImplementationSpecific
+    
+  destination:
+    server: 'https://kubernetes.default.svc'
+    namespace: {{ .Values.namespace | quote }}
+  syncPolicy:
+    automated:
+      prune: true  # Optional: Automatically remove resources not specified in Helm chart
+      selfHeal: true
+{{-end }}
