@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: {{ .Values.epicsConfiguration.configName }}
+  name: {{ .Values.epicsConfiguration.name }}
   labels:
     beamline: {{ .Values.beamline }}
     revision:  {{.Values.targetRevision}}
