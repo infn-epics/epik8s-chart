@@ -25,7 +25,7 @@ spec:
         ## other values from values.yaml
   destination:
     server: 'https://kubernetes.default.svc'
-    namespace: sparc
+    namespace: mytestbeam
   syncPolicy:
     automated:
       prune: true  # Optional: Automatically remove resources not specified in Helm chart

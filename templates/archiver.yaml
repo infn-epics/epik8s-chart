@@ -19,9 +19,9 @@ spec:
     helm:
       values: |
           beamline: {{ .Values.beamline | quote }}
-          configCA:
-            existingConfigMap: {{ .Values.configCA.configName | quote}}
-            address_list: {{ .Values.configCA.gatewayName }} ## override with gateway
+          epicsConfiguration:
+            name: {{ .Values.epicsConfiguration.name | quote}}
+            gateway: {{ .Values.epicsConfiguration.gateway }} ## override with gateway
           mysql:
             host: {{ .Values.mysqlServer }}.{{ .Values.namespace }}.svc.cluster.local
             dbname: arcappl

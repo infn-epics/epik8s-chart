@@ -1,10 +1,10 @@
 #empty
-beamline: sparc
-namespace: sparc
+beamline:
+namespace:
 epik8namespace: "apps.okd-datest.lnf.infn.it"
 targetRevision: "devel"
 epicsConfiguration:
-  configName: "epics-configuration" # name of existing configMap that set CA parameters
+  name: "epics-configuration" # name of existing configMap that set CA parameters
   address_list: |
     plsparcmrf001.lnf.infn.it
     bdsparcplxbpm007
@@ -25,19 +25,17 @@ epicsConfiguration:
   max_array_bytes: "10000000"
   gateway: "cagateway"
   archiver: "archiver"
-  channelfinder: "channelfinder"
+  channelfinder: ## dont deploy channelfinder
   saveandrestore: "saveandrestore"
   console: "console"
   olog: "olog"
   scanserver: "scanserver"
   jupyter: "jupyter"
   mysql: "mysql"
-elasticsearchNetworkHost: "elasticsearch-master.backend.svc.cluster.local"
-elasticsearchHttpPort: "9200"
-elasticsearchClusterName: "elasticsearch"
+
 gatewayReplica: "2"
 consoleReplica: "1"
-gatewaybalancer: "192.168.36.201"
+gatewaybalancer: "192.168.36.203"
 
 backend:
   namespace: "backend"
@@ -49,12 +47,10 @@ backend:
   elasticsearch:
     host: elasticsearch
     clusterName: elasticsearch
-    port:
+    port: 9200
   kafka:
     host: kafka-controller-headless
     port: 9092
 
-olog:
-  database:
 
     

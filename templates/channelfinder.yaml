@@ -21,9 +21,9 @@ spec:
       values: |
           beamline: {{ .Values.beamline | quote }}
           replicaCount: {{ .Values.consoleReplica }}  
-          configCA:
-            existingConfigMap: {{ .Values.configCA.configName | quote}}
-            address_list: {{ .Values.configCA.gatewayName }} ## override with gateway
+          epicsConfiguration:
+            name: {{ .Values.epicsConfiguration.name | quote}}
+            gateway: {{ .Values.epicsConfiguration.gateway }} ## override with gateway
           elasticsearch:
             network:
               host: {{ .Values.backend.elasticsearch.host}}.{{ .Values.backend.namespace}}.svc.cluster.local

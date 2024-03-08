@@ -18,9 +18,6 @@ data:
   PHOEBUS_OLOG: '{{- include "olog-url" . }}'
   JUPYTER: 'http://{{- include "jupyter-url" . }}'
   CONSOLE: 'http://{{- include "console-url" . }}'
-  elasticsearch.cluster.name: "{{ .Values.elasticsearchClusterName }}"
-  elasticsearch.network.host: "{{ .Values.elasticsearchNetworkHost }}"
-  elasticsearch.http.port: "{{ .Values.elasticsearchHttpPort }}"
   phoebus_settings.ini: |
     org.phoebus.pv.ca/addr_list={{ .Values.configCA.gatewayName }} ## balancer {{.Values.gatewaybalancer}}
     org.phoebus.pv.ca/auto_addr_list=false

@@ -22,9 +22,9 @@ spec:
           beamline: {{ .Values.beamline | quote }}
           replicaCount: {{ .Values.consoleReplica }}
           phoebusservice: "scanserver"
-          configCA:
-            existingConfigMap: {{ .Values.configCA.configName | quote}}
-            address_list: {{ .Values.configCA.gatewayName }} ## override with gateway
+          epicsConfiguration:
+            name: {{ .Values.epicsConfiguration.name | quote}}
+            gateway: {{ .Values.epicsConfiguration.gateway }} ## override with gateway
           ingress:
             enabled: true
             hosts:

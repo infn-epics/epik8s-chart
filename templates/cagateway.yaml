@@ -18,28 +18,22 @@ spec:
     path: .
     targetRevision:  {{.Values.targetRevision}}
     helm:
-      parameters:
-        - name: beamline
-          value: {{ .Values.beamline | quote }}
-        - name: configCA.existingConfigMap
-          value: {{ .Values.configCA.configName | quote }}
-        - name: gitRepoConfig.url
-          value: 'https://baltig.infn.it/lnf-da-control/sparc-k8s-ecs.git'
-        - name: gitRepoConfig.branch
-          value: 'main'
-        - name: gitRepoConfig.path
-          value: 'config/services/ca-gateway' ## use DLS ibek there is a ioc.yaml f
-        - name: gitRepoConfig.exec
-          value: 'start.sh'
-        - name: replicaCount
-          value: "{{ .Values.gatewayReplica }}"
-        - name: service.type
-          value: "LoadBalancer"
-        - name: service.loadBalancerIP ## 192.168.36.201 fino al .253.
-          value: {{ .Values.gatewaybalancer }}
-
-        
-    
+      values: |
+          beamline: {{ .Values.beamline | quote }}
+          replicaCount: {{ .Values.gatewayReplica }}  
+          epicsConfiguration:
+            name: {{ .Values.epicsConfiguration.name | quote}}
+          ingress:
+            enabled: false
+          gitRepoConfig:
+            url: https://baltig.infn.it/lnf-da-control/sparc-k8s-ecs.git
+            path: config/services/ca-gateway
+            branch: main
+            exec: start.sh
+          service:
+            type: "LoadBalancer"
+            loadBalancerIP: {{ .Values.gatewaybalancer }}
+      
   destination:
     server: 'https://kubernetes.default.svc'
     namespace: {{ .Values.namespace | quote }}
