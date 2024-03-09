@@ -59,7 +59,5 @@ spec:
     server: 'https://kubernetes.default.svc'
     namespace: {{ .Values.namespace | quote }}
   syncPolicy:
-    automated:
-      prune: true  # Optional: Automatically remove resources not specified in Helm chart
-      selfHeal: true
+    {{- toYaml .Values.syncPolicy | nindent 10 }}
 {{- end -}}

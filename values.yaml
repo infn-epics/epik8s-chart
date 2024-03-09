@@ -112,5 +112,11 @@ backend:
     host: kafka-controller-headless
     port: 9092
 
-
+syncPolicy:
+    automated:
+      prune: true  # Optional: Automatically remove resources not specified in Helm chart
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true 
+      - Prune=true
     
