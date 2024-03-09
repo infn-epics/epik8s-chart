@@ -30,9 +30,14 @@ data:
   {{- if .Values.epicsConfiguration.services.console.name }}
   CONSOLE: 'http://{{- include "console-url" . }}'
   
-  services:
-    {{- toYaml .Values.epicsConfiguration.services | nindent 4 }}
-
+  {{ .Values.beamline }}-configuration.yaml: |
+    epicsConfiguration:
+    {{- toYaml .Values.epicsConfiguration | nindent 8 }}
+  
+  {{ .Values.beamline }}-backend.yaml: |
+    epicsConfiguration:
+    {{- toYaml .Values.backend | nindent 8 }}
+    
   phoebus_settings.ini: |
     
     {{- if and  .Values.epicsConfiguration.services.gateway.name .Values.epicsConfiguration.address_list }}
