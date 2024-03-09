@@ -41,7 +41,6 @@ epicsConfiguration:
       name: "archiver"
       replica: 1
       securityContext:
-        privileged: true
         runAsUser: 0
       
 
