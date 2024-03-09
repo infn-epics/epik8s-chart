@@ -20,7 +20,7 @@ spec:
     helm:
       values: |
           beamline: {{ .Values.beamline | quote }}
-          replicaCount: {{ .ValuesepicsConfiguration.services.channelfinder.replica }}
+          replicaCount: {{ .Values.epicsConfiguration.services.channelfinder.replica }}
           serviceAccountName: {{.Values.serviceAccountName }}
           {{- if .Values.epicsConfiguration.services.channelfinder.securityContext }}
           securityContext:
