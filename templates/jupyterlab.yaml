@@ -20,7 +20,10 @@ spec:
     helm:
       values: |
           beamline: {{ .Values.beamline | quote }}
-          replicaCount: {{ .Values.consoleReplica }}  
+          replicaCount: {{ .Values.consoleReplica }}
+          serviceAccountName: {{.Values.serviceAccountName }}
+          securityContext:
+            {{- toYaml .Values.epicsConfiguration.services.jupyter.securityContext | nindent 12 }}
           epicsConfiguration:
             name: {{ .Values.epicsConfiguration.name | quote}}
             gateway: '{{- include "gateway-service" . }}' ## override with gateway

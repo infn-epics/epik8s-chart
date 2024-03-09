@@ -21,6 +21,9 @@ spec:
       values: |
           beamline: {{ .Values.beamline | quote }}
           replicaCount: {{ .Values.epicsConfiguration.services.saveandrestore.replica}}
+          serviceAccountName: {{.Values.serviceAccountName }}
+          securityContext:
+            {{- toYaml .Values.epicsConfiguration.services.saveandrestore.securityContext | nindent 12 }}
           phoebusservice: "saveandrestore"
           service:
             port: 80 

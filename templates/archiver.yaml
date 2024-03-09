@@ -19,6 +19,10 @@ spec:
     helm:
       values: |
           beamline: {{ .Values.beamline | quote }}
+          serviceAccountName: {{.Values.serviceAccountName }}
+          securityContext:
+            {{- toYaml .Values.epicsConfiguration.services.archiver.securityContext | nindent 12 }}
+
           epicsConfiguration:
             name: {{ .Values.epicsConfiguration.name | quote}}
             gateway: '{{- include "gateway-service" . }}' ## override with gateway
