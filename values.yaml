@@ -23,20 +23,53 @@ epicsConfiguration:
     rdsparcpitaia001.lnf.infn.it
     rdsparcpitaya002.lnf.infn.it
   max_array_bytes: "10000000"
-  gateway: "cagateway"
-  archiver: "archiver"
-  channelfinder: ## dont deploy channelfinder
-  saveandrestore: "saveandrestore"
-  console: "console"
-  olog: "olog"
-  scanserver: "scanserver"
-  jupyter: "jupyter"
-  mysql: "mysql"
-  alarmserver: "alarmserver"
+  services:
+    gateway: 
+      name: "cagateway"
+      ip: 192.168.36.203
+      replica: 2
+      gitRepoConfig:
+            url: https://baltig.infn.it/lnf-da-control/sparc-k8s-ecs.git
+            path: config/services/ca-gateway
+            branch: main
+            exec: start.sh
 
-gatewayReplica: "2"
-consoleReplica: "1"
-gatewaybalancer: "192.168.36.203"
+    archiver: 
+      name: "archiver"
+      replica: 1
+
+    channelfinder: 
+      name: ## dont deploy channelfinder
+      replica: 1
+    saveandrestore: 
+      name: "saveandrestore"
+      loglevel: DEBUG
+    console: 
+      name: "console"
+      replica: 1
+      gitRepoConfig:
+        url: https://baltig.infn.it/lnf-da-control/sparc-k8s-ecs.git
+        path: opi
+        branch: main
+        init: true
+    olog: 
+      name: "olog"
+      loglevel: DEBUG
+    scanserver: 
+      name: "scanserver"
+      loglevel: DEBUG
+    jupyter: 
+      name: "jupyter"
+      gitRepoConfig:
+        url: https://baltig.infn.it/lnf-da-control/ecs-jupyter-control.git
+        path: .
+        branch: main
+        init: true
+    mysql: 
+      name: "mysql"
+    alarmserver: 
+      name: "alarmserver"
+      loglevel: DEBUG
 
 backend:
   namespace: "backend"

@@ -1,9 +1,9 @@
-{{- if .Values.epicsConfiguration.alarmserver -}}
+{{- if .Values.epicsConfiguration.services.alarmserver.name }}
 
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: "{{ .Values.beamline }}-{{ .Values.epicsConfiguration.alarmserver }}"
+  name: "{{ .Values.beamline }}-{{ .Values.epicsConfiguration.services.alarmserver.name }}"
   namespace: argocd
   labels:
     rootapp: {{ .Chart.Name }}
@@ -23,7 +23,7 @@ spec:
           phoebusservice: "alarmserver"
           epicsConfiguration:
             name: {{ .Values.epicsConfiguration.name | quote}}
-            gateway: {{ .Values.epicsConfiguration.gateway }}.{{ .Values.namespace }}.svc.cluster.local ## override with gateway
+            gateway: '{{- include "gateway-service" . }}' ## override with gateway
           kafka:
             host: {{ .Values.backend.kafka.host}}.{{ .Values.backend.namespace}}.svc.cluster.local
             port: {{ .Values.backend.kafka.port}}

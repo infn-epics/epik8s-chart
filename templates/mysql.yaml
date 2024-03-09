@@ -1,4 +1,4 @@
-{{- if .Values.epicsConfiguration.mysql -}}
+{{- if .Values.epicsConfiguration.mysql }}
 
 apiVersion: argoproj.io/v1alpha1
 kind: Application

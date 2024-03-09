@@ -1,9 +1,9 @@
-{{- if .Values.epicsConfiguration.console -}}
+{{- if .Values.epicsConfiguration.services.console.name }}
 
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: "{{ .Values.beamline }}-{{ .Values.epicsConfiguration.console }}"
+  name: "{{ .Values.beamline }}-{{ .Values.epicsConfiguration.services.console.name }}"
   namespace: argocd
   labels:
     rootapp: {{ .Chart.Name }}
@@ -20,10 +20,10 @@ spec:
     helm:
       values: |
           beamline: {{ .Values.beamline | quote }}
-          replicaCount: {{ .Values.consoleReplica }}  
+          replicaCount: {{ .Values.epicsConfiguration.services.console.replica }}  
           epicsConfiguration:
             name: {{ .Values.epicsConfiguration.name | quote}}
-            gateway: {{ .Values.epicsConfiguration.gateway }}.{{ .Values.namespace }}.svc.cluster.local ## override with gateway
+            gateway: '{{- include "gateway-service" . }}' ## override with gateway
     
           ingress:
             enabled: true
@@ -33,10 +33,7 @@ spec:
                   - path: /
                     pathType: ImplementationSpecific
           opi:
-            url: https://baltig.infn.it/lnf-da-control/sparc-k8s-ecs.git
-            path: opi
-            branch: main
-            init: true
+            {{- toYaml .Values.epicsConfiguration.services.console.gitRepoConfig | nindent 12 }}
     
         
     

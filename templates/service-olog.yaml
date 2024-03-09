@@ -1,9 +1,9 @@
-{{- if .Values.epicsConfiguration.olog -}}
+{{- if .Values.epicsConfiguration.services.olog.name }}
 
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: "{{ .Values.beamline}}-{{ .Values.epicsConfiguration.olog }}"
+  name: "{{ .Values.beamline}}-{{ .Values.epicsConfiguration.services.olog.name  }}"
   namespace: argocd
   labels:
     rootapp: {{ .Chart.Name }}
@@ -24,13 +24,13 @@ spec:
           phoebusservice: "olog"
           service:
             port: 80
-            loglevel: DEBUG
+            loglevel: {{.Values.epicsConfiguration.services.olog.loglevel}}
             http:
               enable: true
               port: 8080
           epicsConfiguration:
             name: {{ .Values.epicsConfiguration.name | quote}}
-            gateway: {{ .Values.epicsConfiguration.gateway }}.{{ .Values.namespace }}.svc.cluster.local ## override with gateway
+            gateway: '{{- include "gateway-service" . }}' ## override with gateway
           elasticsearch:
             network:
               host: elasticsearch.backend.svc.cluster.local

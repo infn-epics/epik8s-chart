@@ -1,9 +1,9 @@
-{{- if .Values.epicsConfiguration.jupyter -}}
+{{- if .Values.epicsConfiguration.services.jupyter.name }}
 
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: "{{ .Values.beamline }}-{{ .Values.epicsConfiguration.jupyter }}"
+  name: "{{ .Values.beamline }}-{{ .Values.epicsConfiguration.services.jupyter.name }}"
   namespace: argocd
   labels:
     rootapp: {{ .Chart.Name }}
@@ -23,7 +23,7 @@ spec:
           replicaCount: {{ .Values.consoleReplica }}  
           epicsConfiguration:
             name: {{ .Values.epicsConfiguration.name | quote}}
-            gateway: {{ .Values.epicsConfiguration.gateway }}.{{ .Values.namespace }}.svc.cluster.local ## override with gateway
+            gateway: '{{- include "gateway-service" . }}' ## override with gateway
     
           ingress:
             enabled: true
@@ -34,10 +34,8 @@ spec:
                     pathType: ImplementationSpecific
                     port: 80
           gitRepoConfig:
-            url: https://baltig.infn.it/lnf-da-control/ecs-jupyter-control.git
-            path: .
-            branch: main
-            init: true
+            {{- toYaml .Values.epicsConfiguration.services.jupyter.gitRepoConfig | nindent 12 }}
+           
     
   destination:
     server: 'https://kubernetes.default.svc'

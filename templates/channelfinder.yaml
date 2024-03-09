@@ -1,9 +1,9 @@
-{{- if .Values.epicsConfiguration.channelfinder -}}
+{{- if .Values.epicsConfiguration.services.channelfinder.name }}
 
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: "{{ .Values.beamline}}-{{ .Values.epicsConfiguration.channelfinder }}"
+  name: "{{ .Values.beamline}}-{{ .Values.epicsConfiguration.services.channelfinder.name }}"
   namespace: argocd
   labels:
     rootapp: {{ .Chart.Name }}
@@ -20,10 +20,10 @@ spec:
     helm:
       values: |
           beamline: {{ .Values.beamline | quote }}
-          replicaCount: {{ .Values.consoleReplica }}  
+          replicaCount: {{ .ValuesepicsConfiguration.services.channelfinder.replica }}  
           epicsConfiguration:
             name: {{ .Values.epicsConfiguration.name | quote}}
-            gateway: {{ .Values.epicsConfiguration.gateway }}.{{ .Values.namespace }}.svc.cluster.local ## override with gateway
+            gateway: '{{- include "gateway-service" . }}' ## override with gateway
           elasticsearch:
             network:
               host: {{ .Values.backend.elasticsearch.host}}.{{ .Values.backend.namespace}}.svc.cluster.local

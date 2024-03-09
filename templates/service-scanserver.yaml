@@ -1,9 +1,9 @@
-{{- if .Values.epicsConfiguration.scanserver -}}
+{{- if .Values.epicsConfiguration.services.scanserver.name }}
 
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: "{{ .Values.beamline }}-{{ .Values.epicsConfiguration.scanserver }}"
+  name: "{{ .Values.beamline }}-{{ .Values.epicsConfiguration.services.scanserver.name}}"
   namespace: argocd
   labels:
     rootapp: {{ .Chart.Name }}
@@ -20,11 +20,11 @@ spec:
     helm:
       values: |
           beamline: {{ .Values.beamline | quote }}
-          replicaCount: {{ .Values.consoleReplica }}
+          replicaCount: {{.Values.epicsConfiguration.services.scanserver.replica }}
           phoebusservice: "scanserver"
           epicsConfiguration:
             name: {{ .Values.epicsConfiguration.name | quote}}
-            gateway: {{ .Values.epicsConfiguration.gateway }}.{{ .Values.namespace }}.svc.cluster.local ## override with gateway
+            gateway: '{{- include "gateway-service" . }}' ## override with gateway
           ingress:
             enabled: true
             hosts:

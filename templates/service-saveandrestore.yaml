@@ -1,9 +1,9 @@
-{{- if .Values.epicsConfiguration.saveandrestore -}}
+{{- if .Values.epicsConfiguration.services.saveandrestore.name  }}
 
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: "{{ .Values.beamline}}-{{ .Values.epicsConfiguration.saveandrestore }}"
+  name: "{{ .Values.beamline}}-{{ .Values.epicsConfiguration.services.saveandrestore.name  }}"
   namespace: argocd
   labels:
     rootapp: {{ .Chart.Name }}
@@ -20,13 +20,14 @@ spec:
     helm:
       values: |
           beamline: {{ .Values.beamline | quote }}
-          replicaCount: {{ .Values.consoleReplica }}
+          replicaCount: {{ .Values.epicsConfiguration.services.saveandrestore.replica}}
           phoebusservice: "saveandrestore"
           service:
             port: 80 
+            loglevel: {{.Values.epicsConfiguration.services.saveandrestore.loglevel}}
           epicsConfiguration:
             name: {{ .Values.epicsConfiguration.name | quote}}
-            gateway: {{ .Values.epicsConfiguration.gateway }}.{{ .Values.namespace }}.svc.cluster.local ## override with gateway
+            gateway: '{{- include "gateway-service" . }}' ## override with gateway
           elasticsearch:
             network:
               host: {{ .Values.backend.elasticsearch.host}}.{{ .Values.backend.namespace}}.svc.cluster.local

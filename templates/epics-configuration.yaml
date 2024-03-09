@@ -12,15 +12,27 @@ data:
   EPICS_MAX_ARRAY_BYTES: "{{ .Values.epicsConfiguration.max_array_bytes }}"
   EPICS_GATEWAY: "{{ .Values.epicsConfiguration.gateway }}.{{ .Values.namespace }}.svc.cluster.local"
   EPICS_ARCHIVER: '{{- include "archiver-url" . }}'
-  {{- if .Values.epicsConfiguration.channelfinder -}}
-
+  {{- if .Values.epicsConfiguration.services.channelfinder.name }}
   CHANNEL_FINDER: '{{- include "channelfinder-url" . }}'
   {{- end}}
+  {{- if .Values.epicsConfiguration.services.saveandrestore.name }}
   PHOEBUS_SAVE_AND_RESTORE: '{{- include "saveandrestore-url" . }}'
+  {{- end}}
+  {{- if .Values.epicsConfiguration.services.scanserver.name }}
   PHOEBUS_SCAN_SERVER: '{{- include "scanserver-url" . }}'
+  {{- end}}
+  {{- if .Values.epicsConfiguration.services.olog.name }}
   PHOEBUS_OLOG: '{{- include "olog-url" . }}'
+  {{- end}}
+  {{- if .Values.epicsConfiguration.services.jupyter.name }}
   JUPYTER: 'http://{{- include "jupyter-url" . }}'
+  {{- end}}
+  {{- if .Values.epicsConfiguration.services.console.name }}
   CONSOLE: 'http://{{- include "console-url" . }}'
+  
+  services:
+    {{- toYaml .Values.epicsConfiguration.services | nindent 4 }}
+
   phoebus_settings.ini: |
     
     {{- if and  .Values.epicsConfiguration.gateway .Values.epicsConfiguration.address_list }}
@@ -177,3 +189,4 @@ data:
 
     {{- end}}
 
+{{- end}}

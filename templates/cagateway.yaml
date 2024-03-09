@@ -1,9 +1,9 @@
-{{- if .Values.epicsConfiguration.cagateway -}}
+{{- if .Values.epicsConfiguration.services.gateway.name }}
 
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: "{{ .Values.beamline }}-{{.Values.epicsConfiguration.gateway}}"
+  name: "{{ .Values.beamline }}-{{.Values.epicsConfiguration.services.gateway.name}}"
   namespace: argocd
   labels:
     rootapp: {{ .Chart.Name }}
@@ -20,19 +20,19 @@ spec:
     helm:
       values: |
           beamline: {{ .Values.beamline | quote }}
-          replicaCount: {{ .Values.gatewayReplica }}  
+          replicaCount: {{ .Values.epicsConfiguration.services.gateway.replica }}  
           epicsConfiguration:
             name: {{ .Values.epicsConfiguration.name | quote}}
           ingress:
             enabled: false
-          gitRepoConfig:
-            url: https://baltig.infn.it/lnf-da-control/sparc-k8s-ecs.git
-            path: config/services/ca-gateway
-            branch: main
-            exec: start.sh
+          
+          gitRepoConfig: 
+            {{- toYaml .Values.epicsConfiguration.services.gateway.gitRepoConfig | nindent 12 }}
+          {{- if .Values.epicsConfiguration.services.gateway.ip }}
           service:
             type: "LoadBalancer"
-            loadBalancerIP: {{ .Values.gatewaybalancer }}
+            loadBalancerIP: {{ .Values.epicsConfiguration.services.gateway.ip }}
+          {{- end}}
       
   destination:
     server: 'https://kubernetes.default.svc'
