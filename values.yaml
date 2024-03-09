@@ -56,27 +56,15 @@ epicsConfiguration:
         path: opi
         branch: main
         init: true
-      securityContext:
-            privileged: true
-            runAsUser: 1000
-            runAsGroup: 1000
-            fsGroup: 1000
+      
     olog: 
       name: "olog"
       loglevel: DEBUG
-      securityContext:
-            privileged: true
-            runAsUser: 1000
-            runAsGroup: 1000
-            fsGroup: 1000
+      
     scanserver: 
       name: "scanserver"
       loglevel: DEBUG
-      securityContext:
-            privileged: true
-            runAsUser: 1000
-            runAsGroup: 1000
-            fsGroup: 1000
+      
     jupyter: 
       name: "jupyter"
       gitRepoConfig:
@@ -89,11 +77,7 @@ epicsConfiguration:
     alarmserver: 
       name: "alarmserver"
       loglevel: DEBUG
-      securityContext:
-            privileged: true
-            runAsUser: 1000
-            runAsGroup: 1000
-            fsGroup: 1000
+      
 
 backend:
   namespace: "backend"
