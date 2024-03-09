@@ -45,10 +45,10 @@ epicsConfiguration:
       
 
     channelfinder: 
-      name: ## dont deploy channelfinder
+      name: "channelfinder"
       replica: 1
     saveandrestore: 
-      name: # "saveandrestore"
+      name: "saveandrestore"
       loglevel: DEBUG
     console: 
       name: "console"
@@ -64,7 +64,7 @@ epicsConfiguration:
       loglevel: DEBUG
       
     scanserver: 
-      name: # "scanserver"
+      name: "scanserver"
       loglevel: DEBUG
       
     jupyter: 
@@ -81,7 +81,7 @@ epicsConfiguration:
           name: "default"
 
     alarmserver: 
-      name: # "alarmserver"
+      name: "alarmserver"
       loglevel: DEBUG
   
   externalIoc:
