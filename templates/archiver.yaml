@@ -20,9 +20,10 @@ spec:
       values: |
           beamline: {{ .Values.beamline | quote }}
           serviceAccountName: {{.Values.serviceAccountName }}
+          {{- if .Values.epicsConfiguration.services.archiver.securityContext }}
           securityContext:
             {{- toYaml .Values.epicsConfiguration.services.archiver.securityContext | nindent 12 }}
-
+          {{- end }}
           epicsConfiguration:
             name: {{ .Values.epicsConfiguration.name | quote}}
             gateway: '{{- include "gateway-service" . }}' ## override with gateway

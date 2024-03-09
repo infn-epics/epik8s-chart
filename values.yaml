@@ -4,6 +4,7 @@ namespace: nonamespace
 epik8namespace: "apps.okd-datest.lnf.infn.it"
 targetRevision: "devel"
 serviceAccountName: "default"
+openshift: true
 epicsConfiguration:
   name: "epics-configuration" # name of existing configMap that set CA parameters
   address_list: |
@@ -29,11 +30,7 @@ epicsConfiguration:
       name: "cagateway"
       ip: 192.168.36.203
       replica: 2
-      securityContext:
-            privileged: true
-            runAsUser: 1000
-            runAsGroup: 1000
-            fsGroup: 1000
+      
       gitRepoConfig:
             url: https://baltig.infn.it/lnf-da-control/sparc-k8s-ecs.git
             path: config/services/ca-gateway
