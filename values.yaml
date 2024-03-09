@@ -4,7 +4,7 @@ namespace: nonamespace
 epik8namespace: "apps.okd-datest.lnf.infn.it"
 targetRevision: "devel"
 serviceAccountName: "default"
-openshift: true
+openshift: false
 epicsConfiguration:
   name: "epics-configuration" # name of existing configMap that set CA parameters
   address_list: |
@@ -61,7 +61,7 @@ epicsConfiguration:
         init: true
       
     olog: 
-      name: # "olog"
+      name: "olog"
       loglevel: DEBUG
       
     scanserver: 
@@ -69,7 +69,7 @@ epicsConfiguration:
       loglevel: DEBUG
       
     jupyter: 
-      name: # "jupyter"
+      name: "jupyter"
       gitRepoConfig:
         url: https://baltig.infn.it/lnf-da-control/ecs-jupyter-control.git
         path: .
