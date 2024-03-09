@@ -38,7 +38,7 @@ epicsConfiguration:
             exec: start.sh
 
     archiver: 
-      name: "archiver"
+      name: # "archiver"
       replica: 1
       
 
@@ -46,7 +46,7 @@ epicsConfiguration:
       name: ## dont deploy channelfinder
       replica: 1
     saveandrestore: 
-      name: "saveandrestore"
+      name: # "saveandrestore"
       loglevel: DEBUG
     console: 
       name: "console"
@@ -58,15 +58,15 @@ epicsConfiguration:
         init: true
       
     olog: 
-      name: "olog"
+      name: # "olog"
       loglevel: DEBUG
       
     scanserver: 
-      name: "scanserver"
+      name: # "scanserver"
       loglevel: DEBUG
       
     jupyter: 
-      name: "jupyter"
+      name: # "jupyter"
       gitRepoConfig:
         url: https://baltig.infn.it/lnf-da-control/ecs-jupyter-control.git
         path: .
@@ -75,7 +75,7 @@ epicsConfiguration:
     mysql: 
       name: "mysql"
     alarmserver: 
-      name: "alarmserver"
+      name: # "alarmserver"
       loglevel: DEBUG
       
 
