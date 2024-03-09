@@ -77,7 +77,18 @@ epicsConfiguration:
     alarmserver: 
       name: # "alarmserver"
       loglevel: DEBUG
-      
+  
+  externalIoc:
+    - name: "SR00RPA02"
+      asset: "https://confluence.infn.it/x/nYD8DQ"
+      gitRepoConfig:
+        url: https://baltig.infn.it/lnf-da-control/ecs-jupyter-control.git
+        path: .
+        branch: main
+        exec: 'start.sh'
+      ssh:
+        host: "rdsparcpitaia002.lnf.infn.it"
+        user: "root"
 
 backend:
   namespace: "backend"

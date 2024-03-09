@@ -1,9 +1,9 @@
-{{- if .Values.epicsConfiguration.mysql.name }}
+{{- if .Values.epicsConfiguration.services.mysql.name }}
 
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: {{ .Values.epicsConfiguration.mysql.name }}
+  name: {{ .Values.epicsConfiguration.services.mysql.name }}
   namespace: argocd
   finalizers:
   - resources-finalizer.argocd.argoproj.io
