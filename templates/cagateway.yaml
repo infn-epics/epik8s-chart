@@ -26,7 +26,7 @@ spec:
             {{- toYaml .Values.epicsConfiguration.services.gateway.securityContext | nindent 12 }}
           {{- else }}
           securityContext:
-            privileged: {{ .Values.openshift }}
+            privileged: "{{ .Values.openshift }}"
             runAsUser: 1000
             runAsGroup: 1000
             fsGroup: 1000
