@@ -25,7 +25,9 @@ spec:
             {{- toYaml .Values.epicsConfiguration.services.archiver.securityContext | nindent 12 }}
           {{- else }}
           securityContext:
-            privileged: {{ .Values.openshift }}
+            {{- if .Values.openshift }}
+            privileged: true
+            {{- end }}
             runAsUser: 1000
             runAsGroup: 1000
             fsGroup: 1000
