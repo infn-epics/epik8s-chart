@@ -43,7 +43,6 @@ epicsConfiguration:
       securityContext:
         runAsUser: 0
       
-
     channelfinder: 
       name: "channelfinder"
       replica: 1

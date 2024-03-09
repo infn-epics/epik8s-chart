@@ -9,7 +9,7 @@ metadata:
     rootapp: {{ .Chart.Name }}
     rootappver: {{ .Chart.Version }}
     beamline: {{ .Values.beamline | quote }}
-        revision: {{.Values.targetRevision}}
+    revision: {{.Values.targetRevision}}
 
 spec:
   project: default
