@@ -75,9 +75,9 @@ epicsConfiguration:
     mysql: 
       name: "mysql"
       serviceAccount:
-          create: false
+          create: "false"
           name: "default"
-          
+
     alarmserver: 
       name: # "alarmserver"
       loglevel: DEBUG
