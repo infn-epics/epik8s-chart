@@ -38,7 +38,7 @@ epicsConfiguration:
             exec: start.sh
 
     archiver: 
-      name: # "archiver"
+      name: "archiver"
       replica: 1
       
 
@@ -49,7 +49,7 @@ epicsConfiguration:
       name: # "saveandrestore"
       loglevel: DEBUG
     console: 
-      name: # "console"
+      name: "console"
       replica: 1
       gitRepoConfig:
         url: https://baltig.infn.it/lnf-da-control/sparc-k8s-ecs.git
