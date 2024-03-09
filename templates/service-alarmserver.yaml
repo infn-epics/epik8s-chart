@@ -20,13 +20,13 @@ spec:
       values: |
           beamline: {{ .Values.beamline | quote }}
           replicaCount: {{ .Values.consoleReplica }}
-          serviceAccountName: {{.Values.serviceAccountName }}
+          serviceAccountName: "{{.Values.serviceAccountName }}"
           {{- if .Values.epicsConfiguration.services.alarmserver.securityContext }}
           securityContext:
             {{- toYaml .Values.epicsConfiguration.services.alarmserver.securityContext | nindent 12 }}
           {{- else }}
           securityContext:
-            privileged: {{ .Values.openshift }}
+            privileged: "{{ .Values.openshift }}"
             runAsUser: 1000
             runAsGroup: 1000
             fsGroup: 1000

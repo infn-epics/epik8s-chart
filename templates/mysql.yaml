@@ -1,9 +1,9 @@
-{{- if .Values.epicsConfiguration.mysql }}
+{{- if .Values.epicsConfiguration.mysql.name }}
 
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: {{ .Values.epicsConfiguration.mysql }}
+  name: {{ .Values.epicsConfiguration.mysql.name }}
   namespace: argocd
   finalizers:
   - resources-finalizer.argocd.argoproj.io
@@ -32,12 +32,7 @@ spec:
     namespace: {{ .Values.namespace | quote }}
   syncPolicy:
     automated:
-      prune: true
+      prune: true  # Optional: Automatically remove resources not specified in Helm chart
       selfHeal: true
-      syncTimeout: 10m
-  resource:
-  customizations:
-    timeout:
-      seconds: 600
 
 {{- end }}
