@@ -22,12 +22,12 @@ spec:
           username: "arcappl"
           password: "arcappl"
         {{- if .Values.epicsConfiguration.services.mysql.serviceAccount }}
-          serviceAccount:
-            {{- toYaml .Values.epicsConfiguration.services.mysql.serviceAccount | nindent 12 }}
+        serviceAccount:
+          {{- toYaml .Values.epicsConfiguration.services.mysql.serviceAccount | nindent 12 }}
         {{- else }}
-          serviceAccount:
-            create: false
-            name: "default"
+        serviceAccount:
+          create: false
+          name: "default"
         {{- end}}
         
           
