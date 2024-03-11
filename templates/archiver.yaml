@@ -58,7 +58,7 @@ spec:
               - host: '{{- include "archiver-url" . }}'
                 paths:
                   - path: /
-                    pathType: prefix
+                    pathType: Prefix
     
     
   destination:
