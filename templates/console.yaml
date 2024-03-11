@@ -41,6 +41,7 @@ spec:
     
           ingress:
             enabled: true
+            className: {{.Values.ingressClassName}}
             hosts:
               - host: '{{- include "console-url" . }}'
                 paths:

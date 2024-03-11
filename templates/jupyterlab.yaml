@@ -49,6 +49,8 @@ spec:
 
           ingress:
             enabled: true
+            className: {{.Values.ingressClassName}}
+
             hosts:
               - host: '{{- include "jupyter-url" . }}'
                 paths:

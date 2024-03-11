@@ -2,6 +2,7 @@
 beamline: nobeamline
 namespace: nonamespace
 epik8namespace: "apps.okd-datest.lnf.infn.it"
+ingressClassName: "nginx"
 targetRevision: "devel"
 serviceAccountName: "default"
 openshift: false

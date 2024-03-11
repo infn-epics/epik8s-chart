@@ -52,6 +52,8 @@ spec:
             pass: arcappl
           ingress:
             enabled: true
+            className: {{.Values.ingressClassName}}
+
             hosts:
               - host: '{{- include "archiver-url" . }}'
                 paths:
