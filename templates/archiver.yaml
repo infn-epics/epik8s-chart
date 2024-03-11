@@ -36,15 +36,15 @@ spec:
             name: {{ .Values.epicsConfiguration.name | quote}}
             gateway: '{{- include "gateway-service" . }}' ## override with gateway
           {{- if .Values.epicsConfiguration.services.archiver.dataVolume }}
-            dataVolume:
+          dataVolume:
               {{- toYaml .Values.epicsConfiguration.services.archiver.dataVolume | nindent 12 }}
           {{- else }}
           dataVolume:
             claim:  ## an existing claim or empty will create a new one
-            size: 50Gi ## size of the claim
+            size: 21Gi ## size of the claim
             accessMode: ReadWriteOnce
           {{- end }}
-          
+
           mysql:
             host: '{{- include "mysql-service" . }}'
             dbname: arcappl

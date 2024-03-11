@@ -37,7 +37,16 @@ spec:
           epicsConfiguration:
             name: {{ .Values.epicsConfiguration.name | quote}}
             gateway: '{{- include "gateway-service" . }}' ## override with gateway
-    
+          {{- if .Values.epicsConfiguration.services.jupyter.dataVolume }}
+          dataVolume:
+              {{- toYaml .Values.epicsConfiguration.services.jupyter.dataVolume | nindent 12 }}
+          {{- else }}
+          dataVolume:
+            claim:  ## an existing claim or empty will create a new one
+            size: 21Gi ## size of the claim
+            accessMode: ReadWriteOnce
+          {{- end }}
+
           ingress:
             enabled: true
             hosts:
