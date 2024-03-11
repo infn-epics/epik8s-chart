@@ -41,6 +41,8 @@ spec:
             gateway: '{{- include "gateway-service" . }}' ## override with gateway
           ingress:
             enabled: true
+            className: {{.Values.ingressClassName}}
+
             hosts:
               - host: '{{- include "scanserver-url" . }}'
                 paths:

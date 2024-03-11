@@ -52,6 +52,7 @@ spec:
             database: "{{.Values.beamline}}-ologAttachments"
           ingress:
             enabled: true
+            className: {{.Values.ingressClassName}}
             hosts:
               - host: '{{- include "olog-url" . }}'
                 paths:

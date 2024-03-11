@@ -46,6 +46,7 @@ spec:
               host: {{ .Values.backend.elasticsearch.host}}.{{ .Values.backend.namespace}}.svc.cluster.local
           ingress:
             enabled: true
+            className: {{.Values.ingressClassName}}
             hosts:
               - host: '{{- include "saveandrestore-url" . }}'
                 paths:

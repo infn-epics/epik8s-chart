@@ -43,6 +43,8 @@ spec:
             port: {{ .Values.backend.kafka.port}}
           ingress:
             enabled: true
+            className: {{.Values.ingressClassName}}
+
             hosts:
               - host: '{{- include "alarmserver-url" . }}'
                 paths:
