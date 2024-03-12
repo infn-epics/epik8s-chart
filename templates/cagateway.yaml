@@ -42,10 +42,15 @@ spec:
 
           gitRepoConfig: 
             {{- toYaml .Values.epicsConfiguration.services.gateway.gitRepoConfig | nindent 12 }}
+          
           {{- if .Values.epicsConfiguration.services.gateway.ip }}
           service:
             type: "LoadBalancer"
             loadBalancerIP: {{ .Values.epicsConfiguration.services.gateway.ip }}
+          {{- else if .Values.epicsConfiguration.services.gateway.nodePort}}
+          service:
+            type: "NodePort"
+            nodePort: {{.Values.epicsConfiguration.services.gateway.nodePort }}
           {{- end}}
       
   destination:

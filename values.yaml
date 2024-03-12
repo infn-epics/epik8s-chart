@@ -29,8 +29,9 @@ epicsConfiguration:
   services:
     gateway: 
       name: "cagateway"
-      ip: 192.168.36.203
+      ip:
       replica: 2
+      nodePort: 30095
       
       gitRepoConfig:
             url: https://baltig.infn.it/lnf-da-control/sparc-k8s-ecs.git
