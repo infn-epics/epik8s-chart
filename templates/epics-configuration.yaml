@@ -10,7 +10,7 @@ data:
   
   EPICS_CA_AUTO_ADDR_LIST: "NO"
   EPICS_MAX_ARRAY_BYTES: "{{ .Values.epicsConfiguration.max_array_bytes }}"
-  EPICS_GATEWAY: "{{ .Values.epicsConfiguration.services.gateway.name }}.{{ .Values.namespace }}.svc.cluster.local"
+  EPICS_GATEWAY: "{{- include "gateway-service" . }}"
   EPICS_ARCHIVER: '{{- include "archiver-url" . }}'
   {{- if .Values.epicsConfiguration.services.channelfinder.name }}
   CHANNEL_FINDER: '{{- include "channelfinder-url" . }}'
