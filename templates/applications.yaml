@@ -1,0 +1,50 @@
+{{- if .Values.applications }}
+{{- range .Values.applications }}
+
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: "{{.name}}"
+  namespace: argocd
+  labels:
+    rootapp: {{ .Chart.Name }}
+    rootappver: {{ .Chart.Version }}
+    beamline: {{ .Values.beamline | quote }}
+    revision: {{.Values.targetRevision}}
+
+spec:
+  project: default
+  source:
+    repoURL: 'https://baltig.infn.it/epics-containers/generic-application-chart.git'
+    path: .
+    targetRevision:  {{.Values.targetRevision}}
+    helm:
+      values: |
+          serviceAccountName: {{.Values.serviceAccountName }}
+          {{- if .securityContext }}
+          securityContext:
+            {{- toYaml .securityContext | nindent 12 }}
+          {{- else }}
+          securityContext:
+            {{- if .Values.openshift }}
+            privileged: true
+            {{- end }}
+            runAsUser: 1000
+            runAsGroup: 1000
+            fsGroup: 1000
+          {{- end}}
+          ingress:
+            enabled: false
+          gitRepoConfig: 
+            {{- toYaml .gitRepoConfig | nindent 12 }}
+          gitRepoApp: 
+            {{- toYaml .gitRepoApp | nindent 12 }}
+          
+      
+  destination:
+    server: 'https://kubernetes.default.svc'
+    namespace: {{ .namespace | quote }}
+  syncPolicy:
+    {{- toYaml .Values.syncPolicy | nindent 10 }}
+{{- end }}
+{{- end }}
