@@ -1,4 +1,5 @@
 {{- range $key, $value := .Values.epicsConfiguration.services }}
+# Service {{$key}}
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
@@ -9,7 +10,7 @@ metadata:
     rootappver: {{ $.Chart.Version }}
     beamline: {{ $.Values.beamline | quote }}
     revision: {{$.Values.targetRevision}}
-    service: {{ $value.name}}
+    service: {{ $key}}
 spec:
   project: default
   source:

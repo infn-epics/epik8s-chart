@@ -11,6 +11,18 @@
 {{- printf "%s-%s.%s" .Values.beamline .Values.epicsConfiguration.services.saveandrestore.name .Values.epik8namespace }}
 {{- end }}
 
+{{- define "iocnames" -}}
+{{- $list := .Values.epicsConfiguration.iocs }}
+{{- $commaSeparatedString := "" }}
+
+{{- range $index,$element:=$list }}
+  {{- $commaSeparatedString = printf "%s%s" $element.name $commaSeparatedString }}
+  {{- if ne $index (sub (len $list) 1) }}
+    {{- $commaSeparatedString = printf "%s " $commaSeparatedString }}
+  {{- end }} 
+{{- end }}
+{{- $commaSeparatedString }}
+{{- end }}
 {{- define "console-url" -}}
 {{- printf "%s-%s.%s" .Values.beamline .Values.epicsConfiguration.services.console.name .Values.epik8namespace }}
 {{- end }}

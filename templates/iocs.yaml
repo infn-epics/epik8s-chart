@@ -17,7 +17,12 @@ spec:
   source:
     repoURL: 'https://baltig.infn.it/epics-containers/ioc-chart.git'
     path: .
+    {{- if .targetRevision }}
+    targetRevision: {{.targetRevision}}
+
+    {{- else }}
     targetRevision: {{$.Values.targetRevision}}
+    {{- end }}
     helm:
       parameters:
         - name: beamline
