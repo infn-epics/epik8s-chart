@@ -66,4 +66,5 @@ spec:
     automated:
       prune: true  # Optional: Automatically remove resources not specified in Helm chart
       selfHeal: true
+---
 {{- end }}
