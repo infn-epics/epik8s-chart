@@ -16,7 +16,7 @@
 {{- $commaSeparatedString := "" }}
 
 {{- range $index,$element:=$list }}
-  {{- $commaSeparatedString = printf "%s%s" $element.name $commaSeparatedString }}
+  {{- $commaSeparatedString = printf "%s.%s.svc.cluster.local%s" $element.name $.Values.namespace $commaSeparatedString }}
   {{- if ne $index (sub (len $list) 1) }}
     {{- $commaSeparatedString = printf "%s " $commaSeparatedString }}
   {{- end }} 
