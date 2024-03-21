@@ -41,7 +41,7 @@ spec:
         - name: service.type
           value: "NodePort"
         - name: service.nodePort
-          value: {{$value.nodePort}}
+          value: "{{$value.nodePort}}"
         {{- end }}
         {{- if not $value.gitRepoConfig }}
         ## use defaults
