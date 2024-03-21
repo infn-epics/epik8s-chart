@@ -13,10 +13,10 @@ metadata:
     revision: {{.Values.targetRevision}}
     {{- if .gitRepoApp.url }}
     apprevison: "{{.gitRepoApp.branch}}"
-    {{- endif }}
+    {{- end }}
     {{- if .gitRepoConfig.url }}
     configrevison: "{{.gitRepoConfig.branch}}"
-    {{- endif }}
+    {{- end }}
 
 spec:
   project: default
