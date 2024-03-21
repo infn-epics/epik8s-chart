@@ -21,6 +21,9 @@ spec:
       parameters:
         - name: beamline
           value: {{ $.Values.beamline | quote }}
+        - name: configCA.existingConfigMap
+          value: {{ $.Values.epicsConfiguration.name | quote }}
+
       values: |
           {{- toYaml . | nindent 12 }}
     
