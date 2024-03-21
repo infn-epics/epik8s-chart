@@ -10,24 +10,28 @@ data:
   
   EPICS_CA_AUTO_ADDR_LIST: "NO"
   EPICS_MAX_ARRAY_BYTES: "{{ .Values.epicsConfiguration.max_array_bytes }}"
+  {{- if .Values.epicsConfiguration.services.gateway }}
   EPICS_GATEWAY: "{{- include "gateway-service" . }}"
+  {{- end }}
+  {{- if .Values.epicsConfiguration.services.archiver }}
   EPICS_ARCHIVER: '{{- include "archiver-url" . }}'
-  {{- if .Values.epicsConfiguration.services.channelfinder.name }}
+  {{- end }}
+  {{- if .Values.epicsConfiguration.services.channelfinder }}
   CHANNEL_FINDER: '{{- include "channelfinder-url" . }}'
   {{- end}}
-  {{- if .Values.epicsConfiguration.services.saveandrestore.name }}
+  {{- if .Values.epicsConfiguration.services.saveandrestore }}
   PHOEBUS_SAVE_AND_RESTORE: '{{- include "saveandrestore-url" . }}'
   {{- end}}
-  {{- if .Values.epicsConfiguration.services.scanserver.name }}
+  {{- if .Values.epicsConfiguration.services.scanserver }}
   PHOEBUS_SCAN_SERVER: '{{- include "scanserver-url" . }}'
   {{- end}}
-  {{- if .Values.epicsConfiguration.services.olog.name }}
+  {{- if .Values.epicsConfiguration.services.olog }}
   PHOEBUS_OLOG: '{{- include "olog-url" . }}'
   {{- end}}
-  {{- if .Values.epicsConfiguration.services.jupyter.name }}
+  {{- if .Values.epicsConfiguration.services.jupyter }}
   JUPYTER: 'http://{{- include "jupyter-url" . }}'
   {{- end}}
-  {{- if .Values.epicsConfiguration.services.console.name }}
+  {{- if .Values.epicsConfiguration.services.console }}
   CONSOLE: 'http://{{- include "console-url" . }}'
   
   {{ .Values.beamline }}-configuration.yaml: |

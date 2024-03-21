@@ -1,20 +1,19 @@
 {{- range $key, $value := .Values.epicsConfiguration.services }}
-
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: {{ $value.name}}
+  name: {{ $value.name }}
   namespace: argocd
   labels:
     rootapp: {{ $.Chart.Name }}
     rootappver: {{ $.Chart.Version }}
     beamline: {{ $.Values.beamline | quote }}
     revision: {{$.Values.targetRevision}}
-    service: {{$value.name}}
+    service: {{ $value.name}}
 spec:
   project: default
   source:
-    repoURL: {{$value.charturl }} # 'https://baltig.infn.it/epics-containers/ioc-chart.git'
+    repoURL: {{ $value.charturl }} # 'https://baltig.infn.it/epics-containers/ioc-chart.git'
     {{- if $value.chart}}
     chart: {{$value.chart}}
     {{- else}}
