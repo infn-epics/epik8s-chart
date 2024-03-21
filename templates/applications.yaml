@@ -17,6 +17,7 @@ metadata:
     {{- if .gitRepoConfig.url }}
     configrevison: "{{.gitRepoConfig.branch}}"
     {{- end }}
+    application: {{.name}}
 
 spec:
   project: default

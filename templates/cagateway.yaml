@@ -10,6 +10,8 @@ metadata:
     rootappver: {{ .Chart.Version }}
     beamline: {{ .Values.beamline | quote }}
     revision: {{.Values.targetRevision}}
+    service: {{.Values.epicsConfiguration.services.gateway.name }}
+
 
 spec:
   project: default

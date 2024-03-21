@@ -10,7 +10,7 @@ metadata:
     rootappver: {{ .Chart.Version }}
     beamline: {{ .Values.beamline | quote }}
     revision: {{.Values.targetRevision}}
-
+    service: {{.Values.epicsConfiguration.services.saveandrestore.name}}
 spec:
   project: default
   source:

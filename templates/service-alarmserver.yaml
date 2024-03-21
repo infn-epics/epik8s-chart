@@ -9,6 +9,7 @@ metadata:
     rootapp: {{ .Chart.Name }}
     rootappver: {{ .Chart.Version }}
     beamline: {{ .Values.beamline | quote }}
+    service: {{.Values.epicsConfiguration.services.alarmserver.name}}
 
 spec:
   project: default

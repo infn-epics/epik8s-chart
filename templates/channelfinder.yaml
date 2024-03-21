@@ -10,6 +10,7 @@ metadata:
     rootappver: {{ .Chart.Version }}
     beamline: {{ .Values.beamline | quote }}
     revision: {{.Values.targetRevision}}
+    service: {{.Values.epicsConfiguration.services.channelfinder.name}}
 
 spec:
   project: default
