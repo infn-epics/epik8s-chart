@@ -26,38 +26,17 @@ spec:
     targetRevision:  {{ $.Values.targetRevision }}
     helm:
       values: |
-          serviceAccountName: {{ $.Values.serviceAccountName }}
-          {{- if .securityContext }}
-          securityContext:
-            {{- toYaml .securityContext | nindent 12 }}
-          {{- else }}
-          securityContext:
-            {{- if $.Values.openshift }}
-            privileged: true
-            {{- end }}
-            runAsUser: 1000
-            runAsGroup: 1000
-            fsGroup: 1000
-          {{- end}}
-          ingress:
-            enabled: false
-          gitRepoConfig: 
-            {{- toYaml .gitRepoConfig | nindent 12 }}
-          gitRepoApp: 
-            {{- toYaml .gitRepoApp | nindent 12 }}
-          exec: {{ .exec }}
-          service:
-            {{- toYaml .service | nindent 12 }}
+          {{- toYaml . | nindent 12 }}
+
 
       
   destination:
     server: 'https://kubernetes.default.svc'
     {{- if .namespace }}
-    ## application namespace
-      namespace: {{ .namespace | quote }}
+    namespace: {{ .namespace | quote }}
     {{- else }}
     ## main deploy namespace
-      namespace: {{ $.Values.namespace | quote }}
+    namespace: {{ $.Values.namespace | quote }}
 
     {{- end}}
   syncPolicy:
