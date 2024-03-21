@@ -7,10 +7,10 @@ metadata:
   name: "{{.name}}"
   namespace: argocd
   labels:
-    rootapp: {{ .Chart.Name }}
-    rootappver: {{ .Chart.Version }}
-    beamline: {{ .Values.beamline | quote }}
-    revision: {{.Values.targetRevision}}
+    rootapp: {{ $.Chart.Name }}
+    rootappver: {{ $.Chart.Version }}
+    beamline: {{ $.Values.beamline | quote }}
+    revision: {{$.Values.targetRevision}}
     {{- if .gitRepoApp.url }}
     apprevison: "{{.gitRepoApp.branch}}"
     {{- end }}
@@ -23,16 +23,16 @@ spec:
   source:
     repoURL: 'https://baltig.infn.it/epics-containers/generic-application-chart.git'
     path: .
-    targetRevision:  {{.Values.targetRevision}}
+    targetRevision:  {{ $.Values.targetRevision }}
     helm:
       values: |
-          serviceAccountName: {{.Values.serviceAccountName }}
+          serviceAccountName: {{ $.Values.serviceAccountName }}
           {{- if .securityContext }}
           securityContext:
             {{- toYaml .securityContext | nindent 12 }}
           {{- else }}
           securityContext:
-            {{- if .Values.openshift }}
+            {{- if $.Values.openshift }}
             privileged: true
             {{- end }}
             runAsUser: 1000
@@ -52,8 +52,8 @@ spec:
       
   destination:
     server: 'https://kubernetes.default.svc'
-    namespace: {{ .namespace | quote }}
+    namespace: {{ $.namespace | quote }}
   syncPolicy:
-    {{- toYaml .Values.syncPolicy | nindent 10 }}
+    {{- toYaml $.Values.syncPolicy | nindent 10 }}
 {{- end }}
 {{- end }}
