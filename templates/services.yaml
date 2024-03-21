@@ -26,6 +26,8 @@ spec:
     targetRevision: {{$.Values.targetRevision}}
     {{- end }}
     helm:
+      values: |
+          {{- toYaml . | nindent 12 }}
       parameters:
         - name: beamline
           value: {{ $.Values.beamline | quote }}
@@ -56,8 +58,7 @@ spec:
           value: {{$value.exec}}
         {{- end }}  
         {{- end}}
-      values: |
-          {{- toYaml . | nindent 12 }}
+      
     
   destination:
     server: 'https://kubernetes.default.svc'
