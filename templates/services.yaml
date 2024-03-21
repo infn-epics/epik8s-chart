@@ -13,7 +13,7 @@ metadata:
 spec:
   project: default
   source:
-    repoURL: {{ $value.chaturl }} 
+    repoURL: {{ $value.charturl }} 
     {{- if $value.chart}}
     chart: {{$value.chart}}
     {{- else}}
