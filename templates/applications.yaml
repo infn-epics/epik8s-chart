@@ -11,6 +11,12 @@ metadata:
     rootappver: {{ .Chart.Version }}
     beamline: {{ .Values.beamline | quote }}
     revision: {{.Values.targetRevision}}
+    {{- if .gitRepoApp.url }}
+    apprevison: "{{.gitRepoApp.branch}}"
+    {{- endif }}
+    {{- if .gitRepoConfig.url }}
+    configrevison: "{{.gitRepoConfig.branch}}"
+    {{- endif }}
 
 spec:
   project: default
@@ -39,7 +45,10 @@ spec:
             {{- toYaml .gitRepoConfig | nindent 12 }}
           gitRepoApp: 
             {{- toYaml .gitRepoApp | nindent 12 }}
-          
+          exec: {{ .exec }}
+          service:
+            {{- toYaml .service | nindent 12 }}
+
       
   destination:
     server: 'https://kubernetes.default.svc'
