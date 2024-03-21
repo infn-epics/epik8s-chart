@@ -1,0 +1,35 @@
+{{- if .Values.epicsConfiguration.iocs }}
+{{- range .Values.epicsConfiguration.iocs }}
+
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: {{.name}}
+  namespace: argocd
+  labels:
+    rootapp: {{ $.Chart.Name }}
+    rootappver: {{ $.Chart.Version }}
+    beamline: {{ $.Values.beamline | quote }}
+    revision: {{$.Values.targetRevision}}
+spec:
+  project: default
+  source:
+    repoURL: 'https://baltig.infn.it/epics-containers/ioc-chart.git'
+    path: .
+    targetRevision: {{$.Values.targetRevision}}
+    helm:
+      parameters:
+        - name: beamline
+          value: {{ $.Values.beamline | quote }}
+      values: |
+          {{- toYaml . | nindent 12 }}
+    
+  destination:
+    server: 'https://kubernetes.default.svc'
+    namespace: {{ $.Values.namespace | quote }}
+  syncPolicy:
+    automated:
+      prune: true  # Optional: Automatically remove resources not specified in Helm chart
+      selfHeal: true
+{{- end }}
+{{- end }}
