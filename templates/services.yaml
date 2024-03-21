@@ -1,0 +1,69 @@
+{{- range $key, $value := .Values.epicsConfiguration.services }}
+
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: {{ $value.name}}
+  namespace: argocd
+  labels:
+    rootapp: {{ $.Chart.Name }}
+    rootappver: {{ $.Chart.Version }}
+    beamline: {{ $.Values.beamline | quote }}
+    revision: {{$.Values.targetRevision}}
+    service: {{$value.name}}
+spec:
+  project: default
+  source:
+    repoURL: {{$value.charturl }} # 'https://baltig.infn.it/epics-containers/ioc-chart.git'
+    {{- if $value.chart}}
+    chart: {{$value.chart}}
+    {{- else}}
+    path: .
+    {{- end}}
+    {{- if $value.targetRevision }}
+    targetRevision: {{$value.targetRevision}}
+    {{- else }}
+    targetRevision: {{$.Values.targetRevision}}
+    {{- end }}
+    helm:
+      parameters:
+        - name: beamline
+          value: {{ $.Values.beamline | quote }}
+        - name: configCA.existingConfigMap
+          value: {{ $.Values.epicsConfiguration.name | quote }}
+        {{- if $value.loadbalancer }}
+        - name: service.type
+          value: "LoadBalancer"
+        - name: service.loadBalancerIP
+          value: {{$value.loadbalancer}}
+        {{- end }}
+        {{- if $value.nodePort }}
+        - name: service.type
+          value: "NodePort"
+        - name: service.nodePort
+          value: {{$value.nodePort}}
+        {{- end }}
+        {{- if not $value.gitRepoConfig }}
+        ## use defaults
+        - name: gitRepoConfig.url
+          value: {{$.Values.giturl}}
+        - name: gitRepoConfig.path
+          value: config/services/{{$value.name}}
+        - name: gitRepoConfig.branch
+          value: main
+        {{- if $value.exec }}
+        - name: gitRepoConfig.exec
+          value: {{$value.exec}}
+        {{- end }}  
+        {{- end}}
+      values: |
+          {{- toYaml . | nindent 12 }}
+    
+  destination:
+    server: 'https://kubernetes.default.svc'
+    namespace: {{ $.Values.namespace | quote }}
+  syncPolicy:
+    automated:
+      prune: true  # Optional: Automatically remove resources not specified in Helm chart
+      selfHeal: true
+{{- end }}
