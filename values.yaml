@@ -8,94 +8,14 @@ serviceAccountName: "default"
 openshift: false
 epicsConfiguration:
   name: "epics-configuration" # name of existing configMap that set CA parameters
-  address_list: |
-    plsparcmrf001.lnf.infn.it
-    bdsparcplxbpm007
-    bdsparcplxbpm001
-    bdsparcac3bpm001
-    bdsparcptlbpm001
-    bdsparcutlbpm001
-    bdsparcdlgbpm001
-    bdsparcdlgbpm002
-    bdsparcdlgbpm003
-    bdsparcplxbpm002
-    bdsparcplxbpm003
-    bdsparcplxbpm004
-    bdsparcplxbpm005
-    bdsparcplxbpm006
-    rdsparcpitaia001.lnf.infn.it
-    rdsparcpitaya002.lnf.infn.it
+  address_list: 
   max_array_bytes: "10000000"
-  services:
-    gateway: 
-      name: "cagateway"
-      ip:
-      replica: 2
-      nodePort: 30095
-      
-      gitRepoConfig:
-            url: https://baltig.infn.it/lnf-da-control/sparc-k8s-ecs.git
-            path: config/services/ca-gateway
-            branch: main
-            exec: start.sh
-
-    archiver: 
-      name: "archiver"
-      replica: 1
-      securityContext:
-        runAsUser: 0
-      
-    channelfinder: 
-      name: "channelfinder"
-      replica: 1
-    saveandrestore: 
-      name: "saveandrestore"
-      loglevel: DEBUG
-    console: 
-      name: "console"
-      replica: 1
-      gitRepoConfig:
-        url: https://baltig.infn.it/lnf-da-control/sparc-k8s-ecs.git
-        path: opi
-        branch: main
-        init: true
-      
-    olog: 
-      name: "olog"
-      loglevel: DEBUG
-      
-    scanserver: 
-      name: "scanserver"
-      loglevel: DEBUG
-      
-    jupyter: 
-      name: "jupyter"
-      gitRepoConfig:
-        url: https://baltig.infn.it/lnf-da-control/ecs-jupyter-control.git
-        path: .
-        branch: main
-        init: true
-    mysql: 
-      name: "mysql"
-      serviceAccount:
-          create: "false"
-          name: "default"
-
-    alarmserver: 
-      name: "alarmserver"
-      loglevel: DEBUG
   
+  services:
+  applications:
+  iocs:
   externalIoc:
-    - name: "SR00RPA02"
-      asset: "https://confluence.infn.it/x/nYD8DQ"
-      gitRepoConfig:
-        url: https://baltig.infn.it/lnf-da-control/ecs-jupyter-control.git
-        path: .
-        branch: main
-        exec: 'start.sh'
-      ssh:
-        host: "rdsparcpitaia002.lnf.infn.it"
-        user: "root"
+   
 
 backend:
   namespace: "backend"
