@@ -13,7 +13,7 @@ metadata:
 spec:
   project: default
   source:
-    repoURL: {{ $value.charturl }} # 'https://baltig.infn.it/epics-containers/ioc-chart.git'
+    repoURL: {{ $value.chaturl }} 
     {{- if $value.chart}}
     chart: {{$value.chart}}
     {{- else}}
