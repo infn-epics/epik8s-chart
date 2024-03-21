@@ -52,7 +52,14 @@ spec:
       
   destination:
     server: 'https://kubernetes.default.svc'
-    namespace: {{ $.Values.namespace | quote }}
+    {{- if .namespace }}
+    ## application namespace
+      namespace: {{ .namespace | quote }}
+    {{- else }}
+    ## main deploy namespace
+      namespace: {{ $.Values.namespace | quote }}
+
+    {{- end}}
   syncPolicy:
     {{- toYaml $.Values.syncPolicy | nindent 10 }}
 {{- end }}
