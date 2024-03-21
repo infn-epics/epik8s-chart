@@ -31,7 +31,7 @@ spec:
       parameters:
         - name: beamline
           value: {{ $.Values.beamline | quote }}
-        - name: configCA.existingConfigMap
+        - name: epicsConfiguration
           value: {{ $.Values.epicsConfiguration.name | quote }}
         {{- if $value.loadbalancer }}
         - name: service.type
