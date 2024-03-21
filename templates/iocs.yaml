@@ -1,4 +1,3 @@
-{{- if .Values.epicsConfiguration.iocs }}
 {{- range .Values.epicsConfiguration.iocs }}
 
 apiVersion: argoproj.io/v1alpha1
@@ -40,5 +39,5 @@ spec:
     automated:
       prune: true  # Optional: Automatically remove resources not specified in Helm chart
       selfHeal: true
-{{- end }}
+---
 {{- end }}
