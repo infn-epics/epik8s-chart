@@ -16,7 +16,7 @@
 {{- $commaSeparatedString := "" }}
 
 {{- range $index,$element:=$list }}
-  {{- $commaSeparatedString = printf "%s.%s.svc.cluster.local%s" $element.name $.Values.namespace $commaSeparatedString }}
+  {{- $commaSeparatedString = printf "%s.%s%s" $element.name $.Values.namespace $commaSeparatedString }}
   {{- if ne $index (sub (len $list) 1) }}
     {{- $commaSeparatedString = printf "%s " $commaSeparatedString }}
   {{- end }} 
@@ -47,9 +47,9 @@
 {{- end }}
 
 {{- define "gateway-service" -}}
-{{ .Values.epicsConfiguration.services.gateway.name }}.{{ .Values.namespace }}.svc.cluster.local 
+{{ .Values.epicsConfiguration.services.gateway.name }}.{{ .Values.namespace }}
 {{- end }}
 
 {{- define "mysql-service" -}}
-{{ .Values.epicsConfiguration.services.mysql.name }}.{{ .Values.namespace }}.svc.cluster.local 
+{{ .Values.epicsConfiguration.services.mysql.name }}.{{ .Values.namespace }}
 {{- end }}
