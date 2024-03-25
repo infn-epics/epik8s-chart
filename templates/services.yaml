@@ -55,6 +55,30 @@ spec:
             name: {{ $.Values.epicsConfiguration.name | quote}}
             gateway: {{ $.Values.epicsConfiguration.services.gateway.name }}.{{ $.Values.namespace }}
           {{- end }}
+          {{- if $.Values.backend }}
+          {{- if and $.Values.backend.mongo $value.mongodb}}
+          mongo:
+            host: {{ $.Values.backend.mongo.host}}.{{ $.Values.backend.namespace}}
+            database: {{$value.mongodb}}
+            port: {{ $.Values.backend.mongo.port}}
+          {{- end }}
+          {{- if $.Values.backend.elasticsearch}}
+          elasticsearch:
+            network:
+              host: $.Values.backend.elasticsearch.host.{{ $.Values.backend.namespace}}
+              port: {{ $.Values.backend.elasticsearch.port}}
+          {{- end }}
+          {{- if $.Values.backend.kafka}}
+          kafka:
+              host: $.Values.backend.kafka.host.{{ $.Values.backend.namespace}}
+              port: {{ $.Values.backend.kafka.port}}
+          {{- end }}
+          {{- end }}
+
+
+
+          
+
       parameters:
         - name: beamline
           value: {{ $.Values.beamline | quote }}
