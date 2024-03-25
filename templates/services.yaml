@@ -32,7 +32,7 @@ spec:
           {{- if $value.enable_ingress }}
           ingress:
             enabled: true
-            ingressClassName: {{$.Values.ingressClassName}}
+            className: {{$.Values.ingressClassName}}
             hosts:
               - host: {{ printf "%s-%s.%s" $.Values.beamline $value.name $.Values.epik8namespace }}
                 paths:
