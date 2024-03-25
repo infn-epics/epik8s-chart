@@ -49,7 +49,7 @@ spec:
             runAsUser: 1000
             runAsGroup: 1000
             fsGroup: 1000
-            {{- end }}
+          {{- end }}
           {{- if $.Values.epicsConfiguration.name }}
           epicsConfiguration:
             name: {{ $.Values.epicsConfiguration.name | quote}}
@@ -58,20 +58,25 @@ spec:
           {{- if $.Values.backend }}
           {{- if and $.Values.backend.mongo $value.mongodb}}
           mongo:
-            host: {{ $.Values.backend.mongo.host}}.{{ $.Values.backend.namespace}}
+            host: {{ $.Values.backend.mongo.host }}.{{ $.Values.backend.namespace}}
             database: {{$value.mongodb}}
             port: {{ $.Values.backend.mongo.port}}
           {{- end }}
           {{- if $.Values.backend.elasticsearch}}
           elasticsearch:
             network:
-              host: $.Values.backend.elasticsearch.host.{{ $.Values.backend.namespace}}
+              {{- if and $.Values.backend.elasticsearch.host $.Values.backend.elasticsearch.port}}
+              host: {{$.Values.backend.elasticsearch.host}}.{{ $.Values.backend.namespace}}
               port: {{ $.Values.backend.elasticsearch.port}}
+              {{- end }}
           {{- end }}
           {{- if $.Values.backend.kafka}}
+          {{- if and $.Values.backend.kafka.host $.Values.backend.kafka.port}}
           kafka:
-              host: $.Values.backend.kafka.host.{{ $.Values.backend.namespace}}
+              host: {{$.Values.backend.kafka.host}}.{{ $.Values.backend.namespace}}
               port: {{ $.Values.backend.kafka.port}}
+
+              {{- end }}
           {{- end }}
           {{- end }}
 
