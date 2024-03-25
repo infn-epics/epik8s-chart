@@ -28,6 +28,17 @@ spec:
     helm:
       values: |
           {{- toYaml . | nindent 12 }}
+          {{- if $value.enable_ingress }}
+          ingress:
+            enabled: true
+            ingressClassName: {{$.Values.ingressClassName}}
+            hosts:
+              - host: {{- printf "%s-%s.%s" $.Values.beamline $value.name .Values.epik8namespace }}
+                paths:
+                  - path: /
+                    pathType: Prefix
+          {{- end}}
+
       parameters:
         - name: beamline
           value: {{ $.Values.beamline | quote }}
@@ -58,6 +69,12 @@ spec:
           value: {{$value.exec}}
         {{- end }}  
         {{- end}}
+        {{- if $value.mysql }}
+        - name: mysql.host
+          value: {{- include "mysql-service" . }}
+        {{- end }}
+        
+
       
     
   destination:
