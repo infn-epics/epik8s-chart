@@ -50,11 +50,15 @@ spec:
             runAsGroup: 1000
             fsGroup: 1000
             {{- end }}
+          {{- if $.Values.epicsConfiguration.name }}
+          epicsConfiguration:
+            name: {{ $.Values.epicsConfiguration.name | quote}}
+            gateway: {{ $.Values.epicsConfiguration.services.gateway.name }}.{{ $.Values.namespace }}
+          {{- end }}
       parameters:
         - name: beamline
           value: {{ $.Values.beamline | quote }}
-        - name: epicsConfiguration.name
-          value: {{ $.Values.epicsConfiguration.name | quote }}
+       
         {{- if $value.loadbalancer }}
         - name: service.type
           value: "LoadBalancer"
