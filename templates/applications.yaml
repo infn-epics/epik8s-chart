@@ -4,7 +4,7 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: "{{.name}}"
+  name: {{$.Values.beamline}}-{{.name}}-application
   namespace: argocd
   labels:
     rootapp: {{ $.Chart.Name }}
@@ -26,6 +26,7 @@ spec:
     path: .
     targetRevision:  {{ $.Values.targetRevision }}
     helm:
+      releaseName: {{ .name }}
       values: |
           {{- toYaml . | nindent 12 }}
 

@@ -3,7 +3,7 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: {{.name}}
+  name: {{$.Values.beamline}}-{{.name}}-ioc
   namespace: argocd
   labels:
     rootapp: {{ $.Chart.Name }}
@@ -23,6 +23,7 @@ spec:
     targetRevision: {{$.Values.targetRevision}}
     {{- end }}
     helm:
+      releaseName: {{ .name }}
       parameters:
         - name: beamline
           value: {{ $.Values.beamline | quote }}
