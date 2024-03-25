@@ -29,7 +29,7 @@ data:
   PHOEBUS_OLOG: '{{- include "olog-url" . }}'
   {{- end}}
   {{- if .Values.epicsConfiguration.services.jupyter }}
-  JUPYTER: 'http://{{- include "jupyter-url" . }}'
+  # JUPYTER: 'http://{{- include "jupyter-url" . }}'
   {{- end}}
   {{- if .Values.epicsConfiguration.services.console }}
   CONSOLE: 'http://{{- include "console-url" . }}'
