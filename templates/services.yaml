@@ -43,7 +43,7 @@ spec:
           {{- end}}
           {{- if $value.auto_security }}
           securityContext:
-            {{- if $.Values.openshift }}
+            {{- if or $.Values.openshift $value.privileged }}
             privileged: true
             {{- end }}
             runAsUser: 1000
