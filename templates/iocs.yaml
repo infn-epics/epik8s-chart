@@ -1,5 +1,5 @@
 {{- range .Values.epicsConfiguration.iocs }}
-
+## IOC  {{$.name}}
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
@@ -39,5 +39,7 @@ spec:
     automated:
       prune: true  # Optional: Automatically remove resources not specified in Helm chart
       selfHeal: true
+
+## END  {{$.name}}
 ---
 {{- end }}

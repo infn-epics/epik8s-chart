@@ -1,5 +1,5 @@
 {{- range $key, $value := .Values.epicsConfiguration.services }}
-# Service {{$key}}
+# Service {{$key}} {{$value.name}}
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
@@ -27,18 +27,18 @@ spec:
     {{- end }}
     helm:
       values: |
-          {{- toYaml . | nindent 12 }}
           {{- if $value.enable_ingress }}
           ingress:
             enabled: true
             ingressClassName: {{$.Values.ingressClassName}}
             hosts:
-              - host: {{- printf "%s-%s.%s" $.Values.beamline $value.name .Values.epik8namespace }}
+              - host: {{ printf "%s-%s.%s" $.Values.beamline $value.name $.Values.epik8namespace }}
                 paths:
                   - path: /
                     pathType: Prefix
           {{- end}}
-
+          {{- toYaml . | nindent 12 }}
+          
       parameters:
         - name: beamline
           value: {{ $.Values.beamline | quote }}
@@ -71,18 +71,17 @@ spec:
         {{- end}}
         {{- if $value.mysql }}
         - name: mysql.host
-          value: {{- include "mysql-service" . }}
+          value: {{$value.mysql.host}}
         {{- end }}
-        
-
-      
     
   destination:
     server: 'https://kubernetes.default.svc'
     namespace: {{ $.Values.namespace | quote }}
   syncPolicy:
     automated:
-      prune: true  # Optional: Automatically remove resources not specified in Helm chart
+      prune: true
       selfHeal: true
+
+## END {{$key}} {{$value.name}}
 ---
 {{- end }}

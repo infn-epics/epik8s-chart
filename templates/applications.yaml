@@ -1,4 +1,3 @@
-{{- if .Values.applications }}
 {{- range .Values.applications }}
 # Application {{.name}}
 
@@ -43,5 +42,7 @@ spec:
     {{- end}}
   syncPolicy:
     {{- toYaml $.Values.syncPolicy | nindent 10 }}
-{{- end }}
+
+## END {{.name}}
+---
 {{- end }}
