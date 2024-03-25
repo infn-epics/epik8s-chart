@@ -44,7 +44,7 @@ data:
     
   phoebus_settings.ini: |
     
-    {{- if and  .Values.epicsConfiguration.services.gateway.name .Values.epicsConfiguration.address_list }}
+    {{- if and  .Values.epicsConfiguration.services.gateway .Values.epicsConfiguration.address_list }}
     org.phoebus.pv.ca/addr_list={{- include "gateway-service" . }} ## balancer {{.Values.gatewaybalancer}}
     org.phoebus.pv.ca/auto_addr_list=false
     {{- else if .Values.epicsConfiguration.address_list }}
@@ -53,33 +53,33 @@ data:
     {{- else }}
       org.phoebus.pv.ca/auto_addr_list=true
     {{- end }}
-    {{- if .Values.epicsConfiguration.services.archiver.name }}
+    {{- if .Values.epicsConfiguration.services.archiver }}
     org.csstudio.trends.databrowser3/urls=pbraw://{{- include "archiver-url" . }}/retrieval
     org.csstudio.trends.databrowser3/archives=pbraw://{{- include "archiver-url" . }}/retrieval
     {{- end }}
 
-    {{- if .Values.epicsConfiguration.services.olog.name }}
+    {{- if .Values.epicsConfiguration.services.olog }}
     org.phoebus.olog.es.api/olog_url=http://{{- include "olog-url" . }}/Olog
     org.phoebus.olog.api/olog_url=http://{{- include "olog-url" . }}/Olog
     org.phoebus.logbook/logbook_factory=olog-es
     org.phoebus.olog.api/username=epics
     org.phoebus.olog.api/password=epics
     {{- end }}
-    {{- if .Values.epicsConfiguration.services.channelfinder.name }}
+    {{- if .Values.epicsConfiguration.services.channelfinder }}
     org.phoebus.channelfinder/channelfinder.serviceURL=http://{{- include "channelfinder-url" . }}/ChannelFinder
     {{- end}}
-    {{- if .Values.epicsConfiguration.services.saveandrestore.name }}
+    {{- if .Values.epicsConfiguration.services.saveandrestore }}
     org.phoebus.applications.saveandrestore.client/jmasar.service.url=http://{{- include "saveandrestore-url" . }}/save-restore
     {{- end}}
-    {{- if .Values.epicsConfiguration.services.scanserver.name }}
+    {{- if .Values.epicsConfiguration.services.scanserver }}
     org.csstudio.scan.client/host=http://{{- include "scanserver-url" . }}
     org.csstudio.scan.client/port=4810
     {{- end}}
-    {{- if .Values.epicsConfiguration.services.scanserver.name }}
+    {{- if .Values.epicsConfiguration.services.scanserver }}
     org.csstudio.scan.client/host=http://{{- include "scanserver-url" . }}
     org.csstudio.scan.client/port=4810
     {{- end}}
-    {{- if .Values.epicsConfiguration.services.alarmserver.name }}
+    {{- if .Values.epicsConfiguration.services.alarmserver }}
     org.phoebus.applications.alarm/server={{.Values.backend.kafka.host}}:{{.Values.backend.kafka.port}}
     org.phoebus.applications.alarm/config_name=Accelerator-{{ .Values.beamline }}
     # org.phoebus.applications.alarm/kafka_properties=
