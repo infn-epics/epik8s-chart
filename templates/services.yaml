@@ -27,6 +27,8 @@ spec:
     {{- end }}
     helm:
       values: |
+          {{- toYaml . | nindent 10 }}
+
           {{- if $value.enable_ingress }}
           ingress:
             enabled: true
@@ -37,7 +39,6 @@ spec:
                   - path: /
                     pathType: Prefix
           {{- end}}
-          {{- toYaml . | nindent 12 }}
           
       parameters:
         - name: beamline
