@@ -14,7 +14,7 @@ metadata:
     {{- if .gitRepoApp.url }}
     apprevison: "{{.gitRepoApp.branch}}"
     {{- end }}
-    {{- if .gitRepoConfig.url }}
+    {{- if and .gitRepoConfig and $.Values.gitRepoConfig.url  }}
     configrevison: "{{.gitRepoConfig.branch}}"
     {{- end }}
     application: {{.name}}
@@ -29,7 +29,12 @@ spec:
       releaseName: {{ .name }}
       values: |
           {{- toYaml . | nindent 10 }}
-
+          {{- if and (not $.Values.gitRepoConfig) .gitinit}}
+          gitRepoConfig:
+            url: {{$.Values.giturl}}
+            path: config/services/{{.name}}
+            branch: {{$.Values.gitrev}}
+          {{- end }}
           {{- if not .resources }}
           resources:
             limits:

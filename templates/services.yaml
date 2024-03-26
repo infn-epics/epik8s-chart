@@ -29,6 +29,12 @@ spec:
       releaseName: {{ $value.name }}
       values: |
           {{- toYaml . | nindent 10 }}
+          {{- if and (not $.Values.gitRepoConfig) $value.gitinit}}
+          gitRepoConfig:
+            url: {{$.Values.giturl}}
+            path: config/services/{{$value.name}}
+            branch: {{$.Values.gitrev}}
+          {{- end }}
           {{- if $.Values.serviceAccountName }}
           serviceAccount:
             create: false

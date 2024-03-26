@@ -32,6 +32,12 @@ spec:
 
       values: |
           {{- toYaml . | nindent 10 }}
+          {{- if and (not $.Values.gitRepoConfig) .gitinit}}
+          gitRepoConfig:
+            url: {{$.Values.giturl}}
+            path: config/services/{{.name}}
+            branch: {{$.Values.gitrev}}
+          {{- end }}
           {{- if not .resources }}
           resources:
             limits:
