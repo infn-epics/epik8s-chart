@@ -37,6 +37,13 @@ spec:
               cpu: 1000m
               memory: 2048Mi
           {{- end }}
+          {{- if $.Values.serviceAccountName }}
+          serviceAccount:
+            create: false
+            annotations: {}
+            name: {{$.Values.serviceAccountName}}
+          {{- end }}
+          
           {{- toYaml . | nindent 12 }}
     
   destination:
