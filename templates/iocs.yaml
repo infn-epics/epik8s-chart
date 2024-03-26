@@ -15,9 +15,6 @@ metadata:
     {{- else }}
     iocname: {{.name}}
     {{- end}}
-    {{- if .iocprefix }}
-    iocprefix: {{.iocprefix}}
-    {{- end}}
     {{- if .host }}
     iochost: {{.host}}
     {{- end }}
