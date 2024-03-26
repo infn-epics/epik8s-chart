@@ -41,7 +41,7 @@ spec:
             {{- if .gitpath }}
             path: .gitpath
             {{- else }}
-            path: config/services/{{.name}}
+            path: config/applications/{{.name}}
             {{- end }}
             {{- if .gitrev }}
             branch: {{.gitrev}}
