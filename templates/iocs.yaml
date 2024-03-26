@@ -70,8 +70,8 @@ spec:
           {{- if not .resources }}
           resources:
             limits:
-              cpu: 1000m
-              memory: 2048Mi
+              cpu: 1
+              memory: 2Gi
           {{- end }}
           {{- if $.Values.serviceAccountName }}
           serviceAccount:
