@@ -11,10 +11,10 @@ metadata:
     rootappver: {{ $.Chart.Version }}
     beamline: {{ $.Values.beamline | quote }}
     revision: {{$.Values.targetRevision}}
-    {{- if .gitRepoApp.url }}
+    {{- if and .gitRepoApp .gitRepoApp.branch}}
     apprevison: "{{.gitRepoApp.branch}}"
     {{- end }}
-    {{- if and .gitRepoConfig and $.Values.gitRepoConfig.url  }}
+    {{- if and .gitRepoConfig and $.gitRepoConfig.url  }}
     configrevison: "{{.gitRepoConfig.branch}}"
     {{- end }}
     application: {{.name}}
@@ -48,9 +48,6 @@ spec:
             {{- else }}
             branch: {{$.Values.gitrev}}
             {{- end }}
-            {{- if .exec }}
-            exec: {{.exec}}
-            {{- end }} 
           {{- end }}
           {{- if not .resources }}
           resources:
