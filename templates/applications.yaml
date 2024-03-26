@@ -28,6 +28,8 @@ spec:
     helm:
       releaseName: {{ .name }}
       values: |
+          {{- toYaml . | nindent 10 }}
+
           {{- if not .resources }}
           resources:
             limits:
@@ -40,7 +42,6 @@ spec:
             annotations: {}
             name: {{$.Values.serviceAccountName}}
           {{- end }}
-          {{- toYaml . | nindent 12 }}
 
 
       

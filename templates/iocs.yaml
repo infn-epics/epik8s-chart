@@ -31,6 +31,7 @@ spec:
           value: {{ $.Values.epicsConfiguration.name | quote }}
 
       values: |
+          {{- toYaml . | nindent 10 }}
           {{- if not .resources }}
           resources:
             limits:
@@ -43,8 +44,7 @@ spec:
             annotations: {}
             name: {{$.Values.serviceAccountName}}
           {{- end }}
-          
-          {{- toYaml . | nindent 12 }}
+
     
   destination:
     server: 'https://kubernetes.default.svc'
