@@ -10,11 +10,25 @@ metadata:
     rootappver: {{ $.Chart.Version }}
     beamline: {{ $.Values.beamline | quote }}
     revision: {{$.Values.targetRevision}}
+    {{- if .iocname }}
     iocname: {{.name}}
+    {{- else }}
+    iocname: {{.name}}
+    {{- end}}
+    {{- if .iocprefix }}
+    iocprefix: {{.iocprefix}}
+    {{- end}}
+    {{- if .host }}
+    iochost: {{.host}}
+    {{- end }}
+    {{- if .workdir }}
+    iocdir: {{.workdir}}
+    {{- end}}
+
 spec:
   project: default
   source:
-    repoURL: 'https://baltig.infn.it/epics-containers/ioc-chart.git'
+    repoURL: {{.charturl}}
     path: .
     {{- if .targetRevision }}
     targetRevision: {{.targetRevision}}
@@ -38,7 +52,11 @@ spec:
             {{- if .gitpath }}
             path: .gitpath
             {{- else }}
+            {{- if .iocname }}
+            path: config/iocs/{{.iocname}}
+            {{- else }}
             path: config/iocs/{{.name}}
+            {{- end }}
             {{- end }}
             {{- if .gitrev }}
             branch: {{.gitrev}}
@@ -60,6 +78,16 @@ spec:
             create: false
             annotations: {}
             name: {{$.Values.serviceAccountName}}
+          {{- end }}
+          {{- if .host }}
+          ssh:
+            host: {{.host}}
+            {{- if .user }}
+            user: {{.user}}
+            {{- end }}
+            {{- if .workdir }}
+            workdir: {{.workdir}}
+            {{- end }}
           {{- end }}
 
     
