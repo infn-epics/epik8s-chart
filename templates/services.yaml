@@ -34,6 +34,9 @@ spec:
             url: {{$.Values.giturl}}
             path: config/services/{{$value.name}}
             branch: {{$.Values.gitrev}}
+            {{- if $value.exec }}
+            exec: {{$value.exec}}
+            {{- end }}  
           {{- end }}
           {{- if $.Values.serviceAccountName }}
           serviceAccount:
@@ -118,19 +121,7 @@ spec:
         - name: service.nodePort
           value: "{{$value.nodePort}}"
         {{- end }}
-        {{- if not $value.gitRepoConfig }}
-        ## use defaults
-        - name: gitRepoConfig.url
-          value: {{$.Values.giturl}}
-        - name: gitRepoConfig.path
-          value: config/services/{{$value.name}}
-        - name: gitRepoConfig.branch
-          value: main
-        {{- if $value.exec }}
-        - name: gitRepoConfig.exec
-          value: {{$value.exec}}
-        {{- end }}  
-        {{- end}}
+    
         {{- if $value.mysql }}
         - name: mysql.host
           value: {{$value.mysql.host}}
