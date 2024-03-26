@@ -29,11 +29,22 @@ spec:
       releaseName: {{ .name }}
       values: |
           {{- toYaml . | nindent 10 }}
-          {{- if and (not $.Values.gitRepoConfig) .gitinit}}
+          {{- if and (not $.Values.gitRepoConfig) (or .gitinit .gitpath)}}
           gitRepoConfig:
             url: {{$.Values.giturl}}
+            {{- if .gitpath }}
+            path: .gitpath
+            {{- else }}
             path: config/services/{{.name}}
+            {{- end }}
+            {{- if .gitrev }}
+            branch: {{.gitrev}}
+            {{- else }}
             branch: {{$.Values.gitrev}}
+            {{- end }}
+            {{- if .exec }}
+            exec: {{.exec}}
+            {{- end }} 
           {{- end }}
           {{- if not .resources }}
           resources:
