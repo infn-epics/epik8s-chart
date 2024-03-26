@@ -31,6 +31,12 @@ spec:
           value: {{ $.Values.epicsConfiguration.name | quote }}
 
       values: |
+          {{- if not .resources }}
+          resources:
+            limits:
+              cpu: 1000m
+              memory: 2048Mi
+          {{- end }}
           {{- toYaml . | nindent 12 }}
     
   destination:
