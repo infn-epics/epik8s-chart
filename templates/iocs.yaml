@@ -46,7 +46,7 @@ spec:
 
       values: |
           {{- toYaml . | nindent 10 }}
-          {{- if and (not $.Values.gitRepoConfig) (or .gitinit .gitpath)}}
+          {{- if and (not $.Values.gitRepoConfig) (or .gitinit .gitpath .host)}}
           gitRepoConfig:
             url: {{$.Values.giturl}}
             {{- if .gitpath }}
