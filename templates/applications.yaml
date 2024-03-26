@@ -29,6 +29,12 @@ spec:
       releaseName: {{ .name }}
       values: |
           {{- toYaml . | nindent 10 }}
+          beamline: {{ $.Values.beamline | quote }}
+          {{- if $.Values.epicsConfiguration.name }}
+          epicsConfiguration:
+            name: {{ $.Values.epicsConfiguration.name | quote}}
+            gateway: {{ $.Values.epicsConfiguration.services.gateway.name }}.{{ $.Values.namespace }}
+          {{- end }}
           {{- if and (not $.Values.gitRepoConfig) (or .gitinit .gitpath)}}
           gitRepoConfig:
             url: {{$.Values.giturl}}
