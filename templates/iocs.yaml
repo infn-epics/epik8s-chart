@@ -11,7 +11,7 @@ metadata:
     beamline: {{ $.Values.beamline | quote }}
     revision: {{$.Values.targetRevision}}
     {{- if .iocname }}
-    iocname: {{.name}}
+    iocname: {{.iocname}}
     {{- else }}
     iocname: {{.name}}
     {{- end}}
@@ -95,7 +95,22 @@ spec:
     automated:
       prune: true  # Optional: Automatically remove resources not specified in Helm chart
       selfHeal: true
-
+  info:
+    {{- if .iocname }}
+    iocname: {{.iocname}}
+    {{- else }}
+    iocname: {{.name}}
+    {{- end}}
+    {{- if .iocprefix }}
+    iocprefix: {{ .iocprefix }}
+    {{- end }}
+    {{- if .iocroot }}
+    iocroot: {{ .iocroot }}
+    {{- end }}
+    {{- if .info }}    
+    message: |
+        {{ .info }}
+    {{- end }}
 ## END  {{$.name}}
 ---
 {{- end }}
