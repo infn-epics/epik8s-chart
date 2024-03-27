@@ -14,7 +14,7 @@ metadata:
     {{- if and .gitRepoApp .gitRepoApp.branch}}
     apprevison: "{{.gitRepoApp.branch}}"
     {{- end }}
-    {{- if and .gitRepoConfig and $.gitRepoConfig.url  }}
+    {{- if and .gitRepoConfig .gitRepoConfig.url .gitRepoConfig.branch }}
     configrevison: "{{.gitRepoConfig.branch}}"
     {{- end }}
     application: {{.name}}
