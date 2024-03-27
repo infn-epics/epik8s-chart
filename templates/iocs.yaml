@@ -98,22 +98,22 @@ spec:
   info:
     {{- if .iocname }}
     - name: iocname
-      value: {{.iocname}}
+      value: "{{.iocname}}"
     {{- else }}
     - name: iocname
-      value: {{.name}}
+      value: "{{.name}}"
     {{- end}}
     {{- if .iocprefix }}
     - name: iocprefix
-      value: {{ .iocprefix }}
+      value: "{{ .iocprefix }}"
     {{- end }}
     {{- if .iocroot }}
     - name: iocroot
-      value: {{ .iocroot }}
+      value: "{{ .iocroot }}"
     {{- end }}
     {{- if .info }}
     - name: message
-      value: {{ .info }}
+      value: "{{ .info }}"
     {{- end }}
 ## END  {{$.name}}
 ---

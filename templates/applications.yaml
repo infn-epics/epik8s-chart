@@ -78,7 +78,7 @@ spec:
   {{- if .info }}
   info: 
     - name: message
-      value: {{ .info }}
+      value: "{{ .info }}"
   {{- end }}
 ## END {{.name}}
 ---
