@@ -142,10 +142,14 @@ spec:
     automated:
       prune: true
       selfHeal: true
-  {{- if $value.info }}
   info: 
+  {{- if $value.info }}
     - name: message
       value: "{{ $value.info }}"
+  {{- end }}
+  {{- if .asset }}
+    - name: asset
+      value: "{{ $value.asset }}"
   {{- end }}
 
 ## END {{$key}} {{$value.name}}

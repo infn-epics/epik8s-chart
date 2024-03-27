@@ -111,6 +111,10 @@ spec:
     - name: iocroot
       value: "{{ .iocroot }}"
     {{- end }}
+    {{- if .asset }}
+    - name: asset
+      value: "{{ .asset }}"
+    {{- end }}
     {{- if .info }}
     - name: message
       value: "{{ .info }}"
