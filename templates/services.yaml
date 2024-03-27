@@ -145,7 +145,7 @@ spec:
   {{- if $value.info }}
   info: 
     - name: message
-      value: "{{ $value.info }}""
+      value: "{{ $value.info }}"
   {{- end }}
 
 ## END {{$key}} {{$value.name}}
