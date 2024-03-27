@@ -97,19 +97,23 @@ spec:
       selfHeal: true
   info:
     {{- if .iocname }}
-    - iocname: {{.iocname}}
+    - name: iocname
+      value: {{.iocname}}
     {{- else }}
-    - iocname: {{.name}}
+    - name: iocname
+      value: {{.name}}
     {{- end}}
     {{- if .iocprefix }}
-    - iocprefix: {{ .iocprefix }}
+    - name: iocprefix
+      value: {{ .iocprefix }}
     {{- end }}
     {{- if .iocroot }}
-    - iocroot: {{ .iocroot }}
+    - name: iocroot
+      value: {{ .iocroot }}
     {{- end }}
     {{- if .info }}
-    - message: |
-        {{ .info }}
+    - name: message
+      value: {{ .info }}
     {{- end }}
 ## END  {{$.name}}
 ---
