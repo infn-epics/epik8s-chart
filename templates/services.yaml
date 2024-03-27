@@ -144,8 +144,8 @@ spec:
       selfHeal: true
   {{- if $value.info }}
   info: 
-    message: |
-        {{ $value.info }}
+  - message: |
+      {{ $value.info }}
   {{- end }}
 
 ## END {{$key}} {{$value.name}}

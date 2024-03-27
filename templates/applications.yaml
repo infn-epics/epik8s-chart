@@ -77,7 +77,7 @@ spec:
     {{- toYaml $.Values.syncPolicy | nindent 10 }}
   {{- if .info }}
   info: 
-    message: |
+  - message: |
         {{ .info }}
   {{- end }}
 ## END {{.name}}
