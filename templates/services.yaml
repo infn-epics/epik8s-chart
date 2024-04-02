@@ -65,6 +65,12 @@ spec:
                   - path: /
                     pathType: Prefix
           {{- end}}
+          {{- if not $value.resources }}
+          resources:
+            limits:
+              cpu: 1
+              memory: 2Gi
+          {{- end }}
           {{- if $value.auto_security }}
           securityContext:
             {{- if or $.Values.openshift $value.privileged }}
@@ -103,12 +109,7 @@ spec:
               {{- end }}
           {{- end }}
           {{- end }}
-          {{- if not $value.resources }}
-          resources:
-            limits:
-              cpu: 1
-              memory: 2Gi
-          {{- end }}
+          
 
 
           
