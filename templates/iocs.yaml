@@ -69,6 +69,9 @@ spec:
             limits:
               cpu: 500m
               memory: 256Mi
+            requests:
+              cpu: 100m
+              memory: 100Mi
           {{- end }}
           {{- if $.Values.serviceAccountName }}
           serviceAccount:
