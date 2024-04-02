@@ -72,7 +72,7 @@ spec:
               memory: 2Gi
             requests:
               cpu: 100m
-              memory: 256Mi
+              memory: 100Mi
           {{- end }}
           {{- if $value.auto_security }}
           securityContext:
