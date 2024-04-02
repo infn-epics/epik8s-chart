@@ -47,7 +47,7 @@ spec:
           gitRepoConfig:
             url: {{$.Values.giturl}}
             {{- if .gitpath }}
-            path: .gitpath
+            path: {{ .gitpath }}
             {{- else }}
             {{- if .iocname }}
             path: config/iocs/{{.iocname}}

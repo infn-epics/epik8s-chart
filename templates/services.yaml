@@ -33,7 +33,7 @@ spec:
           gitRepoConfig:
             url: {{$.Values.giturl}}
             {{- if $value.gitpath }}
-            path: $value.gitpath
+            path: {{ $value.gitpath }}
             {{- else }}
             path: config/services/{{$value.name}}
             {{- end }}
