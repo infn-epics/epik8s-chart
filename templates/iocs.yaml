@@ -113,7 +113,7 @@ spec:
     {{- end }}
     {{- if .workdir }}
     - name: workdir
-      value: "{{.workdir}}""
+      value: "{{.workdir}}"
     {{- end}}
 
     {{- if .asset }}
