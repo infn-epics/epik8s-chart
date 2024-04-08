@@ -18,10 +18,7 @@ metadata:
     {{- if .host }}
     iochost: {{.host}}
     {{- end }}
-    {{- if .workdir }}
-    iocdir: {{.workdir}}
-    {{- end}}
-
+    
 spec:
   project: default
   source:
@@ -114,6 +111,11 @@ spec:
     - name: iocroot
       value: "{{ .iocroot }}"
     {{- end }}
+    {{- if .workdir }}
+    - name: workdir
+      value: "{{.workdir}}""
+    {{- end}}
+
     {{- if .asset }}
     - name: asset
       value: "{{ .asset }}"
