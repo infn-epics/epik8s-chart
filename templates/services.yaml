@@ -68,7 +68,7 @@ spec:
           {{- if not $value.resources }}
           resources:
             limits:
-              cpu: 1000m
+              cpu: 999m
               memory: 2Gi
             requests:
               cpu: 100m
