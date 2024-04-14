@@ -1,5 +1,6 @@
 {{- range .Values.applications }}
 # Application {{.name}}
+{{- if or ( not .disable) ( eq .disable false) }}
 
 apiVersion: argoproj.io/v1alpha1
 kind: Application
@@ -88,5 +89,8 @@ spec:
       value: "{{ .asset }}"
   {{- end }}
 ## END {{.name}}
+{{- else }}
+## not deplyed {{ .name }}
+{{- end }}
 ---
 {{- end }}

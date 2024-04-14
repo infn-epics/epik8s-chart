@@ -1,6 +1,6 @@
 {{- range .Values.epicsConfiguration.iocs }}
 ## IOC  {{$.name}}
-{{- if or (not (.deploy) and (.deploy .deploy == "true"))  -}}
+{{- if or ( not .disable) ( eq .disable false) }}
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
@@ -125,6 +125,10 @@ spec:
     - name: message
       value: "{{ .info }}"
     {{- end }}
-## END  {{$.name}}
+## END  {{ .name}}
+{{- else }}
+## not deployed {{ .name }}
+{{- end }}
+
 ---
 {{- end }}

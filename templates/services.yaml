@@ -1,4 +1,6 @@
 {{- range $key, $value := .Values.epicsConfiguration.services }}
+{{- if or ( not $value.disable) ( eq $value.disable false) }}
+
 # Service {{$key}} {{$value.name}}
 apiVersion: argoproj.io/v1alpha1
 kind: Application
@@ -156,5 +158,9 @@ spec:
   {{- end }}
 
 ## END {{$key}} {{$value.name}}
+{{- else }}
+## not deplyed {{ .name }}
+{{- end }}
+
 ---
 {{- end }}
