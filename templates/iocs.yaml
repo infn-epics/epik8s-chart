@@ -1,5 +1,6 @@
 {{- range .Values.epicsConfiguration.iocs }}
 ## IOC  {{$.name}}
+{{- if or (not (.deploy) and (.deploy .deploy == "true"))  -}}
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
