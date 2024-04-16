@@ -19,7 +19,7 @@
   {{- if $element.host }}
   {{- $commaSeparatedString = printf "%s %s" $element.host $commaSeparatedString }}
   {{- else}}
-  {{- $commaSeparatedString = printf "%s.%s%s" $element.name $.Values.namespace $commaSeparatedString }}
+  {{- $commaSeparatedString = printf "%s.%s %s" $element.name $.Values.namespace $commaSeparatedString }}
   {{- end }}
   {{- if ne $index (sub (len $list) 1) }}
     {{- $commaSeparatedString = printf "%s " $commaSeparatedString }}
