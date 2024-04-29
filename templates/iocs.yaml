@@ -80,6 +80,9 @@ spec:
           {{- if .host }}
           ssh:
             host: {{.host}}
+            {{- if .ssh_options}}
+            options: {{.ssh_options}}
+            {{- end }}
             {{- if .user }}
             user: {{.user}}
             {{- end }}
