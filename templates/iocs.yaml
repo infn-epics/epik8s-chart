@@ -89,6 +89,9 @@ spec:
             {{- if .workdir }}
             workdir: {{.workdir}}
             {{- end }}
+            {{- if .scpoptions }}
+            scpoptions: {{.scpoptions}}
+            {{- end }}
           {{- end }}
 
     
