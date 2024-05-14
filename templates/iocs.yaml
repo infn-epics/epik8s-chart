@@ -98,10 +98,12 @@ spec:
   destination:
     server: 'https://kubernetes.default.svc'
     namespace: {{ $.Values.namespace | quote }}
+  {{- if .autosync }}
   syncPolicy:
     automated:
       prune: true  # Optional: Automatically remove resources not specified in Helm chart
       selfHeal: true
+  {{- end }}
   info:
     {{- if .iocname }}
     - name: iocname

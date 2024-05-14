@@ -143,10 +143,12 @@ spec:
   destination:
     server: 'https://kubernetes.default.svc'
     namespace: {{ $.Values.namespace | quote }}
+  {{- if $value.autosync }}
   syncPolicy:
     automated:
-      prune: true
+      prune: true  # Optional: Automatically remove resources not specified in Helm chart
       selfHeal: true
+  {{- end }}
   info: 
   {{- if $value.info }}
     - name: message
