@@ -10,7 +10,7 @@ data:
   
   EPICS_CA_AUTO_ADDR_LIST: "NO"
   {{- if .Values.epicsConfiguration.conn_tmo}}
-  EPICS_CA_CONN_TMO: {{.Values.epicsConfiguration.conn_tmo}}
+  EPICS_CA_CONN_TMO: "{{.Values.epicsConfiguration.conn_tmo}}"
   {{- end }}
   EPICS_CA_MAX_ARRAY_BYTES: "{{ .Values.epicsConfiguration.max_array_bytes }}"
   {{- if .Values.epicsConfiguration.services.gateway }}
