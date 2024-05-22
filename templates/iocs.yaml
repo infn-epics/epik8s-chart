@@ -137,6 +137,10 @@ spec:
     - name: type
       value: "{{ .devtype }}"
     {{- end }}
+    {{- if .devgroup }}
+    - name: group
+      value: "{{ .devgroup }}"
+    {{- end }}
 ## END  {{ .name}}
 {{- else }}
 ## not deployed {{ .name }}
