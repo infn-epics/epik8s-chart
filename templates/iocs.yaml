@@ -133,6 +133,10 @@ spec:
     - name: message
       value: "{{ .info }}"
     {{- end }}
+    {{- if .devtype }}
+    - name: type
+      value: "{{ .devtype }}"
+    {{- end }}
 ## END  {{ .name}}
 {{- else }}
 ## not deployed {{ .name }}
