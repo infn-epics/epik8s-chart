@@ -87,7 +87,9 @@ spec:
           {{- if $.Values.epicsConfiguration.name }}
           epicsConfiguration:
             name: {{ $.Values.epicsConfiguration.name | quote}}
+            {{- if $value.usegateway -}}
             gateway: {{ $.Values.epicsConfiguration.services.gateway.name }}.{{ $.Values.namespace }}
+            {{- end }}
           {{- end }}
           {{- if $.Values.backend }}
           {{- if and $.Values.backend.mongo $value.mongodb}}
