@@ -14,7 +14,8 @@ epicsConfiguration:
   applications:
   iocs:
   externalIoc:
-   
+
+usegateway: true # by default use gateway
 
 backend:
   namespace: "backend"
