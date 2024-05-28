@@ -14,10 +14,9 @@ data:
   {{- end }}
   EPICS_CA_MAX_ARRAY_BYTES: "{{ .Values.epicsConfiguration.max_array_bytes }}"
   {{- if .Values.epicsConfiguration.services.gateway }}
-  EPICS_CAS_AUTO_BEACON_ADDR_LIST: "NO"
   EPICS_GATEWAY: "{{- include "gateway-service" . }}"
   EPICS_CAS_BEACON_ADDR_LIST: "{{- include "gateway-service" . }}"
-
+  EPICS_CAS_AUTO_BEACON_ADDR_LIST: "NO"
   {{- end }}
   {{- if .Values.epicsConfiguration.services.archiver }}
   EPICS_ARCHIVER: '{{- include "archiver-url" . }}'
