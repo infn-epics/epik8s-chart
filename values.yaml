@@ -6,10 +6,17 @@ ingressClassName: "nginx"
 targetRevision: "devel"
 serviceAccountName: "default"
 openshift: false
+## parameter for static ip allocations
+
+baseIp: ## base ip
+startIp: 1
+ipRange: 65536  # /16 range (256 * 256)
+
 epicsConfiguration:
   name: "epics-configuration" # name of existing configMap that set CA parameters
   address_list: 
   max_array_bytes: "10000000"
+  staticIp: true ## until CA/PVA bug
   services:
   applications:
   iocs:

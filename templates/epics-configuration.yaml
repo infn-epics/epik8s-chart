@@ -13,6 +13,7 @@ data:
   EPICS_CA_CONN_TMO: "{{.Values.epicsConfiguration.conn_tmo}}"
   {{- end }}
   EPICS_CA_MAX_ARRAY_BYTES: "{{ .Values.epicsConfiguration.max_array_bytes }}"
+  {{- if .Values.epicsConfiguration.services }}
   {{- if .Values.epicsConfiguration.services.gateway }}
   EPICS_GATEWAY: "{{- include "gateway-service" . }}"
   EPICS_CAS_BEACON_ADDR_LIST: "{{- include "gateway-service" . }}"
@@ -119,4 +120,5 @@ data:
 
     {{- end}}
 
-  {{- end}}
+  {{- end }}
+  {{- end }}
