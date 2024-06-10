@@ -44,7 +44,7 @@ spec:
             {{- if .usegateway -}}
             gateway: {{ $.Values.epicsConfiguration.services.gateway.name }}.{{ $.Values.namespace }}
             {{- end }}
-          {{- if $.Values.epicsConfiguration.staticIp }}
+          {{- if and $.Values.epicsConfiguration.staticIp .Values.baseIp }}
           baseIp: {{.Values.baseIp}}
           startIp: {{.Values.startIp}}
           ipRange: {{.Values.ipRange}}
