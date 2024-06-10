@@ -7,8 +7,8 @@ targetRevision: "devel"
 serviceAccountName: "default"
 openshift: false
 ## parameter for static ip allocations
-
-baseIp: ## base ip
+## baseIP
+baseIp:
 startIp: 1
 ipRange: 65536  # /16 range (256 * 256)
 
