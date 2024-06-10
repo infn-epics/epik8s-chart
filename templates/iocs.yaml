@@ -36,7 +36,7 @@ spec:
       values: |
           {{- toYaml . | nindent 10 }}
           beamline: {{ $.Values.beamline | quote }}
-          {{- if and ($.Values.epicsConfiguration.staticIp .Values.baseIp) }}
+          {{- if $.Values.epicsConfiguration.staticIp }}
           baseIp: {{.Values.baseIp}}
           startIp: {{.Values.startIp}}
           ipRange: {{.Values.ipRange}}
