@@ -39,7 +39,7 @@ spec:
 
 
           {{- if $.Values.baseIp }}
-          baseIp: "{{$.Values.baseIp}}""
+          baseIp: "{{$.Values.baseIp}}"
           startIp: {{$.Values.startIp}}
           ipRange: {{$.Values.ipRange}}
           {{- end }}
