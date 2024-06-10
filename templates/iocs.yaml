@@ -36,11 +36,7 @@ spec:
       values: |
           {{- toYaml . | nindent 10 }}
           beamline: {{ $.Values.beamline | quote }}
-          {{- if $.Values.epicsConfiguration.staticIp }}
-          baseIp: {{.Values.baseIp}}
-          startIp: {{.Values.startIp}}
-          ipRange: {{.Values.ipRange}}
-          {{- end }}
+          
 
           {{- if $.Values.epicsConfiguration.name }}
           epicsConfiguration:
@@ -48,6 +44,11 @@ spec:
             {{- if .usegateway -}}
             gateway: {{ $.Values.epicsConfiguration.services.gateway.name }}.{{ $.Values.namespace }}
             {{- end }}
+          {{- if $.Values.epicsConfiguration.staticIp }}
+          baseIp: {{.Values.baseIp}}
+          startIp: {{.Values.startIp}}
+          ipRange: {{.Values.ipRange}}
+          {{- end }}
           {{- end }}
           {{- if and (not $.Values.gitRepoConfig) (or .gitinit .gitpath .host)}}
           gitRepoConfig:
