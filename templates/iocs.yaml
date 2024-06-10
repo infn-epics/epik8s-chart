@@ -36,6 +36,8 @@ spec:
       values: |
           {{- toYaml . | nindent 10 }}
           beamline: {{ $.Values.beamline | quote }}
+
+          
           {{- if $.Values.baseIp }}
           baseIp: {{$.Values.baseIp}}
           startIp: {{$.Values.startIp}}
