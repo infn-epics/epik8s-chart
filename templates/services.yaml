@@ -31,6 +31,12 @@ spec:
       releaseName: {{ $value.name }}
       values: |
           {{- toYaml . | nindent 10 }}
+          {{- if and $.Values.baseIp $value.staticIp}}
+          baseIp: "{{$.Values.baseIp}}"
+          startIp: {{$.Values.startIp}}
+          ipRange: {{$.Values.ipRange}}
+          {{- end }}
+
           {{- if and (not $.Values.gitRepoConfig) (or $value.gitinit $value.gitpath) }}
           gitRepoConfig:
             url: {{$.Values.giturl}}
