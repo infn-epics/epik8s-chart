@@ -36,6 +36,7 @@ spec:
       values: |
           {{- toYaml . | nindent 10 }}
           {{- if $.Values.nfsMounts }}
+          nfsMounts:
           {{- toYaml $.Values.nfsMounts | nindent 10 }}
           {{- end}}
 
