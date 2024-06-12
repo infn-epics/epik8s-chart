@@ -35,6 +35,10 @@ spec:
       releaseName: {{ .name }}
       values: |
           {{- toYaml . | nindent 10 }}
+          {{- if $.Values.nfsMounts }}
+          {{- toYaml $.Values.nfsMounts | nindent 10 }}
+          {{- end}}
+
           beamline: {{ $.Values.beamline | quote }}
 
 
