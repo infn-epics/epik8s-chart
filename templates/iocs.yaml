@@ -37,7 +37,7 @@ spec:
           {{- end}}
 
           beamline: {{ $.Values.beamline | quote }}
-
+          iocname: "{{ .name }}"
 
           {{- if $.Values.baseIp }}
           baseIp: "{{$.Values.baseIp}}"
