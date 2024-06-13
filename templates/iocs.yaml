@@ -151,6 +151,9 @@ spec:
     {{- if .devtype }}
     - name: type
       value: "{{ .devtype }}"
+    {{- else }}
+    - name: type
+      value: "{{ .iocdir }}"
     {{- end }}
     {{- if .devgroup }}
     - name: group
