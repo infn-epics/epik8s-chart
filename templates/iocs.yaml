@@ -107,6 +107,9 @@ spec:
             {{- if .scpoptions }}
             scpoptions: {{.scpoptions}}
             {{- end }}
+            {{- if .initcmd }}
+            initcmd: {{.initcmd}}
+            {{- end }}
           {{- end }}
 
     
