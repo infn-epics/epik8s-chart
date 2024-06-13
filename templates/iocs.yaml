@@ -11,11 +11,7 @@ metadata:
     rootappver: {{ $.Chart.Version }}
     beamline: {{ $.Values.beamline | quote }}
     revision: {{$.Values.targetRevision}}
-    {{- if .iocname }}
-    iocname: {{.iocname}}
-    {{- else }}
     iocname: {{.name}}
-    {{- end}}
     {{- if .host }}
     iochost: {{.host}}
     {{- end }}
@@ -62,8 +58,8 @@ spec:
             {{- if .gitpath }}
             path: {{ .gitpath }}
             {{- else }}
-            {{- if .iocname }}
-            path: config/iocs/{{.iocname}}
+            {{- if .iocdir }}
+            path: config/iocs/{{.iocdir}}
             {{- else }}
             path: config/iocs/{{.name}}
             {{- end }}
@@ -151,6 +147,7 @@ spec:
     - name: message
       value: "{{ .info }}"
     {{- end }}
+    
     {{- if .devtype }}
     - name: type
       value: "{{ .devtype }}"
