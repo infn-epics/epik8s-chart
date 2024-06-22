@@ -60,9 +60,14 @@ spec:
             beamline: {{ $.Values.beamline }}
             revision:  {{ $.Values.targetRevision}}
         spec:
-          serviceAccountName: {{ .serviceaccout }}
+          {{- if .serviceaccount }}
+          serviceAccountName: {{ .serviceaccount }}
+          {{- end }}
+          {{- if .securityContext }}
+
           securityContext:
             {{- toYaml .securityContext | nindent 12 }}
+          {{- end }}
           initContainers:
             - name: init-config-container-git
               image: baltig.infn.it:4567/epics-containers/container-init
@@ -206,7 +211,17 @@ spec:
                 {{- end }}
                 {{- end }}
               resources:
+              {{- if .resources}} 
+
                 {{ toYaml .resources | nindent 12 }}
+              {{- else }}
+                limits:
+                  cpu: 500m
+                  memory: 256Mi
+                requests:
+                  cpu: 100m
+                  memory: 64Mi
+              {{- end }}
           volumes:
             - name: config-volume
               persistentVolumeClaim:
