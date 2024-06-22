@@ -1,0 +1,226 @@
+{{- range .Values.cronjobs }}
+# Application {{.name}}
+{{- if or ( not .disable) ( eq .disable false) }}
+{{- if  .gitRepoApp.url  }}
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: {{ .name }}-cron-app
+  labels:
+    app: {{ .name }}-cron-app
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      {{- if.gitRepoApp.size }}
+      storage: {{ .gitRepoApp.size }}
+      {{- else }}
+      storage: 1G
+      {{- end }}
+
+
+
+---
+{{- end }}
+
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: {{ .name }}-cron-config
+  labels:
+    app: {{ .name }}-cron-config
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      {{- if and .gitRepoConfig .gitRepoConfig.size }}
+      storage: {{ .gitRepoConfig.size }}
+      {{- else }}
+      storage: 1G
+      {{- end }}
+---
+
+apiVersion: batch/v1beta1
+kind: CronJob
+metadata:
+  name: {{ .name }}
+  labels:
+    beamline: {{ $.Values.beamline }}
+    revision:  {{ $.Values.targetRevision}}
+spec:
+  schedule: "{{.schedule}}"
+  jobTemplate:
+    spec:
+      template:
+        metadata:
+          labels:
+            app.kubernetes.io/name: {{ .name }}
+            beamline: {{ $.Values.beamline }}
+            revision:  {{ $.Values.targetRevision}}
+        spec:
+          serviceAccountName: {{ .serviceaccout }}
+          securityContext:
+            {{- toYaml .securityContext | nindent 12 }}
+          initContainers:
+            - name: init-config-container-git
+              image: baltig.infn.it:4567/epics-containers/container-init
+              command:
+                - sh
+                - -c
+                - |
+                  id=$(id)
+                  cd /tmp
+                  ls -latr
+                  url={{$.Values.giturl}}
+                  path=config/cronjobs/{{.name}}
+                  branch={{$.Values.gitrev}}
+                  exec="start.sh"
+                  {{- if .gitrev }}
+                    branch= {{.gitrev}}
+                  {{- end }}
+                  {{- if .exec }}
+                  exec={{.exec}}
+                  {{- end }}
+                  echo "#!/bin/sh" > k8sreplace.sh
+                  chmod +x k8sreplace.sh
+                  
+                  {{- range $.Values.nfsMounts }}
+                  echo 'sed -i "s|__{{ .name | upper }}_DIR__|{{ .mountPath }}/{{ $.Values.iocname }}|g" $1' >> k8sreplace.sh
+                  {{- end }}
+                  
+                  echo "ID $id repository $url path: $path"
+                  if [ -d temp-config ]; then
+                    rm -rf temp-config
+                  fi
+                  if [ -n "$branch" ]; then
+                    git clone -b $branch $url --recurse-submodules temp-config
+                  else
+                    git clone $url --recurse-submodules temp-config
+                  fi
+                  find temp-config/ -type f -exec ./k8sreplace.sh {} \;
+
+                  if [ -d temp-config/$path ]; then
+                    if [ "$path" == "." ]; then
+                      mv temp-config/* /tmp/
+                    else
+                      mv temp-config/$path/* /tmp/
+                      rm -rf temp-config
+                    fi
+                  else
+                    mv temp-config/* /tmp/
+                  fi
+
+              imagePullPolicy: IfNotPresent
+              volumeMounts:
+                - name: config-volume
+                  mountPath: /tmp
+            {{- if .gitRepoApp.url }}
+            - name: init-app-container-git
+              image: baltig.infn.it:4567/epics-containers/container-init
+              command:
+                - sh
+                - -c
+                - |
+                  id=$(id)
+                  cd /tmp
+                  url={{.gitRepoApp.url}}
+                  path={{.gitRepoApp.path}}
+                  branch={{.gitRepoApp.branch}}
+                  echo "ID $id repository application $url "
+                  if [ -n "$branch" ]; then
+                    git clone -b $branch $url --recurse-submodules temp-config
+                  else
+                    git clone $url --recurse-submodules temp-config
+                  fi
+
+                  if [ -d temp-config/$path ]; then
+                    if [ "$path" == "." ]; then
+                      mv temp-config/* /tmp/
+                    else
+                      mv temp-config/$path/* /tmp/
+                      rm -rf temp-config
+                    fi
+                  else
+                    mv temp-config/* /tmp/
+                  fi
+
+                  ls /tmp
+                  {{- if .gitRepoApp.exec }}
+                  {{ .gitRepoApp.exec }}
+                  {{- end }}
+              imagePullPolicy: IfNotPresent
+              volumeMounts:
+                - name: app-volume
+                  mountPath: /tmp
+            {{- end }}
+          containers:
+            - name: {{ .name }}
+              image: "{{ .image }}"
+              {{- if .pullPolicy }}
+              imagePullPolicy: {{ .image.pullPolicy }}
+              {{- else }}
+              imagePullPolicy: IfNotPresent
+
+              {{- end }}
+              {{- if $.Values.epicsConfiguration.name }}
+              envFrom:
+              - configMapRef:
+                  name: {{ $.Values.epicsConfiguration.name }}
+              {{- end }}
+              env:
+                {{- range $.Values.nfsMounts }}
+                - name: {{ .name | upper }}_SERVER
+                  value: {{ .server | quote }}
+                - name: {{ .name | upper }}_SERVER_PATH
+                  value: {{ .path | quote }}
+                - name: {{ .name | upper }}_DIR
+                  value: {{ .mountPath | quote }}
+                {{- end }}
+              {{- if .exec }}
+              command:
+                - sh
+                - -c
+                - |
+                  cd /app
+                  {{ .exec }}
+              {{- end }}
+              volumeMounts:
+              {{- range $.Values.nfsMounts }}
+                - name: {{ .name }}
+                  mountPath: {{ .mountPath }}
+              {{- end }}
+                {{- if .gitRepoApp.url }}
+                - name: app-volume
+                  mountPath: /app
+                {{- end }}
+                - name: config-volume
+                  mountPath: /config
+              ports:
+                {{- if .service }}
+                {{- range .service.ports }}
+                - name: {{ .targetname }}
+                  containerPort: {{ .targetport }}
+                  protocol: {{ .protocol }}
+                {{- end }}
+                {{- end }}
+              resources:
+                {{ toYaml .resources | nindent 12 }}
+          volumes:
+            - name: config-volume
+              persistentVolumeClaim:
+                claimName: {{ .name }}-cron-config
+            {{- if .gitRepoApp.url }}
+            - name: app-volume
+              persistentVolumeClaim:
+                claimName: {{ .name }}-cron-app
+            {{- end }}
+      restartPolicy: OnFailure
+
+## END {{.name}}
+{{- else }}
+## not deplyed {{ .name }}
+{{- end }}
+---
+{{- end }}
