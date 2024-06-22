@@ -188,6 +188,9 @@ spec:
                 - sh
                 - -c
                 - |
+                  {{- range $.Values.nfsMounts }}
+                  mkdir -p {{ .mountPath }}
+                  {{- end }}
                   cd /app
                   {{ .exec }}
               {{- end }}
