@@ -62,11 +62,18 @@ spec:
         spec:
           {{- if .serviceaccount }}
           serviceAccountName: {{ .serviceaccount }}
+          {{- else }}
+          serviceAccountName: "default"
           {{- end }}
+          
           restartPolicy: Never
           {{- if .securityContext }}
           securityContext:
             {{- toYaml .securityContext | nindent 12 }}
+          {{- else }}
+          securityContext:
+            runAsUser: 1000
+            runAsGroup: 1000
           {{- end }}
           initContainers:
             - name: init-config-container-git
