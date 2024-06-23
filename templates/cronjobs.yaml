@@ -174,7 +174,6 @@ spec:
                 - name: {{ .name | upper }}_DIR
                   value: {{ .mountPath | quote }}
                 {{- end }}
-              {{- if .exec }}
               command:
                 - sh
                 - -c
@@ -186,7 +185,6 @@ spec:
                   {{- else}}
                   ./start.sh
                   {{- end }}
-              {{- end }}
               volumeMounts:
                 {{- range $.Values.nfsMounts }}
                 - name: {{ .name }}
