@@ -188,6 +188,7 @@ spec:
               volumeMounts:
                {{- range $.Values.nfsMounts }}
                 - name: {{ .name }}
+                  mountPath: {{ .mountPath }}
                   nfs:
                     server: {{ .server }}
                     path: {{ .path }}
