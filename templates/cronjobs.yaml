@@ -48,7 +48,7 @@ metadata:
     revision: {{ $.Values.targetRevision }}
 spec:
   schedule: "{{ .schedule }}"
-  concurrencyPolicy: Forbid
+  concurrencyPolicy: Replace
   failedJobsHistoryLimit: 1
   
   jobTemplate:
