@@ -67,6 +67,10 @@ spec:
           initContainers:
             - name: init-config-container-git
               image: baltig.infn.it:4567/epics-containers/container-init
+              securityContext:
+                runAsUser: 1000
+                runAsGroup: 1000
+                fsGroup: 1000
               command:
                 - sh
                 - -c
@@ -115,6 +119,10 @@ spec:
             {{- if .gitRepoApp.url }}
             - name: init-app-container-git
               image: baltig.infn.it:4567/epics-containers/container-init
+              securityContext:
+                runAsUser: 1000
+                runAsGroup: 1000
+                fsGroup: 1000
               command:
                 - sh
                 - -c
