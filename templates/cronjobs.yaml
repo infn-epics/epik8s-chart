@@ -183,7 +183,7 @@ spec:
                   {{- if .gitRepoApp.exec }}
                   {{ .gitRepoApp.exec }}
                   {{- else}}
-                  ./start.sh
+                  /config/start.sh
                   {{- end }}
               volumeMounts:
                 {{- range $.Values.nfsMounts }}
