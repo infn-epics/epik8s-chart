@@ -63,10 +63,7 @@ spec:
           {{- if .serviceaccount }}
           serviceAccountName: {{ .serviceaccount }}
           {{- else }}
-          serviceAccount:
-            create: false
-            annotations: {}
-            name: "default"
+          serviceAccountName: "default"
           {{- end }}
 
           restartPolicy: Never
