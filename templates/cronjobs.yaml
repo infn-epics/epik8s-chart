@@ -50,7 +50,7 @@ spec:
   schedule: "{{ .schedule }}"
   concurrencyPolicy: Forbid
   failedJobsHistoryLimit: 1
-  restartPolicy: Never
+  
   jobTemplate:
     spec:
       template:
@@ -63,6 +63,7 @@ spec:
           {{- if .serviceaccount }}
           serviceAccountName: {{ .serviceaccount }}
           {{- end }}
+          restartPolicy: Never
           {{- if .securityContext }}
           securityContext:
             {{- toYaml .securityContext | nindent 12 }}
