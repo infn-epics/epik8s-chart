@@ -151,7 +151,7 @@ spec:
           containers:
             - name: {{ .name }}
               image: "{{ .image }}"
-              imagePullPolicy: {{ .image.pullPolicy | default "IfNotPresent" }}
+              imagePullPolicy: IfNotPresent
               {{- if $.Values.epicsConfiguration.name }}
               envFrom:
                 - configMapRef:
