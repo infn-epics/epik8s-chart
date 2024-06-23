@@ -1,7 +1,7 @@
 {{- range .Values.cronjobs }}
 # Application {{.name}}
-{{- if or ( not .disable) ( eq .disable false) }}
-{{- if  .gitRepoApp.url  }}
+{{- if or (not .disable) (eq .disable false) }}
+{{- if .gitRepoApp.url }}
 kind: PersistentVolumeClaim
 apiVersion: v1
 metadata:
@@ -13,14 +13,11 @@ spec:
     - ReadWriteOnce
   resources:
     requests:
-      {{- if.gitRepoApp.size }}
+    {{- if and .gitRepoApp .gitRepoApp.size }}
       storage: {{ .gitRepoApp.size }}
-      {{- else }}
+    {{- else }}
       storage: 1G
-      {{- end }}
-
-
-
+    {{- end }}
 ---
 {{- end }}
 
@@ -35,22 +32,22 @@ spec:
     - ReadWriteOnce
   resources:
     requests:
-      {{- if and .gitRepoConfig .gitRepoConfig.size }}
+    {{- if and .gitRepoConfig .gitRepoConfig.size }}
       storage: {{ .gitRepoConfig.size }}
-      {{- else }}
+    {{- else }}
       storage: 1G
-      {{- end }}
----
+    {{- end }}
 
-apiVersion: batch/v1
+---
+apiVersion: batch/v1beta1
 kind: CronJob
 metadata:
   name: {{ .name }}
   labels:
     beamline: {{ $.Values.beamline }}
-    revision:  {{ $.Values.targetRevision}}
+    revision: {{ $.Values.targetRevision }}
 spec:
-  schedule: "{{.schedule}}"
+  schedule: "{{ .schedule }}"
   jobTemplate:
     spec:
       template:
@@ -58,13 +55,12 @@ spec:
           labels:
             app.kubernetes.io/name: {{ .name }}
             beamline: {{ $.Values.beamline }}
-            revision:  {{ $.Values.targetRevision}}
+            revision: {{ $.Values.targetRevision }}
         spec:
           {{- if .serviceaccount }}
           serviceAccountName: {{ .serviceaccount }}
           {{- end }}
           {{- if .securityContext }}
-
           securityContext:
             {{- toYaml .securityContext | nindent 12 }}
           {{- end }}
@@ -83,7 +79,7 @@ spec:
                   branch={{$.Values.gitrev}}
                   exec="start.sh"
                   {{- if .gitrev }}
-                    branch= {{.gitrev}}
+                    branch={{.gitrev}}
                   {{- end }}
                   {{- if .exec }}
                   exec={{.exec}}
@@ -116,7 +112,6 @@ spec:
                   else
                     mv temp-config/* /tmp/
                   fi
-
               imagePullPolicy: IfNotPresent
               volumeMounts:
                 - name: config-volume
@@ -140,7 +135,7 @@ spec:
                     git clone $url --recurse-submodules temp-config
                   fi
 
-                  if [ -d temp-config/$path ]; then
+                  if [ -d temp-config/$path]; then
                     if [ "$path" == "." ]; then
                       mv temp-config/* /tmp/
                     else
@@ -167,12 +162,11 @@ spec:
               imagePullPolicy: {{ .image.pullPolicy }}
               {{- else }}
               imagePullPolicy: IfNotPresent
-
               {{- end }}
               {{- if $.Values.epicsConfiguration.name }}
               envFrom:
-              - configMapRef:
-                  name: {{ $.Values.epicsConfiguration.name }}
+                - configMapRef:
+                    name: {{ $.Values.epicsConfiguration.name }}
               {{- end }}
               env:
                 {{- range $.Values.nfsMounts }}
@@ -188,17 +182,14 @@ spec:
                 - sh
                 - -c
                 - |
-                  {{- range $.Values.nfsMounts }}
-                  mkdir -p {{ .mountPath }}
-                  {{- end }}
                   cd /app
                   {{ .exec }}
               {{- end }}
               volumeMounts:
-              {{- range $.Values.nfsMounts }}
+                {{- range $.Values.nfsMounts }}
                 - name: {{ .name }}
                   mountPath: {{ .mountPath }}
-              {{- end }}
+                {{- end }}
                 {{- if .gitRepoApp.url }}
                 - name: app-volume
                   mountPath: /app
@@ -214,17 +205,16 @@ spec:
                 {{- end }}
                 {{- end }}
               resources:
-              {{- if .resources}} 
-
+                {{- if .resources }}
                 {{ toYaml .resources | nindent 12 }}
-              {{- else }}
+                {{- else }}
                 limits:
                   cpu: 500m
                   memory: 256Mi
                 requests:
                   cpu: 100m
                   memory: 64Mi
-              {{- end }}
+                {{- end }}
           volumes:
             - name: config-volume
               persistentVolumeClaim:
@@ -234,11 +224,17 @@ spec:
               persistentVolumeClaim:
                 claimName: {{ .name }}-cron-app
             {{- end }}
+            # Added necessary volumes for data and autosave
+            - name: data
+              persistentVolumeClaim:
+                claimName: data-pvc
+            - name: autosave
+              persistentVolumeClaim:
+                claimName: autosave-pvc
       restartPolicy: OnFailure
-
-## END {{.name}}
+## END {{ .name }}
 {{- else }}
-## not deplyed {{ .name }}
+## not deployed {{ .name }}
 {{- end }}
 ---
 {{- end }}
