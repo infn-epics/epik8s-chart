@@ -233,7 +233,7 @@ spec:
             {{- end }}
             
             
-      restartPolicy: OnFailure
+      
 ## END {{ .name }}
 {{- else }}
 ## not deployed {{ .name }}
