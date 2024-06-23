@@ -87,12 +87,13 @@ spec:
                   {{- if .exec }}
                   exec={{.exec}}
                   {{- end }}
+                  echo "ID $id config repository $url path: $path"
+
                   echo "#!/bin/sh" > k8sreplace.sh
                   chmod +x k8sreplace.sh
                   {{- range $.Values.nfsMounts }}
-                  echo 'sed -i "s|__{{ .name | upper }}_DIR__|{{ .mountPath }}/{{ $.Values.iocname }}|g" $1' >> k8sreplace.sh
+                  echo 'sed -i "s|__{{ .name | upper }}_DIR__|{{ .mountPath }}|g" $1' >> k8sreplace.sh
                   {{- end }}
-                  echo "ID $id repository $url path: $path"
                   if [ -d temp-config ]; then
                     rm -rf temp-config
                   fi
