@@ -186,9 +186,11 @@ spec:
                   {{ .exec }}
               {{- end }}
               volumeMounts:
-                {{- range $.Values.nfsMounts }}
+               {{- range .nfsMounts }}
                 - name: {{ .name }}
-                  mountPath: {{ .mountPath }}
+                  nfs:
+                    server: {{ .server }}
+                    path: {{ .path }}
                 {{- end }}
                 {{- if .gitRepoApp.url }}
                 - name: app-volume
