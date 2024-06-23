@@ -48,6 +48,8 @@ metadata:
     revision: {{ $.Values.targetRevision }}
 spec:
   schedule: "{{ .schedule }}"
+  concurrencyPolicy: Forbid
+  failedJobsHistoryLimit: 1
   jobTemplate:
     spec:
       template:
@@ -163,6 +165,7 @@ spec:
               {{- else }}
               imagePullPolicy: IfNotPresent
               {{- end }}
+              restartPolicy: Never
               {{- if $.Values.epicsConfiguration.name }}
               envFrom:
                 - configMapRef:
