@@ -189,10 +189,7 @@ spec:
                {{- range $.Values.nfsMounts }}
                 - name: {{ .name }}
                   mountPath: {{ .mountPath }}
-                  nfs:
-                    server: {{ .server }}
-                    path: {{ .path }}
-                {{- end }}
+               {{- end }}
                 {{- if .gitRepoApp.url }}
                 - name: app-volume
                   mountPath: /app
@@ -219,6 +216,13 @@ spec:
                   memory: 64Mi
                 {{- end }}
           volumes:
+          {{- range $.Values.nfsMounts }}
+            - name: {{ .name }}
+              mountPath: {{ .mountPath }}
+              nfs:
+                server: {{ .server }}
+                path: {{ .path }}
+          {{- end }}
             - name: config-volume
               persistentVolumeClaim:
                 claimName: {{ .name }}-cron-config
@@ -227,13 +231,8 @@ spec:
               persistentVolumeClaim:
                 claimName: {{ .name }}-cron-app
             {{- end }}
-            # Added necessary volumes for data and autosave
-            - name: data
-              persistentVolumeClaim:
-                claimName: data-pvc
-            - name: autosave
-              persistentVolumeClaim:
-                claimName: autosave-pvc
+            
+            
       restartPolicy: OnFailure
 ## END {{ .name }}
 {{- else }}
