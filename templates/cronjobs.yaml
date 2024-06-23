@@ -186,7 +186,7 @@ spec:
                   {{ .exec }}
               {{- end }}
               volumeMounts:
-               {{- range .nfsMounts }}
+               {{- range $.Values.nfsMounts }}
                 - name: {{ .name }}
                   nfs:
                     server: {{ .server }}
