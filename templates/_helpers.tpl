@@ -17,13 +17,17 @@
 {{- range $index, $element := $list }}
   {{- if $element.host }}
     {{- if $element.ca_server_port }}
-      {{- $commaSeparatedString = printf "%s:%s %s" $element.host $element.ca_server_port $commaSeparatedString }}
+      {{- $portAsString := printf "%d" $element.ca_server_port }}
+
+      {{- $commaSeparatedString = printf "%s:%s %s" $element.host $portAsString $commaSeparatedString }}
     {{- else }}
       {{- $commaSeparatedString = printf "%s %s" $element.host $commaSeparatedString }}
     {{- end}}
   {{- else }}
     {{- if $element.ca_server_port }}
-      {{- $commaSeparatedString = printf "%s.%s:%s %s" $element.name $.Values.namespace $element.ca_server_port $commaSeparatedString }}
+      {{- $portAsString := printf "%d" $element.ca_server_port }}
+
+      {{- $commaSeparatedString = printf "%s.%s:%s %s" $element.name $.Values.namespace $portAsString $commaSeparatedString }}
     {{- else }}
       {{- $commaSeparatedString = printf "%s.%s %s" $element.name $.Values.namespace $commaSeparatedString }}
     {{- end }}
