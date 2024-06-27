@@ -17,7 +17,7 @@
 {{- range $index, $element := $list }}
   {{- if $element.host }}
     {{- if $element.ca_server_port }}
-      {{- $commaSeparatedString = printf "%s:%d %s" $element.host $element.ca_server_port $commaSeparatedString }}
+      {{- $commaSeparatedString = printf "%s:%s %s" $element.host $element.ca_server_port $commaSeparatedString }}
     {{- else }}
       {{- $commaSeparatedString = printf "%s %s" $element.host $commaSeparatedString }}
     {{- end}}
