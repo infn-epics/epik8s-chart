@@ -40,7 +40,7 @@ spec:
           {{- toYaml $.Values.nfsMounts | nindent 10 }}
           {{- end}}
           {{- end}}
-          
+
           beamline: {{ $.Values.beamline | quote }}
           iocname: "{{ .name }}"
 
@@ -106,6 +106,8 @@ spec:
             {{- end }}
             {{- if .workdir }}
             workdir: {{.workdir}}
+            {{- else }}
+            workdir: "workdir-{{.name}}"
             {{- end }}
             {{- if .scpoptions }}
             scpoptions: {{.scpoptions}}
