@@ -17,7 +17,7 @@
 {{- range $index, $element := $list }}
   {{- if $element.host }}
     {{- if $element.ca_server_port }}
-      {{- $portAsString := "$element.ca_server_port" }}
+      {{- $portAsString := printf "%f" $element.ca_server_port }}
 
       {{- $commaSeparatedString = printf "%s:%s %s" $element.host $portAsString $commaSeparatedString }}
     {{- else }}
@@ -25,7 +25,7 @@
     {{- end}}
   {{- else }}
     {{- if $element.ca_server_port }}
-      {{- $portAsString := "$element.ca_server_port" }}
+      {{- $portAsString := printf "%f" $element.ca_server_port }}
 
       {{- $commaSeparatedString = printf "%s.%s:%s %s" $element.name $.Values.namespace $portAsString $commaSeparatedString }}
     {{- else }}
