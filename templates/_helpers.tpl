@@ -23,7 +23,7 @@
     {{- end}}
   {{- else }}
     {{- if $element.ca_server_port }}
-      {{- $commaSeparatedString = printf "%s.%s:%d %s" $element.name $.Values.namespace $element.ca_server_port $commaSeparatedString }}
+      {{- $commaSeparatedString = printf "%s.%s:%s %s" $element.name $.Values.namespace $element.ca_server_port $commaSeparatedString }}
     {{- else }}
       {{- $commaSeparatedString = printf "%s.%s %s" $element.name $.Values.namespace $commaSeparatedString }}
     {{- end }}
