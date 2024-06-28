@@ -86,7 +86,7 @@ data:
     org.csstudio.scan.client/port=4810
     {{- end}}
     {{- if .Values.epicsConfiguration.services.alarmserver }}
-    org.phoebus.applications.alarm/server={{.Values.backend.kafka.host}}:{{.Values.backend.kafka.port}}
+    org.phoebus.applications.alarm/server={{.Values.backend.kafka.host}}.{{.Values.backend.namespace}}:{{.Values.backend.kafka.port}}
     org.phoebus.applications.alarm/config_name=Accelerator-{{ .Values.beamline }}
     # org.phoebus.applications.alarm/kafka_properties=
     org.phoebus.applications.alarm/config_names=Accelerator-{{ .Values.beamline }}, Demo
@@ -105,7 +105,7 @@ data:
     # org.phoebus.applications.alarm/annunciator_threshold=3
     # org.phoebus.applications.alarm/annunciator_retention_count=100
     # org.phoebus.applications.alarm/idle_timeout=10
-    # org.phoebus.applications.alarm/automated_email_sender=Alarm Notifier <alarm_server@example.org>
+    # org.phoebus.applications.alarm/automated_email_sender=Alarm Notifier <andrea.michelotti@lnf.infn.it>
     # org.phoebus.applications.alarm/automated_action_followup=mailto:, cmd:
     # org.phoebus.applications.alarm/heartbeat_pv=Demo:AlarmServerHeartbeat
     # org.phoebus.applications.alarm/heartbeat_pv=
