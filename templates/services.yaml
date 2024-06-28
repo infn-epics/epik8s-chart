@@ -1,11 +1,11 @@
 {{- range $key, $value := .Values.epicsConfiguration.services }}
 {{- if or ( not $value.disable) ( eq $value.disable false) }}
 
-# Service {{$key}} {{$value.name}}
+# Service {{$key}}
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: {{$.Values.beamline}}-{{ $value.name }}-service
+  name: {{$.Values.beamline}}-{{ $key }}-service
   namespace: argocd
   labels:
     rootapp: {{ $.Chart.Name }}
@@ -28,7 +28,7 @@ spec:
     targetRevision: {{$.Values.targetRevision}}
     {{- end }}
     helm:
-      releaseName: {{ $value.name }}
+      releaseName: {{ $key }}
       values: |
           {{- toYaml . | nindent 10 }}
           {{- if and $.Values.baseIp $value.staticIp}}
@@ -43,7 +43,7 @@ spec:
             {{- if $value.gitpath }}
             path: {{ $value.gitpath }}
             {{- else }}
-            path: config/services/{{$value.name}}
+            path: config/services/{{$key}}
             {{- end }}
             {{- if $value.gitrev }}
             branch: {{$value.gitrev}}
@@ -68,7 +68,7 @@ spec:
             className: {{$.Values.ingressClassName}}
             {{- end }}
             hosts:
-              - host: {{ printf "%s-%s.%s" $.Values.beamline $value.name $.Values.epik8namespace }}
+              - host: {{ printf "%s-%s.%s" $.Values.beamline $key $.Values.epik8namespace }}
                 paths:
                   - path: /
                     pathType: Prefix
@@ -167,9 +167,9 @@ spec:
       value: "{{ $value.asset }}"
   {{- end }}
 
-## END {{$key}} {{$value.name}}
+## END {{$key}} 
 {{- else }}
-## not deplyed {{ .name }}
+## not deplyed {{ $key }}
 {{- end }}
 
 ---
