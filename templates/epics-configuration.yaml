@@ -51,7 +51,7 @@ data:
   phoebus_settings.ini: |
     
     {{- if .Values.epicsConfiguration.services.gateway }}
-    org.phoebus.pv.ca/addr_list={{- include "gateway-service" . }} ## balancer {{.Values.gatewaybalancer}}
+    org.phoebus.pv.ca/addr_list={{- include "gateway-service" . }}
     org.phoebus.pv.ca/auto_addr_list=false
     {{- else if .Values.epicsConfiguration.address_list }}
     org.phoebus.pv.ca/addr_list={{ .Values.epicsConfiguration.address_list }}
