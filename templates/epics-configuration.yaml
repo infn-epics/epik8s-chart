@@ -87,9 +87,9 @@ data:
     {{- end}}
     {{- if .Values.epicsConfiguration.services.alarmserver }}
     org.phoebus.applications.alarm/server={{.Values.backend.kafka.host}}.{{.Values.backend.namespace}}:{{.Values.backend.kafka.port}}
-    org.phoebus.applications.alarm/config_name=Accelerator-{{ .Values.beamline }}
+    org.phoebus.applications.alarm/config_name=Accelerator
     # org.phoebus.applications.alarm/kafka_properties=
-    org.phoebus.applications.alarm/config_names=Accelerator-{{ .Values.beamline }}, Demo
+    org.phoebus.applications.alarm/config_names=Accelerator, Demo
     org.phoebus.applications.alarm/connection_timeout=30
     org.phoebus.applications.alarm/severity_pv_timeout=5
     org.phoebus.applications.alarm/alarm_area_level=2
@@ -108,8 +108,8 @@ data:
     # org.phoebus.applications.alarm/automated_email_sender=Alarm Notifier <andrea.michelotti@lnf.infn.it>
     # org.phoebus.applications.alarm/automated_action_followup=mailto:, cmd:
     # org.phoebus.applications.alarm/heartbeat_pv=Demo:AlarmServerHeartbeat
-    # org.phoebus.applications.alarm/heartbeat_pv=
-    # org.phoebus.applications.alarm/heartbeat_secs=10
+      org.phoebus.applications.alarm/heartbeat_pv={{.Values.beamline}}_alarm_hb
+      org.phoebus.applications.alarm/heartbeat_secs=10
     # org.phoebus.applications.alarm/nag_period=00:15:00
     # org.phoebus.applications.alarm/connection_check_secs=5
     # org.phoebus.applications.alarm/disable_notify_visible=false
