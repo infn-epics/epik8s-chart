@@ -108,8 +108,8 @@ data:
     # org.phoebus.applications.alarm/automated_email_sender=Alarm Notifier <andrea.michelotti@lnf.infn.it>
     # org.phoebus.applications.alarm/automated_action_followup=mailto:, cmd:
     # org.phoebus.applications.alarm/heartbeat_pv=Demo:AlarmServerHeartbeat
-      org.phoebus.applications.alarm/heartbeat_pv={{.Values.beamline}}_alarm_hb
-      org.phoebus.applications.alarm/heartbeat_secs=10
+    #  org.phoebus.applications.alarm/heartbeat_pv={{.Values.beamline}}_alarmserver:AlarmServerHeartbeat
+    #  org.phoebus.applications.alarm/heartbeat_secs=10
     # org.phoebus.applications.alarm/nag_period=00:15:00
     # org.phoebus.applications.alarm/connection_check_secs=5
     # org.phoebus.applications.alarm/disable_notify_visible=false
