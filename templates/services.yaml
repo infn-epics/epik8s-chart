@@ -93,7 +93,7 @@ spec:
           {{- if $.Values.epicsConfiguration.name }}
           epicsConfiguration:
             name: {{ $.Values.epicsConfiguration.name | quote}}
-            {{- if $value.usegateway -}}
+            {{- if $value.usegateway }}
             gateway: gateway.{{ $.Values.namespace }}
             {{- end }}
           {{- end }}
