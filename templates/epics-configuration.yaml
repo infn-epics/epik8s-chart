@@ -34,8 +34,8 @@ data:
   {{- if .Values.epicsConfiguration.services.olog }}
   PHOEBUS_OLOG: '{{- include "olog-url" . }}'
   {{- end}}
-  {{- if .Values.epicsConfiguration.services.jupyter }}
-  # JUPYTER: 'http://{{- include "jupyter-url" . }}'
+  {{- if .Values.epicsConfiguration.services.notebook }}
+  JUPYTER: 'http://{{- include "notebook-url" . }}'
   {{- end}}
   {{- if .Values.epicsConfiguration.services.console }}
   CONSOLE: 'http://{{- include "console-url" . }}'
@@ -117,8 +117,13 @@ data:
     # org.phoebus.applications.alarm/Format: M1=Value1, M2=Value2
     # org.phoebus.applications.alarm/macros=TOP=/home/controls/displays,WEBROOT=http://localhost/controls/displays
     # org.phoebus.applications.alarm/max_block_ms=10000
-
     {{- end}}
+    {{- if .Values.epicsConfiguration.services.alarmserver }}
+
+    org.phoebus.applications.alarm.logging.ui/service_uri=http://{{- include "alarmlogger-url" . }}
+    org.phoebus.applications.alarm.logging.ui/results_max_size=10000
+    {{- end}}
+
 
   {{- end }}
   {{- end }}

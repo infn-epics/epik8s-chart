@@ -1,14 +1,4 @@
-{{- define "archiver-url" -}}
-{{- printf "%s-%s.%s" .Values.beamline .Values.epicsConfiguration.services.archiver.name .Values.epik8namespace }}
-{{- end }}
 
-{{- define "channelfinder-url" -}}
-{{- printf "%s-%s.%s" .Values.beamline .Values.epicsConfiguration.services.channelfinder.name .Values.epik8namespace }}
-{{- end }}
-
-{{- define "saveandrestore-url" -}}
-{{- printf "%s-%s.%s" .Values.beamline .Values.epicsConfiguration.services.saveandrestore.name .Values.epik8namespace }}
-{{- end }}
 
 {{- define "iocnames" -}}
 {{- $list := .Values.epicsConfiguration.iocs }}
@@ -41,30 +31,73 @@
 {{- $commaSeparatedString }}
 {{- end }}
 
-{{- define "console-url" -}}
-{{- printf "%s-%s.%s" .Values.beamline .Values.epicsConfiguration.services.console.name .Values.epik8namespace }}
-{{- end }}
 
-{{- define "olog-url" -}}
-{{- printf "%s-%s.%s" .Values.beamline .Values.epicsConfiguration.services.olog.name .Values.epik8namespace }}
-{{- end }}
-
-{{- define "scanserver-url" -}}
-{{- printf "%s-%s.%s" .Values.beamline .Values.epicsConfiguration.services.scanserver.name .Values.epik8namespace }}
-{{- end }}
-
-{{- define "jupyter-url" -}}
-{{- printf "%s-%s.%s" .Values.beamline .Values.epicsConfiguration.services.jupyter.name .Values.epik8namespace }}
-{{- end }}
-
-{{- define "alarmserver-url" -}}
-{{- printf "%s-%s.%s" .Values.beamline .Values.epicsConfiguration.services.alarmserver.name .Values.epik8namespace }}
-{{- end }}
 
 {{- define "gateway-service" -}}
-{{ .Values.epicsConfiguration.services.gateway.name }}.{{ .Values.namespace }}
+{{- if hasKey .Values.epicsConfiguration.services "gateway" }}
+{{- printf "gateway.%s" .Values.namespace }}
+{{- end }}
 {{- end }}
 
 {{- define "mysql-service" -}}
-{{ .Values.epicsConfiguration.services.mysql.name }}.{{ .Values.namespace }}
+{{- if hasKey .Values.epicsConfiguration.services "mysql" }}
+{{- printf "mysql.%s" .Values.namespace }}
+{{- end }}
+{{- end }}
+
+
+{{- define "archiver-url" -}}
+{{- if hasKey .Values.epicsConfiguration.services "archiver" }}
+{{- printf "%s-archiver.%s" .Values.beamline .Values.epik8namespace }}
+{{- end }}
+{{- end }}
+
+
+{{- define "channelfinder-url" -}}
+{{- if hasKey .Values.epicsConfiguration.services "channelfinder" }}
+{{- printf "%s-channelfinder.%s" .Values.beamline .Values.epik8namespace }}
+{{- end }}
+{{- end }}
+
+{{- define "saveandrestore-url" -}}
+{{- if hasKey .Values.epicsConfiguration.services "saveandrestore" }}
+{{- printf "%s-saveandrestore.%s" .Values.beamline .Values.epik8namespace }}
+{{- end }}
+{{- end }}
+
+{{- define "console-url" -}}
+{{- if hasKey .Values.epicsConfiguration.services "console" }}
+{{- printf "%s-console.%s" .Values.beamline .Values.epik8namespace }}
+{{- end }}
+{{- end }}
+
+{{- define "olog-url" -}}
+{{- if hasKey .Values.epicsConfiguration.services "olog" }}
+{{- printf "%s-olog.%s" .Values.beamline .Values.epik8namespace }}
+{{- end }}
+{{- end }}
+
+{{- define "scanserver-url" -}}
+{{- if hasKey .Values.epicsConfiguration.services "scanserver" }}
+{{- printf "%s-scanserver.%s" .Values.beamline .Values.epik8namespace }}
+{{- end }}
+{{- end }}
+
+
+{{- define "notebook-url" -}}
+{{- if hasKey .Values.epicsConfiguration.services "notebook" }}
+{{- printf "%s-notebook.%s" .Values.beamline .Values.epik8namespace }}
+{{- end }}
+{{- end }}
+
+{{- define "alarmserver-url" -}}
+{{- if hasKey .Values.epicsConfiguration.services "alarmserver" }}
+{{- printf "%s-alarmserver.%s" .Values.beamline .Values.epik8namespace }}
+{{- end }}
+{{- end }}
+
+{{- define "alarmlogger-url" -}}
+{{- if hasKey .Values.epicsConfiguration.services "alarmlogger" }}
+{{- printf "%s-alarmlogger.%s" .Values.beamline .Values.epik8namespace }}
+{{- end }}
 {{- end }}
