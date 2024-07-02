@@ -5,6 +5,8 @@
 {{- $commaSeparatedString := "" }}
 
 {{- range $index, $element := $list }}
+  {{- if $element.disable }}
+  {{- else }}
   {{- if $element.host }}
     {{- if $element.ca_server_port }}
       {{- $portAsString := int $element.ca_server_port }}
@@ -22,6 +24,7 @@
       {{- $commaSeparatedString = printf "%s.%s %s" $element.name $.Values.namespace $commaSeparatedString }}
     {{- end }}
   {{- end }}
+  {{- end}}
 
   {{- if ne $index (sub (len $list) 1) }}
     {{- $commaSeparatedString = printf "%s " $commaSeparatedString }}
