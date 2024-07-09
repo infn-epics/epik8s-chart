@@ -30,6 +30,15 @@ spec:
     helm:
       releaseName: {{ $key }}
       values: |
+          {{- if $value.nfsMounts }}
+          nfsMounts:
+          {{- toYaml $value.nfsMounts | nindent 10 }}
+          {{- else }}
+          {{- if $.Values.nfsMounts }}
+          nfsMounts:
+          {{- toYaml $.Values.nfsMounts | nindent 10 }}
+          {{- end}}
+          {{- end}}
           {{- toYaml . | nindent 10 }}
           {{- if and $.Values.baseIp $value.staticIp}}
           baseIp: "{{$.Values.baseIp}}"
