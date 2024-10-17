@@ -24,6 +24,10 @@ epicsConfiguration:
 
 usegateway: true # by default use gateway
 
+http_proxy:
+https_proxy:
+no_proxy:
+
 backend:
   namespace: "backend"
   mongo:
