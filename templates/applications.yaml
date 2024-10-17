@@ -30,9 +30,8 @@ spec:
       releaseName: {{ .name }}
       values: |
           {{- toYaml . | nindent 10 }}
-          http_proxy:{{ $.Values.http_proxy | quote }}
-          https_proxy:{{ $.Values.https_proxy | quote }}
-          no_proxy:{{ $.Values.no_proxy | quote }}
+
+          
 
           beamline: {{ $.Values.beamline | quote }}
           {{- if $.Values.epicsConfiguration.name }}
