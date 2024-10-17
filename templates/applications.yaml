@@ -29,10 +29,11 @@ spec:
     helm:
       releaseName: {{ .name }}
       values: |
+          http_proxy: {{ $.Values.http_proxy | quote }}
+          https_proxy: {{ $.Values.https_proxy | quote }}
+          no_proxy: {{ $.Values.no_proxy | quote }}
+
           {{- toYaml . | nindent 10 }}
-
-          
-
           beamline: {{ $.Values.beamline | quote }}
           {{- if $.Values.epicsConfiguration.name }}
           epicsConfiguration:
