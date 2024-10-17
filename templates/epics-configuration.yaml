@@ -10,7 +10,7 @@ data:
   HTTPS_PROXY: {{.Values.https_proxy | quote}}
   {{- end}}
   {{- if .Values.no_proxy }}
-  NO_PROXY: "{{.Values.no_proxy | quote}}"
+  NO_PROXY: {{.Values.no_proxy | quote}}
   {{- end}}
   
 ---
