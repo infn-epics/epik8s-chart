@@ -45,12 +45,12 @@ spec:
           iocname: "{{ .name }}"
 
           {{- if $.Values.baseIp }}
-          staticIP: {{ include "allocateIpFromName" $. }}
+          staticIP: {{ include "allocateIpFromName" . }}
           {{- end }}
           http_proxy: {{ $.Values.http_proxy | quote }}
           https_proxy: {{ $.Values.https_proxy | quote }}
           no_proxy: {{ $.Values.no_proxy | quote }}
-          
+
 
           {{- if $.Values.epicsConfiguration.name }}
           epicsConfiguration:
