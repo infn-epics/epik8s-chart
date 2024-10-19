@@ -124,7 +124,7 @@
   {{- $fourthOctet := index $octets 3 | int -}}
 
   # Calculate the number of available IPs from the CIDR range
-  {{- $ipRange := pow 2 (sub 32 $cidrRange) | int -}}  # Number of IPs in the given CIDR range
+  {{- $ipRange := (2 | mul (sub 32 $cidrRange)) | int -}}  # Number of IPs in the given CIDR range
 
   # Calculate the IP suffix based on the conversion and the available IP range
   {{- $ipSuffix := add $startIp (mod $conversion $ipRange) -}}
