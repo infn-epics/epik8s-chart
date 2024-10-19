@@ -41,7 +41,7 @@ spec:
             gateway: gateway.{{ $.Values.namespace }}
           {{- end }}
           
-          {{- if and $.Values.baseIp $value.staticIp }}
+          {{- if and $.Values.baseIp .staticIp }}
           staticIP: {{ include "allocateIpFromName" . }}
           {{- end }}
 
