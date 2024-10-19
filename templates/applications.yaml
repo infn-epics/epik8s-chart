@@ -42,7 +42,8 @@ spec:
           {{- end }}
           
           {{- if and $.Values.baseIp .staticIp }}
-          staticIP: {{ include "allocateIpFromName" . }}
+          staticIP: {{ include "allocateIpFromName" (dict "name" .name "namespace" $.Values.namespace "baseIp" $.Values.baseIp "startIp" $.Values.startIp) }}
+
           {{- end }}
 
           {{- if and (not $.Values.gitRepoConfig) (or .gitinit .gitpath)}}
