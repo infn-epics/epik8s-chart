@@ -40,6 +40,11 @@ spec:
             name: {{ $.Values.epicsConfiguration.name | quote}}
             gateway: gateway.{{ $.Values.namespace }}
           {{- end }}
+          
+          {{- if and $.Values.baseIp $value.staticIp }}
+          staticIP: {{ include "allocateIpFromName" $. }}
+          {{- end }}
+
           {{- if and (not $.Values.gitRepoConfig) (or .gitinit .gitpath)}}
           gitRepoConfig:
             url: {{$.Values.giturl}}

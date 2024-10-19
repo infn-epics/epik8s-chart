@@ -40,12 +40,14 @@ spec:
           {{- end}}
           {{- end}}
           {{- toYaml . | nindent 10 }}
-          {{- if and $.Values.baseIp $value.staticIp}}
-          baseIp: "{{$.Values.baseIp}}"
-          startIp: {{$.Values.startIp}}
-          ipRange: {{$.Values.ipRange}}
+          
+          {{- if and $.Values.baseIp $value.staticIp }}
+          staticIP: {{ include "allocateIpFromName" $. }}
           {{- end }}
-
+          http_proxy: {{ $.Values.http_proxy | quote }}
+          https_proxy: {{ $.Values.https_proxy | quote }}
+          no_proxy: {{ $.Values.no_proxy | quote }}
+          
           {{- if and (not $.Values.gitRepoConfig) (or $value.gitinit $value.gitpath) }}
           gitRepoConfig:
             url: {{$.Values.giturl}}

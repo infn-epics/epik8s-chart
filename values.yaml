@@ -10,7 +10,6 @@ openshift: false
 ## baseIP
 baseIp:
 startIp: 1
-ipRange: 65536  # /16 range (256 * 256)
 
 epicsConfiguration:
   name: "epics-configuration" # name of existing configMap that set CA parameters
