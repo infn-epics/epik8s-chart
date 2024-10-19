@@ -42,7 +42,7 @@ spec:
           {{- toYaml . | nindent 10 }}
           
           {{- if and $.Values.baseIp $value.staticIp }}
-          staticIP: {{ include "allocateIpFromName" (dict "name" key "namespace" $.Values.namespace "baseIp" $.Values.baseIp "startIp" $.Values.startIp) }}
+          staticIP: {{ include "allocateIpFromName" (dict "name" $key "namespace" $.Values.namespace "baseIp" $.Values.baseIp "startIp" $.Values.startIp) }}
 
           {{- end }}
           http_proxy: {{ $.Values.http_proxy | quote }}
