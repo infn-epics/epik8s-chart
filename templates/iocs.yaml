@@ -45,7 +45,8 @@ spec:
           iocname: "{{ .name }}"
 
           {{- if $.Values.baseIp }}
-          staticIP: {{ include "allocateIpFromName" . }}
+          staticIP: {{ include "allocateIpFromName" (dict "name" .name "namespace" $.Values.namespace "baseIp" $.Values.baseIp "startIp" $.Values.startIp) }}
+
           {{- end }}
           http_proxy: {{ $.Values.http_proxy | quote }}
           https_proxy: {{ $.Values.https_proxy | quote }}

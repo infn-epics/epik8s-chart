@@ -106,9 +106,9 @@
 {{- end }}
 
 {{- define "allocateIpFromName" -}}
-  {{- $name := printf "%s.%s" .Release.Name .Release.Namespace -}}
-  {{- $baseIpWithCIDR := .Values.baseIp -}}  # base IP in CIDR notation, e.g., "10.152.182.0/23"
-  {{- $startIp := .Values.startIp | int -}}  # Starting IP offset
+  {{- $name := printf "%s.%s" .name .namespace -}}  # Use name and namespace from the parameters
+  {{- $baseIpWithCIDR := .baseIp -}}  # base IP in CIDR notation, e.g., "10.152.182.0/23"
+  {{- $startIp := .startIp | int -}}  # Starting IP offset
   {{- $conversion := atoi (adler32sum $name) -}}
 
   # Split the base IP and range
@@ -124,7 +124,7 @@
   {{- $fourthOctet := index $octets 3 | int -}}
 
   # Calculate the number of available IPs from the CIDR range
-  {{- $ipRange := (2 | mul (sub 32 $cidrRange)) | int -}}  # Number of IPs in the given CIDR range
+  {{- $ipRange := pow 2 (sub 32 $cidrRange) | int -}}  # Number of IPs in the given CIDR range
 
   # Calculate the IP suffix based on the conversion and the available IP range
   {{- $ipSuffix := add $startIp (mod $conversion $ipRange) -}}
@@ -136,3 +136,4 @@
   # Print the resulting IP
   {{- printf "%d.%d.%d.%d" $firstOctet $secondOctet $thirdOctet $fourthOctet -}}
 {{- end -}}
+
