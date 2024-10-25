@@ -135,32 +135,37 @@
   {{- $fourthOctet := index $octets "_3" | int -}}
   {{- $ipRange := 65536 }}
 
-  {{- if $cidrRange == 24 }}
-    {{- $ipRange := 256 }}
+  {{- if eq $cidrRange 24 }}
+    {{- $ipRange = 256 }}
   {{- end }}
 
-  {{- if $cidrRange == 23 }}
-    {{- $ipRange := 512 }}
-  {{- end }}
-  {{- if $cidrRange == 22 }}
-    {{- $ipRange := 1024 }}
-  {{- end }}
-  {{- if $cidrRange == 21 }}
-    {{- $ipRange := 2048 }}
-  {{- end }}
-  {{- if $cidrRange == 20 }}
-    {{- $ipRange := 4096 }}
-  {{- end }}
-  {{- if $cidrRange == 19 }}
-    {{- $ipRange := 8192 }}
-  {{- end }}
-  {{- if $cidrRange == 18 }}
-    {{- $ipRange := 16384 }}
-  {{- end }}
-  {{- if $cidrRange == 17 }}
-    {{- $ipRange := 32768 }}
+  {{- if eq $cidrRange 23 }}
+    {{- $ipRange = 512 }}
   {{- end }}
 
+  {{- if eq $cidrRange 22 }}
+    {{- $ipRange = 1024 }}
+  {{- end }}
+
+  {{- if eq $cidrRange 21 }}
+    {{- $ipRange = 2048 }}
+  {{- end }}
+
+  {{- if eq $cidrRange 20 }}
+    {{- $ipRange = 4096 }}
+  {{- end }}
+
+  {{- if eq $cidrRange 19 }}
+    {{- $ipRange = 8192 }}
+  {{- end }}
+
+  {{- if eq $cidrRange 18 }}
+    {{- $ipRange = 16384 }}
+  {{- end }}
+
+  {{- if eq $cidrRange 17 }}
+    {{- $ipRange = 32768 }}
+  {{- end }}
   {{- $ipSuffix := add $startIp (mod $conversion $ipRange) -}}
 
   {{- $thirdOctet := add $thirdOctet (div $ipSuffix 256) -}}
