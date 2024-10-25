@@ -133,8 +133,33 @@
   {{- $secondOctet := index $octets "_1" | int -}}
   {{- $thirdOctet := index $octets "_2" | int -}}
   {{- $fourthOctet := index $octets "_3" | int -}}
+  {{- $ipRange := 65536 }}
 
-  {{- $ipRange := (2 | mul (sub 32 $cidrRange)) | int -}}  
+  {{- if cidrRange == 24 }}
+    {{- $ipRange := 256 }}
+  {{- end }}
+
+  {{- if cidrRange == 23 }}
+    {{- $ipRange := 512 }}
+  {{- end }}
+  {{- if cidrRange == 22 }}
+    {{- $ipRange := 1024 }}
+  {{- end }}
+  {{- if cidrRange == 21 }}
+    {{- $ipRange := 2048 }}
+  {{- end }}
+  {{- if cidrRange == 20 }}
+    {{- $ipRange := 4096 }}
+  {{- end }}
+  {{- if cidrRange == 19 }}
+    {{- $ipRange := 8192 }}
+  {{- end }}
+  {{- if cidrRange == 18 }}
+    {{- $ipRange := 16384 }}
+  {{- end }}
+  {{- if cidrRange == 17 }}
+    {{- $ipRange := 32768 }}
+  {{- end }}
 
   {{- $ipSuffix := add $startIp (mod $conversion $ipRange) -}}
 
