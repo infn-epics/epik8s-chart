@@ -26,35 +26,6 @@
   {{- end }}
   {{- end}}
 
-{{- define "pvaiocnames" -}}
-{{- $list := .Values.epicsConfiguration.iocs }}
-{{- $commaSeparatedString := "" }}
-
-{{- range $index, $element := $list }}
-  {{- if $element.disable }}
-  {{- else }}
-  {{- if $element.pva }}
-    {{- if $element.host }}
-      {{- if $element.pva_server_port }}
-        {{- $portAsString := int $element.pva_server_port }}
-
-        {{- $commaSeparatedString = printf "%s:%d %s" $element.host $portAsString $commaSeparatedString }}
-      {{- else }}
-        {{- $commaSeparatedString = printf "%s %s" $element.host $commaSeparatedString }}
-      {{- end}}
-    {{- else }}
-      {{- if $element.pva_server_port }}
-        {{- $portAsString := int $element.pva_server_port }}
-
-        {{- $commaSeparatedString = printf "%s.%s.svc:%d %s" $element.name $.Values.namespace $portAsString $commaSeparatedString }}
-      {{- else }}
-        {{- $commaSeparatedString = printf "%s.%s.svc %s" $element.name $.Values.namespace $commaSeparatedString }}
-      {{- end }}
-    {{- end }}
-  {{- end}}
-
-  {{- end}}
-
   {{- if ne $index (sub (len $list) 1) }}
     {{- $commaSeparatedString = printf "%s " $commaSeparatedString }}
   {{- end }} 
@@ -64,6 +35,44 @@
 {{- end }}
 
 
+{{- define "pvaiocnames" -}}
+{{- $list := .Values.epicsConfiguration.iocs }}
+{{- $commaSeparatedString := "" }}
+
+{{- range $index, $element := $list }}
+  {{- if $element.disable }}
+  {{- else }}
+  {{- if $element.pva }}
+
+    {{- if $element.host }}
+      {{- if $element.ca_server_port }}
+        {{- $portAsString := int $element.ca_server_port }}
+
+        {{- $commaSeparatedString = printf "%s:%d %s" $element.host $portAsString $commaSeparatedString }}
+      {{- else }}
+        {{- $commaSeparatedString = printf "%s %s" $element.host $commaSeparatedString }}
+      {{- end}}
+    {{- else }}
+      {{- if $element.ca_server_port }}
+        {{- $portAsString := int $element.ca_server_port }}
+
+        {{- $commaSeparatedString = printf "%s.%s.svc:%d %s" $element.name $.Values.namespace $portAsString $commaSeparatedString }}
+      {{- else }}
+        {{- $commaSeparatedString = printf "%s.%s.svc %s" $element.name $.Values.namespace $commaSeparatedString }}
+      {{- end }}
+    {{- end }}
+    {{- end}}
+
+    {{- if ne $index (sub (len $list) 1) }}
+      {{- $commaSeparatedString = printf "%s " $commaSeparatedString }}
+    {{- end }}
+  {{- end }}
+
+{{- end }}
+
+
+{{- $commaSeparatedString }}
+{{- end }}
 
 {{- define "gateway-service" -}}
 {{- if hasKey .Values.epicsConfiguration.services "gateway" }}
