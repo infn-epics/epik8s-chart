@@ -31,7 +31,7 @@
   {{- end }} 
 {{- end }}
 
-{{- $commaSeparatedString }}
+{{- trim $commaSeparatedString }}
 {{- end }}
 
 
@@ -40,39 +40,28 @@
 {{- $commaSeparatedString := "" }}
 
 {{- range $index, $element := $list }}
-  {{- if $element.disable }}
-  {{- else }}
-  {{- if $element.pva }}
-
+  {{- if and (not $element.disable) $element.pva }}
     {{- if $element.host }}
-      {{- if $element.ca_server_port }}
-        {{- $portAsString := int $element.ca_server_port }}
-
-        {{- $commaSeparatedString = printf "%s:%d %s" $element.host $portAsString $commaSeparatedString }}
+      {{- if $element.pva_server_port }}
+        {{- $portAsString := int $element.pva_server_port }}
+        {{- $commaSeparatedString = printf "%s %s:%d" $commaSeparatedString $element.host $portAsString }}
       {{- else }}
-        {{- $commaSeparatedString = printf "%s %s" $element.host $commaSeparatedString }}
-      {{- end}}
+        {{- $commaSeparatedString = printf "%s %s" $commaSeparatedString $element.host }}
+      {{- end }}
     {{- else }}
-      {{- if $element.ca_server_port }}
-        {{- $portAsString := int $element.ca_server_port }}
-
-        {{- $commaSeparatedString = printf "%s.%s.svc:%d %s" $element.name $.Values.namespace $portAsString $commaSeparatedString }}
+      {{- if $element.pva_server_port }}
+        {{- $portAsString := int $element.pva_server_port }}
+        {{- $commaSeparatedString = printf "%s %s.%s.svc:%d" $commaSeparatedString $element.name $.Values.namespace $portAsString }}
       {{- else }}
-        {{- $commaSeparatedString = printf "%s.%s.svc %s" $element.name $.Values.namespace $commaSeparatedString }}
+        {{- $commaSeparatedString = printf "%s %s.%s.svc" $commaSeparatedString $element.name $.Values.namespace }}
       {{- end }}
     {{- end }}
-    {{- end}}
-
-    {{- if ne $index (sub (len $list) 1) }}
-      {{- $commaSeparatedString = printf "%s " $commaSeparatedString }}
-    {{- end }}
   {{- end }}
-
 {{- end }}
 
-
-{{- $commaSeparatedString }}
+{{- trim $commaSeparatedString -}}
 {{- end }}
+
 
 {{- define "gateway-service" -}}
 {{- if hasKey .Values.epicsConfiguration.services "gateway" }}
