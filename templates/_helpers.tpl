@@ -26,7 +26,7 @@
   {{- end }}
   {{- end}}
 
-  {{- define "pvaiocnames" -}}
+{{- define "pvaiocnames" -}}
 {{- $list := .Values.epicsConfiguration.iocs }}
 {{- $commaSeparatedString := "" }}
 
