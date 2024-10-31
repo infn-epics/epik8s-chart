@@ -193,6 +193,31 @@
   {{- if eq $cidrRange 17 }}
     {{- $ipRange = 32768 }}
   {{- end }}
+
+  {{- if eq $cidrRange 16 }}
+    {{- $ipRange = 65536 }}
+  {{- end }}
+
+  {{- if eq $cidrRange 15 }}
+    {{- $ipRange = 131072 }}
+  {{- end }}
+
+  {{- if eq $cidrRange 15 }}
+    {{- $ipRange = 262144 }}
+  {{- end }}
+
+  {{- if eq $cidrRange 14 }}
+    {{- $ipRange = 524288 }}
+  {{- end }}
+
+  {{- if eq $cidrRange 13 }}
+    {{- $ipRange = 1048576 }}
+  {{- end }}
+
+  {{- if le $cidrRange 12 }}
+    {{- $ipRange = 2097152 }}
+  {{- end }}
+  
   {{- $ipSuffix := add $startIp (mod $conversion $ipRange) -}}
 
   {{- $thirdOctet := add $thirdOctet (div $ipSuffix 256) -}}
