@@ -234,14 +234,14 @@
   {{- $conversion := atoi (adler32sum $name) -}}
 
   {{- $baseIpParts := split "/" $baseIpWithCIDR -}}
-  {{- $baseIp := index $baseIpParts 0 -}}
-  {{- $cidrRange := index $baseIpParts 1 | int -}}
+  {{- $baseIp := index $baseIpParts "_0" -}}
+  {{- $cidrRange := index $baseIpParts "_1" | int -}}
 
   {{- $octets := split "." $baseIp -}}
-  {{- $firstOctet := index $octets 0 | int -}}
-  {{- $secondOctet := index $octets 1 | int -}}
-  {{- $thirdOctet := index $octets 2 | int -}}
-  {{- $fourthOctet := index $octets 3 | int -}}
+  {{- $firstOctet := index $octets "_0" | int -}}
+  {{- $secondOctet := index $octets "_1" | int -}}
+  {{- $thirdOctet := index $octets "_2" | int -}}
+  {{- $fourthOctet := index $octets "_3" | int -}}
   {{- $ipRange := 65536 }}
 
   {{- if eq $cidrRange 24 }}
