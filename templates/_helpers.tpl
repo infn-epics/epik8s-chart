@@ -132,191 +132,12 @@
 {{- end }}
 {{- end }}
 
-{{- define "allocateIpFromNames" -}}
-  {{- $name := printf "%s.%s" .name .namespace -}}  # Use name and namespace from the parameters
-
-  {{- $baseIpWithCIDR := .baseIp -}}  # base IP in CIDR notation, e.g., "10.152.182.0/23"
-
-  {{- $startIp := .startIp | int -}}  # Starting IP offset
-  {{- $conversion := atoi (adler32sum $name) -}}
-  {{- $baseIpParts := split "/" $baseIpWithCIDR -}}
-  {{- printf "baseIpParts: %s %s %s \n" $baseIpParts (index $baseIpParts "_0") (index $baseIpParts "_1")}}
-  
-
-{{- end}}
-{{- define "allocateIpFromNamewrong" -}}
-  {{- $name := printf "%s.%s" .name .namespace -}}
-  {{- $baseIpWithCIDR := .baseIp -}}  
-
-  {{- $startIp := .startIp | int -}}  
-  {{- $conversion := atoi (adler32sum $name) -}}
-
-  {{- $baseIpParts := split "/" $baseIpWithCIDR -}}
-  {{- $baseIp := index $baseIpParts "_0" -}}   
-  {{- $cidrRange := index $baseIpParts "_1" | int -}}  
-
-  {{- $octets := split "." $baseIp -}}
-  {{- $firstOctet := index $octets "_0" | int -}}
-  {{- $secondOctet := index $octets "_1" | int -}}
-  {{- $thirdOctet := index $octets "_2" | int -}}
-  {{- $fourthOctet := index $octets "_3" | int -}}
-  {{- $ipRange := 65536 }}
-
-  {{- if eq $cidrRange 24 }}
-    {{- $ipRange = 256 }}
-  {{- end }}
-
-  {{- if eq $cidrRange 23 }}
-    {{- $ipRange = 512 }}
-  {{- end }}
-
-  {{- if eq $cidrRange 22 }}
-    {{- $ipRange = 1024 }}
-  {{- end }}
-
-  {{- if eq $cidrRange 21 }}
-    {{- $ipRange = 2048 }}
-  {{- end }}
-
-  {{- if eq $cidrRange 20 }}
-    {{- $ipRange = 4096 }}
-  {{- end }}
-
-  {{- if eq $cidrRange 19 }}
-    {{- $ipRange = 8192 }}
-  {{- end }}
-
-  {{- if eq $cidrRange 18 }}
-    {{- $ipRange = 16384 }}
-  {{- end }}
-
-  {{- if eq $cidrRange 17 }}
-    {{- $ipRange = 32768 }}
-  {{- end }}
-
-  {{- if eq $cidrRange 16 }}
-    {{- $ipRange = 65536 }}
-  {{- end }}
-
-  {{- if eq $cidrRange 15 }}
-    {{- $ipRange = 131072 }}
-  {{- end }}
-
-  {{- if eq $cidrRange 15 }}
-    {{- $ipRange = 262144 }}
-  {{- end }}
-
-  {{- if eq $cidrRange 14 }}
-    {{- $ipRange = 524288 }}
-  {{- end }}
-
-  {{- if eq $cidrRange 13 }}
-    {{- $ipRange = 1048576 }}
-  {{- end }}
-
-  {{- if le $cidrRange 12 }}
-    {{- $ipRange = 2097152 }}
-  {{- end }}
-  
-  {{- $ipSuffix := add $startIp (mod $conversion $ipRange) -}}
-
-  {{- $thirdOctet := add $thirdOctet (div $ipSuffix 256) -}}
-  {{- $fourthOctet := mod $ipSuffix 256 -}}
-
-  {{- printf "%d.%d.%d.%d" $firstOctet $secondOctet $thirdOctet $fourthOctet -}}
-{{- end -}}
-
-{{- define "allocateIpFromNameold" -}}
-  {{- $name := printf "%s.%s" .name .namespace -}}
-  {{- $baseIpWithCIDR := .baseIp -}}
-
-  {{- $startIp := .startIp | int -}}
-  {{- $conversion := atoi (adler32sum $name) -}}
-
-  {{- $baseIpParts := split "/" $baseIpWithCIDR -}}
-  {{- $baseIp := index $baseIpParts "_0" -}}
-  {{- $cidrRange := index $baseIpParts "_1" | int -}}
-
-  {{- $octets := split "." $baseIp -}}
-  {{- $firstOctet := index $octets "_0" | int -}}
-  {{- $secondOctet := index $octets "_1" | int -}}
-  {{- $thirdOctet := index $octets "_2" | int -}}
-  {{- $fourthOctet := index $octets "_3" | int -}}
-  {{- $ipRange := 65536 }}
-
-  {{- if eq $cidrRange 24 }}
-    {{- $ipRange = 256 }}
-  {{- end }}
-
-  {{- if eq $cidrRange 23 }}
-    {{- $ipRange = 512 }}
-  {{- end }}
-
-  {{- if eq $cidrRange 22 }}
-    {{- $ipRange = 1024 }}
-  {{- end }}
-
-  {{- if eq $cidrRange 21 }}
-    {{- $ipRange = 2048 }}
-  {{- end }}
-
-  {{- if eq $cidrRange 20 }}
-    {{- $ipRange = 4096 }}
-  {{- end }}
-
-  {{- if eq $cidrRange 19 }}
-    {{- $ipRange = 8192 }}
-  {{- end }}
-
-  {{- if eq $cidrRange 18 }}
-    {{- $ipRange = 16384 }}
-  {{- end }}
-
-  {{- if eq $cidrRange 17 }}
-    {{- $ipRange = 32768 }}
-  {{- end }}
-
-  {{- if eq $cidrRange 16 }}
-    {{- $ipRange = 65536 }}
-  {{- end }}
-
-  {{- if eq $cidrRange 15 }}
-    {{- $ipRange = 131072 }}
-  {{- end }}
-
-  {{- if eq $cidrRange 14 }}
-    {{- $ipRange = 262144 }}
-  {{- end }}
-
-  {{- if eq $cidrRange 13 }}
-    {{- $ipRange = 524288 }}
-  {{- end }}
-
-  {{- if le $cidrRange 12 }}
-    {{- $ipRange = 2097152 }}
-  {{- end }}
-
-  {{- $ipRange = sub $ipRange $firstOctet -}}
-  {{- $ipRange = sub $ipRange (mul $secondOcted 256) -}}
-  {{- $ipRange = sub $ipRange (mul $thirdOctet 65536) -}}
-
-
-  {{- $ipSuffix := add $startIp (mod $conversion $ipRange) -}}
-
-  {{- $secondOctet := add $secondOctet (div $ipSuffix 65536) -}}
-  {{- $ipSuffix = mod $ipSuffix 65536 -}}
-  {{- $thirdOctet := add $thirdOctet (div $ipSuffix 256) -}}
-  {{- $fourthOctet := mod $ipSuffix 256 -}}
-
-  {{- printf "%d.%d.%d.%d" $firstOctet $secondOctet $thirdOctet $fourthOctet -}}
-{{- end -}}
-
 
 
 {{- define "allocateIpFromName" -}}
   {{- $name := printf "%s.%s" .name .namespace -}}
   {{- $baseIpWithCIDR := .baseIp -}}
-  
+
   {{- $startIp := .startIp | int -}}
   {{- $conversion := atoi (adler32sum $name) -}}
 
@@ -330,8 +151,10 @@
   {{- $thirdOctet := index $octets "_2" | int -}}
   {{- $fourthOctet := index $octets "_3" | int -}}
 
+
   {{- $totalIps := 1 }}
-  {{- range $i := until (sub 32 $cidrRange) }}
+  {{- $loopcnt:= sub 32 $cidrRange -}}
+  {{- range $i,$k := until ($loopcnt | int) }}
     {{- $totalIps = mul $totalIps 2 }}
   {{- end }}
 
@@ -355,3 +178,32 @@
 
   {{- printf "%d.%d.%d.%d" $firstOctet $secondOctet $thirdOctet $fourthOctet -}}
 {{- end -}}
+
+
+{{- define "allocateIpFromNames" -}}
+  {{- $name := printf "%s.%s" .name .namespace -}}
+  {{- $baseIpWithCIDR := .baseIp -}}
+
+  {{- $startIp := .startIp | int -}}
+  {{- $conversion := atoi (adler32sum $name) -}}
+
+  {{- $baseIpParts := split "/" $baseIpWithCIDR -}}
+  {{- $baseIp := index $baseIpParts "_0" -}}
+  {{- $cidrRange := index $baseIpParts "_1" | int -}}
+
+  {{- $octets := split "." $baseIp -}}
+  {{- $firstOctet := index $octets "_0" | int -}}
+  {{- $secondOctet := index $octets "_1" | int -}}
+  {{- $thirdOctet := index $octets "_2" | int -}}
+  {{- $fourthOctet := index $octets "_3" | int -}}
+
+  {{- $totalIps := 1 }}
+  {{- $loopcnt:= sub 32 $cidrRange -}}
+  {{- range $i,$k := until ($loopcnt | int) }}
+    {{- $totalIps = mul $totalIps 2 }}
+  {{- end }}
+  {{- printf "CIDR %d IPs %d" $cidrRange $totalIps -}}
+
+
+{{- end -}}
+
