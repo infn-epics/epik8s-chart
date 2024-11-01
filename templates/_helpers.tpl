@@ -144,7 +144,7 @@
   
 
 {{- end}}
-{{- define "allocateIpFromName" -}}
+{{- define "allocateIpFromNamewrong" -}}
   {{- $name := printf "%s.%s" .name .namespace -}}
   {{- $baseIpWithCIDR := .baseIp -}}  
 
@@ -225,4 +225,85 @@
 
   {{- printf "%d.%d.%d.%d" $firstOctet $secondOctet $thirdOctet $fourthOctet -}}
 {{- end -}}
+
+{{- define "allocateIpFromName" -}}
+  {{- $name := printf "%s.%s" .name .namespace -}}
+  {{- $baseIpWithCIDR := .baseIp -}}
+
+  {{- $startIp := .startIp | int -}}
+  {{- $conversion := atoi (adler32sum $name) -}}
+
+  {{- $baseIpParts := split "/" $baseIpWithCIDR -}}
+  {{- $baseIp := index $baseIpParts 0 -}}
+  {{- $cidrRange := index $baseIpParts 1 | int -}}
+
+  {{- $octets := split "." $baseIp -}}
+  {{- $firstOctet := index $octets 0 | int -}}
+  {{- $secondOctet := index $octets 1 | int -}}
+  {{- $thirdOctet := index $octets 2 | int -}}
+  {{- $fourthOctet := index $octets 3 | int -}}
+  {{- $ipRange := 65536 }}
+
+  {{- if eq $cidrRange 24 }}
+    {{- $ipRange = 256 }}
+  {{- end }}
+
+  {{- if eq $cidrRange 23 }}
+    {{- $ipRange = 512 }}
+  {{- end }}
+
+  {{- if eq $cidrRange 22 }}
+    {{- $ipRange = 1024 }}
+  {{- end }}
+
+  {{- if eq $cidrRange 21 }}
+    {{- $ipRange = 2048 }}
+  {{- end }}
+
+  {{- if eq $cidrRange 20 }}
+    {{- $ipRange = 4096 }}
+  {{- end }}
+
+  {{- if eq $cidrRange 19 }}
+    {{- $ipRange = 8192 }}
+  {{- end }}
+
+  {{- if eq $cidrRange 18 }}
+    {{- $ipRange = 16384 }}
+  {{- end }}
+
+  {{- if eq $cidrRange 17 }}
+    {{- $ipRange = 32768 }}
+  {{- end }}
+
+  {{- if eq $cidrRange 16 }}
+    {{- $ipRange = 65536 }}
+  {{- end }}
+
+  {{- if eq $cidrRange 15 }}
+    {{- $ipRange = 131072 }}
+  {{- end }}
+
+  {{- if eq $cidrRange 14 }}
+    {{- $ipRange = 262144 }}
+  {{- end }}
+
+  {{- if eq $cidrRange 13 }}
+    {{- $ipRange = 524288 }}
+  {{- end }}
+
+  {{- if le $cidrRange 12 }}
+    {{- $ipRange = 2097152 }}
+  {{- end }}
+
+  {{- $ipSuffix := add $startIp (mod $conversion $ipRange) -}}
+
+  {{- $secondOctet := add $secondOctet (div $ipSuffix 65536) -}}
+  {{- $ipSuffix = mod $ipSuffix 65536 -}}
+  {{- $thirdOctet := add $thirdOctet (div $ipSuffix 256) -}}
+  {{- $fourthOctet := mod $ipSuffix 256 -}}
+
+  {{- printf "%d.%d.%d.%d" $firstOctet $secondOctet $thirdOctet $fourthOctet -}}
+{{- end -}}
+
 
