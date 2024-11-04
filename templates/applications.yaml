@@ -50,7 +50,7 @@ spec:
           gitRepoConfig:
             url: {{$.Values.giturl}}
             {{- if .gitpath }}
-            path: {{.gitpath}}
+            path: config/applications/{{.gitpath}}
             {{- else }}
             path: config/applications/{{.name}}
             {{- end }}
