@@ -59,6 +59,11 @@ spec:
             {{- else }}
             branch: {{$.Values.gitrev}}
             {{- end }}
+            {{- if .token }}
+            token: {{.token}}
+            {{- else }}
+            token: {{$.Values.token}}
+            {{- end }}
           {{- end }}
           {{- if not .resources }}
           resources:

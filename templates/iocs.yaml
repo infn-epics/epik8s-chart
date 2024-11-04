@@ -77,6 +77,11 @@ spec:
             {{- else }}
             branch: {{$.Values.gitrev}}
             {{- end }}
+            {{- if .token }}
+            token: {{.token}}
+            {{- else }}
+            token: {{$.Values.token}}
+            {{- end }}
             {{- if .exec }}
             exec: {{.exec}}
             {{- end }} 
