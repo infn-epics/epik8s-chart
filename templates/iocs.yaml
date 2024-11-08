@@ -1,5 +1,5 @@
 {{- range .Values.epicsConfiguration.iocs }}
-## IOC  {{$.name | lower}}
+## IOC  {{.name | lower }}
 {{- if or ( not .disable) ( eq .disable false) }}
 apiVersion: argoproj.io/v1alpha1
 kind: Application
