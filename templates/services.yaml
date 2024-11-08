@@ -1,18 +1,18 @@
 {{- range $key, $value := .Values.epicsConfiguration.services }}
 {{- if or ( not $value.disable) ( eq $value.disable false) }}
 
-# Service {{$key}}
+# Service {{$key | lower}}
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: {{$.Values.beamline}}-{{ $key }}-service
+  name: {{$.Values.beamline}}-{{ $key | lower }}-service
   namespace: argocd
   labels:
     rootapp: {{ $.Chart.Name }}
     rootappver: {{ $.Chart.Version }}
     beamline: {{ $.Values.beamline | quote }}
     revision: {{$.Values.targetRevision}}
-    service: {{ $key}}
+    service: {{ $key | lower}}
 spec:
   project: default
   source:
@@ -28,7 +28,7 @@ spec:
     targetRevision: {{$.Values.targetRevision}}
     {{- end }}
     helm:
-      releaseName: {{ $key }}
+      releaseName: {{ $key | lower }}
       values: |
           {{- if $value.nfsMounts }}
           nfsMounts:
@@ -85,7 +85,7 @@ spec:
             className: {{$.Values.ingressClassName}}
             {{- end }}
             hosts:
-              - host: {{ printf "%s-%s.%s" $.Values.beamline $key $.Values.epik8namespace }}
+              - host: {{ printf "%s-%s.%s" $.Values.beamline ($key | lower) $.Values.epik8namespace }}
                 paths:
                   - path: /
                     pathType: Prefix
@@ -184,9 +184,9 @@ spec:
       value: "{{ $value.asset }}"
   {{- end }}
 
-## END {{$key}} 
+## END {{$key | lower}} 
 {{- else }}
-## not deplyed {{ $key }}
+## not deplyed {{ $key | lower }}
 {{- end }}
 
 ---

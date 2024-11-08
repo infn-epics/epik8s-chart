@@ -1,13 +1,13 @@
 {{- range .Values.cronjobs }}
-# Application {{ .name }}
+# Application {{ .name | lower }}
 {{- if or (not .disable) (eq .disable false) }}
 {{- if .gitRepoApp.url }}
 kind: PersistentVolumeClaim
 apiVersion: v1
 metadata:
-  name: {{ .name }}-cron-app
+  name: {{ .name | lower }}-cron-app
   labels:
-    app: {{ .name }}-cron-app
+    app: {{ .name | lower }}-cron-app
 spec:
   accessModes:
     - ReadWriteOnce
@@ -24,9 +24,9 @@ spec:
 kind: PersistentVolumeClaim
 apiVersion: v1
 metadata:
-  name: {{ .name }}-cron-config
+  name: {{ .name | lower }}-cron-config
   labels:
-    app: {{ .name }}-cron-config
+    app: {{ .name | lower }}-cron-config
 spec:
   accessModes:
     - ReadWriteOnce
@@ -41,7 +41,7 @@ spec:
 apiVersion: batch/v1
 kind: CronJob
 metadata:
-  name: {{ .name }}
+  name: {{ .name | lower }}
   labels:
     beamline: {{ $.Values.beamline }}
     revision: {{ $.Values.targetRevision }}
@@ -54,7 +54,7 @@ spec:
       template:
         metadata:
           labels:
-            app.kubernetes.io/name: {{ .name }}
+            app.kubernetes.io/name: {{ .name | lower }}
             beamline: {{ $.Values.beamline }}
             revision: {{ $.Values.targetRevision }}
         spec:
@@ -157,7 +157,7 @@ spec:
                   mountPath: /tmp
             {{- end }}
           containers:
-            - name: {{ .name }}
+            - name: {{ .name | lower }}
               image: "{{ .image }}"
               imagePullPolicy: IfNotPresent
               {{- if $.Values.epicsConfiguration.name }}
@@ -187,7 +187,7 @@ spec:
                   {{- end }}
               volumeMounts:
                 {{- range $.Values.nfsMounts }}
-                - name: {{ .name }}
+                - name: {{ .name | lower }}
                   mountPath: {{ .mountPath }}
                 {{- end }}
                 {{- if .gitRepoApp.url }}
@@ -217,22 +217,22 @@ spec:
                 {{- end }}
           volumes:
             {{- range $.Values.nfsMounts }}
-            - name: {{ .name }}
+            - name: {{ .name | lower }}
               nfs:
                 server: {{ .server }}
                 path: {{ .path }}
             {{- end }}
             - name: config-volume
               persistentVolumeClaim:
-                claimName: {{ .name }}-cron-config
+                claimName: {{ .name | lower }}-cron-config
             {{- if .gitRepoApp.url }}
             - name: app-volume
               persistentVolumeClaim:
-                claimName: {{ .name }}-cron-app
+                claimName: {{ .name | lower }}-cron-app
             {{- end }}
-## END {{ .name }}
+## END {{ .name | lower }}
 {{- else }}
-## not deployed {{ .name }}
+## not deployed {{ .name | lower }}
 {{- end }}
 ---
 {{- end }}

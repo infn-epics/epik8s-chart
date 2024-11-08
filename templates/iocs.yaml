@@ -1,17 +1,17 @@
 {{- range .Values.epicsConfiguration.iocs }}
-## IOC  {{$.name}}
+## IOC  {{$.name | lower}}
 {{- if or ( not .disable) ( eq .disable false) }}
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: {{$.Values.beamline}}-{{.name}}-ioc
+  name: {{$.Values.beamline}}-{{.name | lower}}-ioc
   namespace: argocd
   labels:
     rootapp: {{ $.Chart.Name }}
     rootappver: {{ $.Chart.Version }}
     beamline: {{ $.Values.beamline | quote }}
     revision: {{$.Values.targetRevision}}
-    iocname: {{.name}}
+    iocname: {{.name | lower}}
     {{- if .host }}
     iochost: {{.host}}
     {{- end }}
@@ -28,7 +28,7 @@ spec:
     targetRevision: {{$.Values.targetRevision}}
     {{- end }}
     helm:
-      releaseName: {{ .name }}
+      releaseName: {{ .name | lower }}
       values: |
           {{- toYaml . | nindent 10 }}
           {{- if .nfsMounts }}
@@ -42,7 +42,7 @@ spec:
           {{- end}}
 
           beamline: {{ $.Values.beamline | quote }}
-          iocname: "{{ .name }}"
+          iocname: "{{ .name | lower }}"
 
           {{- if $.Values.baseIp }}
           staticIP: {{ include "allocateIpFromName" (dict "name" .name "namespace" $.Values.namespace "baseIp" $.Values.baseIp "startIp" $.Values.startIp) }}
@@ -141,7 +141,7 @@ spec:
       value: "{{.iocname}}"
     {{- else }}
     - name: iocname
-      value: "{{.name}}"
+      value: "{{.name | lower}}"
     {{- end}}
     {{- if .iocprefix }}
     - name: iocprefix
@@ -176,9 +176,9 @@ spec:
     - name: group
       value: "{{ .devgroup }}"
     {{- end }}
-## END  {{ .name}}
+## END  {{ .name | lower}}
 {{- else }}
-## not deployed {{ .name }}
+## not deployed {{ .name | lower }}
 {{- end }}
 
 ---

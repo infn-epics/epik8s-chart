@@ -1,11 +1,11 @@
 {{- range .Values.applications }}
-# Application {{.name}}
+# Application {{.name | lower}}
 {{- if or ( not .disable) ( eq .disable false) }}
 
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: {{$.Values.beamline}}-{{.name}}-application
+  name: {{$.Values.beamline}}-{{.name | lower}}-application
   namespace: argocd
   labels:
     rootapp: {{ $.Chart.Name }}
@@ -18,7 +18,7 @@ metadata:
     {{- if and .gitRepoConfig .gitRepoConfig.url .gitRepoConfig.branch }}
     configrevison: "{{.gitRepoConfig.branch}}"
     {{- end }}
-    application: {{.name}}
+    application: {{.name | lower}}
 
 spec:
   project: default
@@ -27,7 +27,7 @@ spec:
     path: .
     targetRevision:  {{ $.Values.targetRevision }}
     helm:
-      releaseName: {{ .name }}
+      releaseName: {{ .name | lower }}
       values: |
           http_proxy: {{ $.Values.http_proxy | quote }}
           https_proxy: {{ $.Values.https_proxy | quote }}
@@ -103,9 +103,9 @@ spec:
     - name: asset
       value: "{{ .asset }}"
   {{- end }}
-## END {{.name}}
+## END {{.name | lower}}
 {{- else }}
-## not deplyed {{ .name }}
+## not deplyed {{ .name | lower }}
 {{- end }}
 ---
 {{- end }}
