@@ -8,6 +8,8 @@ metadata:
   name: {{ .name | lower }}-cron-app
   labels:
     app: {{ .name | lower }}-cron-app
+    type: "cronjob"
+    beamline: {{ $.Values.beamline }}
 spec:
   accessModes:
     - ReadWriteOnce

@@ -13,6 +13,7 @@ metadata:
     beamline: {{ $.Values.beamline | quote }}
     revision: {{$.Values.targetRevision}}
     service: {{ $key | lower}}
+    type: "service"
 spec:
   project: default
   source:

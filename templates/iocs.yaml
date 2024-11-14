@@ -12,6 +12,7 @@ metadata:
     beamline: {{ $.Values.beamline | quote }}
     revision: {{$.Values.targetRevision}}
     iocname: {{.name | lower}}
+    type: "ioc"
     {{- if .host }}
     iochost: {{.host}}
     {{- end }}

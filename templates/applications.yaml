@@ -12,6 +12,8 @@ metadata:
     rootappver: {{ $.Chart.Version }}
     beamline: {{ $.Values.beamline | quote }}
     revision: {{$.Values.targetRevision}}
+    type: "application"
+
     {{- if and .gitRepoApp .gitRepoApp.branch}}
     apprevison: "{{.gitRepoApp.branch}}"
     {{- end }}
