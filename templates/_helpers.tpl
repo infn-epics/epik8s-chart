@@ -65,7 +65,7 @@
 
 {{- define "gateway-service" -}}
 {{- if hasKey .Values.epicsConfiguration.services "gateway" }}
-{{- printf "gateway.%s" .Values.namespace }}
+{{- printf "gateway.%s.svc" .Values.namespace }}
 {{- end }}
 {{- end }}
 
