@@ -177,7 +177,8 @@
 {{- $commaSeparatedString := "" }}
 
 {{- range $index, $element := $list }}
-  {{- $staticip := include "allocateIpFromName" (dict "name" $element.name "namespace" $.Values.namespace "baseIp" $.Values.staticIpBase "startIp" $.Values.staticIpStart) -}}  {{- if $element.disable }}
+  {{- $staticip := include "allocateIpFromName" (dict "name" $element.name "namespace" $.Values.namespace "baseIp" $.Values.baseIp "startIp" $.Values.startIp) -}}
+  {{- if $element.disable }}
   {{- else }}
   {{- if $element.host }}
     {{- if $element.ca_server_port }}
