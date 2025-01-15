@@ -171,69 +171,13 @@
 
 {{- end -}}
 
+
 {{- define "iocnames" -}}
 {{- $list := .Values.epicsConfiguration.iocs }}
 {{- $commaSeparatedString := "" }}
 
 {{- range $index, $element := $list }}
-
-  {{- $staticip:= include allocateIpFromName (dict "name" $element.name "namespace" $.Values.namespace "baseIp" $.Values.staticIpBase "startIp" $.Values.staticIpStart) -}}
-  {{- if $element.disable }}
-  {{- else }}
-  {{- if $element.host }}
-    {{- if $element.ioc_server_port }}
-      {{- $portAsString := int $element.ioc_server_port }}
-
-      {{- $commaSeparatedString = printf "%s:%d %s" $element.host $portAsString $commaSeparatedString }}
-    {{- else }}
-      {{- $commaSeparatedString = printf "%s %s" $element.host $commaSeparatedString }}
-    {{- end}}
-  {{- else }}
-    {{- if $element.ioc_server_port }}
-      {{- $portAsString := int $element.ioc_server_port }}
-
-      {{- $commaSeparatedString = printf "%s.%s.svc:%d %s" $element.name $.Values.namespace $portAsString $commaSeparatedString }}
-    {{- else }}
-      {{- $commaSeparatedString = printf "%s.%s.svc %s" $element.name $.Values.namespace $commaSeparatedString }}
-    {{- end }}
-  {{- end }}
-  {{- end}}
-
-  {{- if ne $index (sub (len $list) 1) }}
-    {{- $commaSeparatedString = printf "%s " $commaSeparatedString }}
-  {{- end }}
-  {{- if $element.disable }}
-  {{- else }}
-  {{- if $element.host }}
-    {{- if $element.ioc_server_port }}
-      {{- $portAsString := int $element.ioc_server_port }}
-
-      {{- $commaSeparatedString = printf "%s:%d %s" $element.host $portAsString $commaSeparatedString }}
-    {{- else }}
-      {{- $commaSeparatedString = printf "%s %s" $element.host $commaSeparatedString }}
-    {{- end}}
-  {{- else }}
-    {{- if $element.ioc_server_port }}
-      {{- $portAsString := int $element.ioc_server_port }}
-
-      {{- $commaSeparatedString = printf "%s.%s.svc:%d %s" $element.name $.Values.namespace $portAsString $commaSeparatedString }}
-    {{- else }}
-      
-      {{- $commaSeparatedString = printf "%s.%s.svc %s" $element.name $.Values.namespace $commaSeparatedString }}
-    {{- end }}
-  {{- end }}
-  {{- end}}
-
-  {{- if ne $index (sub (len $list) 1) }}
-    {{- $commaSeparatedString = printf "%s " $commaSeparatedString }}
-  {{- end }} 
-{{- end }}
-
-{{- trim $commaSeparatedString }}
-{{- end }}
-
-{{- range $index, $element := $list }}
-  {{- if $element.disable }}
+  {{- $staticip := include "allocateIpFromName" (dict "name" $element.name "namespace" $.Values.namespace "baseIp" $.Values.staticIpBase "startIp" $.Values.staticIpStart) -}}  {{- if $element.disable }}
   {{- else }}
   {{- if $element.host }}
     {{- if $element.ca_server_port }}
@@ -249,7 +193,7 @@
 
       {{- $commaSeparatedString = printf "%s.%s.svc:%d %s" $element.name $.Values.namespace $portAsString $commaSeparatedString }}
     {{- else }}
-      {{- $commaSeparatedString = printf "%s.%s.svc %s" $element.name $.Values.namespace $commaSeparatedString }}
+      {{- $commaSeparatedString = printf "%s %s" $staticip $commaSeparatedString }}
     {{- end }}
   {{- end }}
   {{- end}}
