@@ -40,7 +40,7 @@ spec:
           {{- if $.Values.epicsConfiguration.name }}
           epicsConfiguration:
             name: {{ $.Values.epicsConfiguration.name | quote}}
-            gateway: gateway.{{ $.Values.namespace }}
+            gateway: gateway.{{ $.Values.namespace }}.svc
           {{- end }}
           
           {{- if and $.Values.baseIp .staticIp }}

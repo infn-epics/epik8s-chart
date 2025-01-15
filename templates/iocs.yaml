@@ -57,8 +57,8 @@ spec:
           {{- if $.Values.epicsConfiguration.name }}
           epicsConfiguration:
             name: {{ $.Values.epicsConfiguration.name | quote}}
-            {{- if .usegateway -}}
-            gateway: gateway.{{ $.Values.namespace }}
+            {{- if .usegateway }}
+            gateway: gateway.{{ $.Values.namespace }}.svc
             {{- end }}
           {{- end }}
           {{- if and (not $.Values.gitRepoConfig) (or .gitinit .gitpath .host)}}
