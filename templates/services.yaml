@@ -112,7 +112,7 @@ spec:
           epicsConfiguration:
             name: {{ $.Values.epicsConfiguration.name | quote}}
             {{- if $value.usegateway }}
-            gateway: gateway.{{ $.Values.namespace }}
+            gateway: gateway.{{ $.Values.namespace }}.svc
             {{- end }}
           {{- end }}
           {{- if $.Values.backend }}
