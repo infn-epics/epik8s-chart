@@ -4,21 +4,25 @@
 {{- $commaSeparatedString := "" }}
 
 {{- range $index, $element := $list }}
+
   {{- if and (not $element.disable) $element.pva }}
     {{- if $element.host }}
+      {{- $ips := 0 }}
       {{- if $element.networks }}
       {{- range $element.networks}}
         {{- if .ip }}
             {{- $commaSeparatedString = printf "%s %s" $commaSeparatedString .ip}}
+            {{- $ips := 1 }}
+
         {{- end}}
       {{- end}}
-      {{- end}}
-
+      {{- else }}
       {{- if $element.pva_server_port }}
         {{- $portAsString := int $element.pva_server_port }}
         {{- $commaSeparatedString = printf "%s %s.%s.svc" $commaSeparatedString $element.name $.Values.namespace}}
       {{- else }}
         {{- $commaSeparatedString = printf "%s %s.%s.svc" $commaSeparatedString $element.name $.Values.namespace}}
+      {{- end }}
       {{- end }}
     {{- else }}
       {{- if $element.pva_server_port }}
