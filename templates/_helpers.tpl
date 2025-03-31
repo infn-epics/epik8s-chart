@@ -8,9 +8,9 @@
     {{- if $element.host }}
       {{- if $element.pva_server_port }}
         {{- $portAsString := int $element.pva_server_port }}
-        {{- $commaSeparatedString = printf "%s %s:%d %s.%s.svc" $commaSeparatedString $element.host $portAsString $element.name $.Values.namespace}}
+        {{- $commaSeparatedString = printf "%s %s.%s.svc" $commaSeparatedString $element.name $.Values.namespace}}
       {{- else }}
-        {{- $commaSeparatedString = printf "%s %s %s.%s.svc" $commaSeparatedString $element.host $element.name $.Values.namespace}}
+        {{- $commaSeparatedString = printf "%s %s.%s.svc" $commaSeparatedString $element.name $.Values.namespace}}
       {{- end }}
     {{- else }}
       {{- if $element.pva_server_port }}
@@ -184,9 +184,9 @@
     {{- if $element.ca_server_port }}
       {{- $portAsString := int $element.ca_server_port }}
 
-      {{- $commaSeparatedString = printf "%s.%s.svc %s" $element.name $.Values.namespace $commaSeparatedString }}
+      {{- $commaSeparatedString = printf "%s:%d %s" $element.host $portAsString $commaSeparatedString }}
     {{- else }}
-      {{- $commaSeparatedString = printf "%s.%s.svc %s" $element.name $.Values.namespace $commaSeparatedString }}
+      {{- $commaSeparatedString = printf "%s %s" $element.host $commaSeparatedString }}
     {{- end}}
   {{- else }}
     {{- if $element.ca_server_port }}
