@@ -184,9 +184,9 @@
     {{- if $element.ca_server_port }}
       {{- $portAsString := int $element.ca_server_port }}
 
-      {{- $commaSeparatedString = printf "%s:%d %s.%s.svc %s" $element.host $portAsString $element.name $.Values.namespace $commaSeparatedString }}
+      {{- $commaSeparatedString = printf "%s.%s.svc %s" $element.name $.Values.namespace $commaSeparatedString }}
     {{- else }}
-      {{- $commaSeparatedString = printf "%s %s.%s.svc %s" $element.host $element.name $.Values.namespace $commaSeparatedString }}
+      {{- $commaSeparatedString = printf "%s.%s.svc %s" $element.name $.Values.namespace $commaSeparatedString }}
     {{- end}}
   {{- else }}
     {{- if $element.ca_server_port }}
