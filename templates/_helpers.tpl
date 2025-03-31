@@ -12,6 +12,7 @@
             {{- $commaSeparatedString = printf "%s %s" $commaSeparatedString .ip}}
         {{- end}}
       {{- end}}
+      {{- end}}
 
       {{- if $element.pva_server_port }}
         {{- $portAsString := int $element.pva_server_port }}
@@ -188,6 +189,13 @@
   {{- if $element.disable }}
   {{- else }}
   {{- if $element.host }}
+    {{- if $element.networks }}
+      {{- range $element.networks}}
+        {{- if .ip }}
+            {{- $commaSeparatedString = printf "%s %s" $commaSeparatedString .ip}}
+        {{- end}}
+      {{- end}}
+      {{- end}}
     {{- if $element.ca_server_port }}
       {{- $portAsString := int $element.ca_server_port }}
 
