@@ -6,6 +6,13 @@
 {{- range $index, $element := $list }}
   {{- if and (not $element.disable) $element.pva }}
     {{- if $element.host }}
+      {{- if $element.networks }}
+      {{- range $element.networks}}
+        {{- if .ip }}
+            {{- $commaSeparatedString = printf "%s %s" $commaSeparatedString .ip}}
+        {{- end}}
+      {{- end}}
+
       {{- if $element.pva_server_port }}
         {{- $portAsString := int $element.pva_server_port }}
         {{- $commaSeparatedString = printf "%s %s.%s.svc" $commaSeparatedString $element.name $.Values.namespace}}
