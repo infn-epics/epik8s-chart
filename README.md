@@ -1,4 +1,4 @@
-# Epik8 Chart
+# Epik8s Chart
 
 Deploy Epics stack through argoCD.
 
@@ -13,7 +13,7 @@ metadata:
 spec:
   project: default
   source:
-    repoURL: 'https://baltig.infn.it/epics-containers/epik8-chart.git'
+    repoURL: 'https://github.com/infn-epics/epik8s-chart.git'
     path: deploy
     targetRevision: HEAD
     helm:
