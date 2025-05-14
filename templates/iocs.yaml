@@ -52,7 +52,18 @@ spec:
           http_proxy: {{ $.Values.http_proxy | quote }}
           https_proxy: {{ $.Values.https_proxy | quote }}
           no_proxy: {{ $.Values.no_proxy | quote }}
-
+          {{- if .enable_ingress }}
+          ingress:
+            enabled: true
+            {{- if $.Values.ingressClassName }}
+            className: {{$.Values.ingressClassName}}
+            {{- end }}
+            hosts:
+              - host: {{ printf "%s-%s.%s" $.Values.beamline (.name | lower) $.Values.epik8namespace }}
+                paths:
+                  - path: /
+                    pathType: Prefix
+          {{- end}}
 
           {{- if $.Values.epicsConfiguration.name }}
           epicsConfiguration:
