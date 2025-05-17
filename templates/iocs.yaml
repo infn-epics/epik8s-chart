@@ -50,7 +50,7 @@ spec:
 
           {{- end }}
           {{- if $.Values.ssh_key_secret}}
-          ssh_key_secret:{{$.Values.ssh_key_secret}}
+          ssh_key_secret: {{$.Values.ssh_key_secret}}
           {{- end }}
           http_proxy: {{ $.Values.http_proxy | quote }}
           https_proxy: {{ $.Values.https_proxy | quote }}
