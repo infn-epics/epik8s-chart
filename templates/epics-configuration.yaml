@@ -84,7 +84,14 @@ data:
     org.csstudio.trends.databrowser3/urls=pbraw://{{- include "archiver-url" . }}/retrieval
     org.csstudio.trends.databrowser3/archives=pbraw://{{- include "archiver-url" . }}/retrieval
     {{- end }}
-
+  
+    {{- if .Values.email.smtp }}
+    org.phoebus.email/mailhost={{.Values.email.smtp.host}}
+    org.phoebus.email/mailport={{.Values.email.smtp.port}}
+    org.phoebus.email/username={{.Values.email.smtp.username}}
+    org.phoebus.email/password={{.Values.email.smtp.password}}
+    {{- end }}
+  
     {{- if .Values.epicsConfiguration.services.olog }}
     org.phoebus.olog.es.api/olog_url=http://{{- include "olog-url" . }}/Olog
     org.phoebus.olog.api/olog_url=http://{{- include "olog-url" . }}/Olog
