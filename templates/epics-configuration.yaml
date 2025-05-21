@@ -85,7 +85,7 @@ data:
     org.csstudio.trends.databrowser3/archives=pbraw://{{- include "archiver-url" . }}/retrieval
     {{- end }}
   
-    {{- if .Values.email.smtp }}
+    {{- if and (hasKey .Values "email") (hasKey .Values.email "smtp") }}
     org.phoebus.email/mailhost={{.Values.email.smtp.host}}
     org.phoebus.email/mailport={{.Values.email.smtp.port}}
     org.phoebus.email/username={{.Values.email.smtp.username}}
