@@ -20,17 +20,17 @@
       {{- else }}
       {{- if $element.pva_server_port }}
         {{- $portAsString := int $element.pva_server_port }}
-        {{- $commaSeparatedString = printf "%s %s.%s.svc" $commaSeparatedString $element.name $domain}}
+        {{- $commaSeparatedString = printf "%s:%d %s" $element.host $portAsString $commaSeparatedString }}
       {{- else }}
-        {{- $commaSeparatedString = printf "%s %s.%s.svc" $commaSeparatedString $element.name $domain}}
+        {{- $commaSeparatedString = printf "%s %s" $element.host $commaSeparatedString }}
       {{- end }}
       {{- end }}
     {{- else }}
       {{- if $element.pva_server_port }}
         {{- $portAsString := int $element.pva_server_port }}
-        {{- $commaSeparatedString = printf "%s %s.%s.svc:%d" $commaSeparatedString $element.name $domain $portAsString }}
+          {{- $commaSeparatedString = printf "%s.%s.svc:%d %s" $element.name $domain $portAsString $commaSeparatedString }}
       {{- else }}
-        {{- $commaSeparatedString = printf "%s %s.%s.svc" $commaSeparatedString $element.name $domain }}
+        {{- $commaSeparatedString = printf "%s.%s.svc %s" $element.name $domain $commaSeparatedString }}
       {{- end }}
     {{- end }}
   {{- end }}
