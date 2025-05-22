@@ -44,10 +44,10 @@ spec:
 
           beamline: {{ $.Values.beamline | quote }}
           iocname: "{{ .name | lower }}"
-
+          }}
+          
           {{- if $.Values.baseIp }}
           staticIP: {{ include "allocateIpFromName" (dict "name" .name "namespace" $.Values.namespace "baseIp" $.Values.baseIp "startIp" $.Values.startIp) }}
-
           {{- end }}
           {{- if $.Values.ssh_key_secret}}
           ssh_key_secret: {{$.Values.ssh_key_secret}}
