@@ -114,6 +114,9 @@ spec:
             {{- if $value.usegateway }}
             gateway: gateway.{{ $.Values.namespace }}.svc
             {{- end }}
+            ca_addr_list: {{ include "iocnames" $. }}
+            pva_addr_list: {{ include "pvaiocnames" $. }}
+            {{- if $value.address_list }}
           {{- end }}
           {{- if $.Values.backend }}
           {{- if and $.Values.backend.mongo $value.mongodb}}
