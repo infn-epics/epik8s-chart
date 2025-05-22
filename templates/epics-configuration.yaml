@@ -26,8 +26,6 @@ data:
   EPICS_CA_ADDR_LIST: "{{ .Values.epicsConfiguration.address_list }} {{ include "iocnames" (dict "domain" .Values.namespace "iocs" .Values.epicsConfiguration.iocs ) }}"
   EPICS_PVA_ADDR_LIST: "{{ include "pvaiocnames" (dict "domain" .Values.namespace "iocs" .Values.epicsConfiguration.iocs ) }}"
   EPICS_PVA_AUTO_ADDR_LIST: "NO"
-  EPICS_PVA_NAME_SERVERS: "{{ include "pvaiocnames" (dict "domain" .Values.namespace "iocs" .Values.epicsConfiguration.iocs ) }}"
-
   EPICS_CA_AUTO_ADDR_LIST: "NO"
   {{- if .Values.epicsConfiguration.conn_tmo}}
   EPICS_CA_CONN_TMO: "{{.Values.epicsConfiguration.conn_tmo}}"
