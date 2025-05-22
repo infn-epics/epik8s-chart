@@ -114,10 +114,12 @@ spec:
             {{- if $value.usegateway }}
             gateway: gateway.{{ $.Values.namespace }}.svc
             {{- end }}
-            ca_addr_list: {{ include "iocnames" . }}
-            pva_addr_list: {{ include "pvaiocnames" . }}
-            {{- if $value.address_list }}
+            ca_addr_list: "{{ include "iocnames"  (dict "iocs" $.Values.epicsConfiguration.iocs "domain" $.Values.namespace) }}"
+            pva_addr_list: "{{ include "pvaiocnames"  (dict "iocs" $.Values.epicsConfiguration.iocs "domain" $.Values.namespace) }}"
+
           {{- end }}
+  
+          
           {{- if $.Values.backend }}
           {{- if and $.Values.backend.mongo $value.mongodb}}
           mongo:
@@ -143,10 +145,6 @@ spec:
           {{- end }}
           {{- end }}
           
-
-
-          
-
       parameters:
         - name: beamline
           value: {{ $.Values.beamline | quote }}
@@ -183,7 +181,7 @@ spec:
     - name: message
       value: "{{ $value.info }}"
   {{- end }}
-  {{- if .asset }}
+  {{- if $value.asset }}
     - name: asset
       value: "{{ $value.asset }}"
   {{- end }}
