@@ -67,8 +67,10 @@ spec:
                   - path: /
                     pathType: Prefix
           {{- end}}
-          
-          pva: {{ .pva | default true }}
+          {{- if not (hasKey . "pva") }}
+          pva: true
+          {{- end }}
+
           
           {{- if $.Values.epicsConfiguration.name }}
           epicsConfiguration:
