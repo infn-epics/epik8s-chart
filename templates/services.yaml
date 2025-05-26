@@ -31,6 +31,7 @@ spec:
     helm:
       releaseName: {{ $key | lower }}
       values: |
+          svcname: {{ $key }}
           {{- if $value.nfsMounts }}
           nfsMounts:
           {{- toYaml $value.nfsMounts | nindent 10 }}
@@ -41,7 +42,9 @@ spec:
           {{- end}}
           {{- end}}
           {{- toYaml . | nindent 10 }}
-          
+          {{- if $.Values.epik8s_secrets}}
+          epik8s_secrets: {{$.Values.epik8s_secrets}}
+          {{- end }}
           {{- if and $.Values.baseIp $value.staticIp }}
           staticIP: {{ include "allocateIpFromName" (dict "name" $key "namespace" $.Values.namespace "baseIp" $.Values.baseIp "startIp" $.Values.startIp) }}
 
