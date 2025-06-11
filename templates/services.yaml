@@ -45,6 +45,7 @@ spec:
           {{- if $.Values.epik8s_secrets}}
           epik8s_secrets: {{$.Values.epik8s_secrets}}
           {{- end }}
+
           {{- if and $.Values.baseIp $value.staticIp }}
           staticIP: {{ include "allocateIpFromName" (dict "name" $key "namespace" $.Values.namespace "baseIp" $.Values.baseIp "startIp" $.Values.startIp) }}
 
@@ -52,7 +53,9 @@ spec:
           http_proxy: {{ $.Values.http_proxy | quote }}
           https_proxy: {{ $.Values.https_proxy | quote }}
           no_proxy: {{ $.Values.no_proxy | quote }}
-
+          {{- if $.Values.template }}
+          template: {{ $.Values.template | quote }}
+          {{- else }}
           {{- if and (not $.Values.gitRepoConfig) (or $value.gitinit $value.gitpath) }}
           gitRepoConfig:
             url: {{$.Values.giturl}}
@@ -74,6 +77,7 @@ spec:
             {{- if $value.exec }}
             exec: {{$value.exec}}
             {{- end }}  
+          {{- end }}
           {{- end }}
           {{- if $.Values.serviceAccountName }}
           serviceAccount:
