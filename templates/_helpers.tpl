@@ -6,7 +6,7 @@
 
 {{- range $index, $element := $list }}
 
-  {{- if and (not $element.disable) (or (not (hasKey $element "pva")) $element.pva) }}
+  {{- if and (not $element.disable) ($element.pva) }}
     {{- if $element.host }}
       {{- $ips := 0 }}
       {{- if $element.networks }}
