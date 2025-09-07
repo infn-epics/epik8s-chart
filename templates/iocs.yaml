@@ -16,6 +16,14 @@ metadata:
     {{- if .host }}
     iochost: {{.host}}
     {{- end }}
+    {{- if .devtype }}
+    devtype: {{.devtype}}
+    {{- else }}
+    devtype: "{{ .iocdir }}"
+    {{- end }}
+    {{- if .devgroup }}
+    devgroup: "{{ .devgroup }}"
+    {{- end }}
     
 spec:
   project: default
@@ -192,17 +200,7 @@ spec:
       value: "{{ .info }}"
     {{- end }}
     
-    {{- if .devtype }}
-    - name: type
-      value: "{{ .devtype }}"
-    {{- else }}
-    - name: type
-      value: "{{ .iocdir }}"
-    {{- end }}
-    {{- if .devgroup }}
-    - name: group
-      value: "{{ .devgroup }}"
-    {{- end }}
+    
 ## END  {{ .name | lower}}
 {{- else }}
 ## not deployed {{ .name | lower }}
