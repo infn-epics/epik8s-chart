@@ -24,6 +24,9 @@ metadata:
     {{- if .devgroup }}
     devgroup: "{{ .devgroup }}"
     {{- end }}
+    {{- if .template }}
+    template: "{{ .template }}"
+    {{- end }}
     
 spec:
   project: default
