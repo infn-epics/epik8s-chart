@@ -85,8 +85,12 @@ spec:
             annotations: {}
             name: {{$.Values.serviceAccountName}}
           {{- end }}
-
-          {{- if $value.enable_ingress }}
+          
+          {{- if or $value.enable_ingress $value.ingress }}
+          {{- if $value.ingress }}
+          ingress:
+          {{- toYaml $value.ingress | nindent 12 }}
+          {{- else }}
           ingress:
             enabled: true
             {{- if $.Values.ingressClassName }}
@@ -100,6 +104,7 @@ spec:
                 paths:
                   - path: /
                     pathType: Prefix
+          {{- end }}
           {{- end}}
           {{- if not $value.resources }}
           resources:
