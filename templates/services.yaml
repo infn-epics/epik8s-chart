@@ -172,6 +172,10 @@ spec:
         - name: service.nodePort
           value: "{{$value.nodePort}}"
         {{- end }}
+        {{- if and $value.service $value.service.port }}
+        - name: service.port
+          value: "{{$value.service.port}}"
+        {{- end }}
     
         {{- if $value.mysql }}
         - name: mysql.host
