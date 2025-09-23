@@ -164,6 +164,8 @@ spec:
       parameters:
         - name: beamline
           value: {{ $.Values.beamline | quote }}
+        - name: epik8namespace
+          value: {{ $.Values.epik8namespace | quote }}
        
         {{- if $value.loadbalancer }}
         - name: service.type
