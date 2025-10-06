@@ -80,7 +80,7 @@ data:
     {{- else }}
       org.phoebus.pv.ca/auto_addr_list=true
     {{- end }}
-    {{- if .Values.epicsConfiguration.service.pvagateway }}
+    {{- if .Values.epicsConfiguration.services.pvagateway }}
       org.phoebus.pv.pva/epics_pva_name_servers={{- include "pvagateway-service" . }}
     {{- else }}
       org.phoebus.pv.pva/epics_pva_name_servers={{ include "pvaiocnames" (dict "domain" .Values.namespace "iocs" .Values.epicsConfiguration.iocs ) }}
