@@ -46,6 +46,12 @@
 {{- end }}
 {{- end }}
 
+{{- define "pvagateway-service" -}}
+{{- if hasKey .Values.epicsConfiguration.services "pvagateway" }}
+{{- printf "pvagateway.%s.svc" .Values.namespace }}
+{{- end }}
+{{- end }}
+
 {{- define "mysql-service" -}}
 {{- if hasKey .Values.epicsConfiguration.services "mysql" }}
 {{- printf "mysql.%s" .Values.namespace }}

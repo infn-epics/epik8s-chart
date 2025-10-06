@@ -80,6 +80,13 @@ data:
     {{- else }}
       org.phoebus.pv.ca/auto_addr_list=true
     {{- end }}
+    {{- if .Values.epicsConfiguration.service.pvagateway }}
+      org.phoebus.pv.pva/epics_pva_name_servers={{- include "pvagateway-service" . }}
+    {{- else }}
+      org.phoebus.pv.pva/epics_pva_name_servers={{ include "pvaiocnames" (dict "domain" .Values.namespace "iocs" .Values.epicsConfiguration.iocs ) }}
+    {{- end }}
+    org.phoebus.pva/pva_auto_addr_list=false
+
     {{- if .Values.epicsConfiguration.services.archiver }}
     org.csstudio.trends.databrowser3/urls=pbraw://{{- include "archiver-url" . }}/retrieval
     org.csstudio.trends.databrowser3/archives=pbraw://{{- include "archiver-url" . }}/retrieval
