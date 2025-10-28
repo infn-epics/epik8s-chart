@@ -5,7 +5,11 @@ apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
   name: {{$.Values.beamline}}-{{.name | lower}}-ioc
-  namespace: {{ .Values.argocdNamespace | default "argocd" }}
+  {{- if $.Values.argocdNamespace }}
+  namespace: {{ $.Values.argocdNamespace }}
+  {{- else }}
+  namespace: argocd
+  {{- end }}
   labels:
     rootapp: {{ $.Chart.Name }}
     rootappver: {{ $.Chart.Version }}
