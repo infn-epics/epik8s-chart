@@ -6,7 +6,7 @@ apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
   name: {{$.Values.beamline}}-{{ $key | lower }}-service
-  namespace: argocd
+  namespace: {{ .Values.argocdNamespace | default "argocd" }}
   labels:
     rootapp: {{ $.Chart.Name }}
     rootappver: {{ $.Chart.Version }}
