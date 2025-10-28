@@ -29,7 +29,7 @@ metadata:
     {{- end }}
     
 spec:
-  project: default
+  project: {{ $.Values.argocdProject | default "default" }}
   source:
     repoURL: {{.charturl}}
     path: .

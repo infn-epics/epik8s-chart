@@ -23,7 +23,7 @@ metadata:
     application: {{.name | lower}}
 
 spec:
-  project: default
+  project: {{ $.Values.argocdProject | default "default" }}
   source:
     repoURL: 'https://baltig.infn.it/epics-containers/generic-application-chart.git'
     path: .

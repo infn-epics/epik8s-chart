@@ -15,7 +15,7 @@ metadata:
     service: {{ $key | lower}}
     type: "service"
 spec:
-  project: default
+  project: {{ $.Values.argocdProject | default "default" }}
   source:
     repoURL: {{ $value.charturl }} 
     {{- if $value.chart}}
