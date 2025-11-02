@@ -149,7 +149,7 @@ spec:
           {{- end }}
           {{- if $.Values.backend.elasticsearch}}
           elasticsearch:
-          {{- toYaml $.Values.backend.elasticsearch | nindent 14 }}
+          {{- toYaml $.Values.backend.elasticsearch | nindent 12 }}
 
             network:
               {{- if and $.Values.backend.elasticsearch.host $.Values.backend.elasticsearch.port}}
