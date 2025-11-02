@@ -52,6 +52,13 @@
 {{- end }}
 {{- end }}
 
+
+{{- define "archiver-service" -}}
+{{- if hasKey .Values.epicsConfiguration.services "archiver" }}
+{{- printf "archiver.%s.svc" .Values.namespace }}
+{{- end }}
+{{- end }}
+
 {{- define "mysql-service" -}}
 {{- if hasKey .Values.epicsConfiguration.services "mysql" }}
 {{- printf "mysql.%s" .Values.namespace }}

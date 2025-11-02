@@ -48,7 +48,7 @@ data:
   EPICS_CAS_AUTO_BEACON_ADDR_LIST: "NO"
   {{- end }}
   {{- if .Values.epicsConfiguration.services.archiver }}
-  EPICS_ARCHIVER: '{{- include "archiver-url" . }}'
+  EPICS_ARCHIVER: '{{- include "archiver-service" . }}'
   {{- end }}
   {{- if .Values.epicsConfiguration.services.channelfinder }}
   CHANNEL_FINDER: '{{- include "channelfinder-url" . }}'

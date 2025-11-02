@@ -149,11 +149,14 @@ spec:
           {{- end }}
           {{- if $.Values.backend.elasticsearch}}
           elasticsearch:
+          {{ toYaml $.Values.backend.elasticsearch | nindent 10 }}
+
             network:
               {{- if and $.Values.backend.elasticsearch.host $.Values.backend.elasticsearch.port}}
               host: {{$.Values.backend.elasticsearch.host}}.{{ $.Values.backend.namespace}}
               port: {{ $.Values.backend.elasticsearch.port}}
               {{- end }}
+
           {{- end }}
           {{- if $.Values.backend.kafka}}
           {{- if and $.Values.backend.kafka.host $.Values.backend.kafka.port}}
