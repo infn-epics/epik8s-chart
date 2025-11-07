@@ -45,6 +45,16 @@ spec:
           {{- toYaml $.Values.nfsMounts | nindent 10 }}
           {{- end}}
           {{- end}}
+          {{- if $value.nfsBackups }}
+          nfsBackups:
+          {{- toYaml $value.nfsBackups | nindent 10 }}
+          {{- else }}
+          {{- if $.Values.nfsBackups }}
+          nfsBackups:
+          {{- toYaml $.Values.nfsBackups | nindent 10 }}
+          {{- end}}
+          {{- end}}
+          
           {{- toYaml . | nindent 10 }}
           {{- if $.Values.epik8s_secrets}}
           epik8s_secrets: {{$.Values.epik8s_secrets}}
