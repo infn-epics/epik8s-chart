@@ -127,73 +127,46 @@
 {{- define "allocateIpFromName" -}}
   {{- $name := printf "%s.%s" .name .namespace -}}
   {{- $baseIpWithCIDR := .baseIp -}}
+
   {{- $startIp := .startIp | int -}}
+  {{- $conversion := atoi (adler32sum $name) -}}
 
-  {{- /* Generate hash and convert to integer */}}
-  {{- $hash := adler32sum $name -}}
-  {{- $conversion := atoi $hash -}}
-
-  {{- /* Parse CIDR */}}
   {{- $baseIpParts := split "/" $baseIpWithCIDR -}}
   {{- $baseIp := index $baseIpParts "_0" -}}
   {{- $cidrRange := index $baseIpParts "_1" | int -}}
 
-  {{- /* Calculate total available IPs in subnet (excluding network and broadcast) */}}
-  {{- $totalIps := sub (mul 1 (sub 32 $cidrRange)) 2 -}}
-  {{- if le $totalIps 0 -}}
-    {{- $totalIps = 1 -}}
-  {{- end -}}
-
-  {{- /* Generate IP offset within subnet range */}}
-  {{- $ipOffset := mod (add $conversion $startIp) $totalIps -}}
-
-  {{- /* Parse base IP octets */}}
   {{- $octets := split "." $baseIp -}}
   {{- $firstOctet := index $octets "_0" | int -}}
   {{- $secondOctet := index $octets "_1" | int -}}
   {{- $thirdOctet := index $octets "_2" | int -}}
   {{- $fourthOctet := index $octets "_3" | int -}}
 
-  {{- /* Calculate final IP: base_ip + offset */}}
-  {{- $finalIp := add $fourthOctet $ipOffset -}}
-  {{- $carry := 0 -}}
 
-  {{- /* Handle octet overflow with carry */}}
-  {{- if ge $finalIp 256 -}}
-    {{- $carry = div $finalIp 256 -}}
-    {{- $finalIp = mod $finalIp 256 -}}
-  {{- end -}}
-  {{- $thirdOctet = add $thirdOctet $carry -}}
-  {{- $carry = 0 -}}
+  {{- $totalIps := 1 }}
+  {{- $loopcnt:= sub 32 $cidrRange -}}
+  {{- range $i,$k := until ($loopcnt | int) }}
+    {{- $totalIps = mul $totalIps 2 }}
+  {{- end }}
 
-  {{- if ge $thirdOctet 256 -}}
-    {{- $carry = div $thirdOctet 256 -}}
+  {{- $ipSuffix := add $startIp (mod $conversion $totalIps) -}}
+
+  {{- $secondOctet := add $secondOctet (div $ipSuffix 65536) -}}
+  {{- $ipSuffix = mod $ipSuffix 65536 -}}
+  {{- $thirdOctet := add $thirdOctet (div $ipSuffix 256) -}}
+  {{- $fourthOctet := mod $ipSuffix 256 -}}
+
+  {{- if gt $fourthOctet 255 }}
+    {{- $fourthOctet = mod $fourthOctet 256 -}}
+  {{- end }}
+  {{- if gt $thirdOctet 255 }}
     {{- $thirdOctet = mod $thirdOctet 256 -}}
-  {{- end -}}
-  {{- $secondOctet = add $secondOctet $carry -}}
-  {{- $carry = 0 -}}
-
-  {{- if ge $secondOctet 256 -}}
-    {{- $carry = div $secondOctet 256 -}}
+    {{- $secondOctet = add $secondOctet 1 -}}
+  {{- end }}
+  {{- if gt $secondOctet 255 }}
     {{- $secondOctet = mod $secondOctet 256 -}}
-  {{- end -}}
-  {{- $firstOctet = add $firstOctet $carry -}}
+  {{- end }}
 
-  {{- /* Ensure IP stays within valid range (0-255) */}}
-  {{- if gt $firstOctet 255 -}}
-    {{- $firstOctet = 255 -}}
-  {{- end -}}
-  {{- if gt $secondOctet 255 -}}
-    {{- $secondOctet = 255 -}}
-  {{- end -}}
-  {{- if gt $thirdOctet 255 -}}
-    {{- $thirdOctet = 255 -}}
-  {{- end -}}
-  {{- if gt $finalIp 255 -}}
-    {{- $finalIp = 255 -}}
-  {{- end -}}
-
-  {{- printf "%d.%d.%d.%d" $firstOctet $secondOctet $thirdOctet $finalIp -}}
+  {{- printf "%d.%d.%d.%d" $firstOctet $secondOctet $thirdOctet $fourthOctet -}}
 {{- end -}}
 
 
