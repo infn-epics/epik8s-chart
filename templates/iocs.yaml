@@ -57,6 +57,10 @@ spec:
           {{- end}}
           {{- end}}
 
+          {{- if $.Values.ioc_version }}
+          ioc_version: {{ $.Values.ioc_version }}
+          {{- end }}
+
           beamline: {{ $.Values.beamline | quote }}
           iocname: "{{ .name | lower }}"
           
