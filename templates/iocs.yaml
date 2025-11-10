@@ -57,7 +57,7 @@ spec:
           {{- end}}
           {{- end}}
 
-          {{- if $.Values.ioc_version }}
+          {{- if and $.Values.ioc_version (not .image) }}
           ioc_version: {{ $.Values.ioc_version }}
           {{- end }}
 
