@@ -131,9 +131,9 @@ data:
     {{- end}}
     {{- if .Values.epicsConfiguration.services.alarmserver }}
     org.phoebus.applications.alarm/server={{.Values.backend.kafka.host}}.{{.Values.backend.namespace}}:{{.Values.backend.kafka.port}}
-    org.phoebus.applications.alarm/config_name=Accelerator
+    org.phoebus.applications.alarm/config_name={{.Values.beamline}}-Accelerator
     # org.phoebus.applications.alarm/kafka_properties=
-    org.phoebus.applications.alarm/config_names=Accelerator, Demo
+    org.phoebus.applications.alarm/config_names={{.Values.beamline}}-Accelerator
     org.phoebus.applications.alarm/connection_timeout=30
     org.phoebus.applications.alarm/severity_pv_timeout=5
     org.phoebus.applications.alarm/alarm_area_level=2
