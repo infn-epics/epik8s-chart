@@ -1,240 +1,229 @@
-{{- range .Values.cronjobs }}
-# Application {{ .name | lower }}
-{{- if or (not .disable) (eq .disable false) }}
-{{- if .gitRepoApp.url }}
-kind: PersistentVolumeClaim
-apiVersion: v1
-metadata:
-  name: {{ .name | lower }}-cron-app
-  labels:
-    app: {{ .name | lower }}-cron-app
-    type: "cronjob"
-    beamline: {{ $.Values.beamline }}
-spec:
-  accessModes:
-    - ReadWriteOnce
-  resources:
-    requests:
-      {{- if and .gitRepoApp .gitRepoApp.size }}
-      storage: {{ .gitRepoApp.size }}
-      {{- else }}
-      storage: 1G
-      {{- end }}
----
-{{- end }}
+{{- range $key, $value := .Values.cronjobs }}
+{{- if or ( not $value.disable) ( eq $value.disable false) }}
 
-kind: PersistentVolumeClaim
-apiVersion: v1
+# Service {{$key | lower}}
+apiVersion: argoproj.io/v1alpha1
+kind: Application
 metadata:
-  name: {{ .name | lower }}-cron-config
+  name: {{$.Values.beamline}}-{{ $key | lower }}-cronjoob
+  {{- if $.Values.argocdNamespace }}
+  namespace: {{ .Values.argocdNamespace }}
+  {{- else }}
+  namespace: argocd
+  {{- end }}
   labels:
-    app: {{ .name | lower }}-cron-config
+    rootapp: {{ $.Chart.Name }}
+    rootappver: {{ $.Chart.Version }}
+    beamline: {{ $.Values.beamline | quote }}
+    revision: {{$.Values.targetRevision}}
+    service: {{ $key | lower}}
+    type: "service"
 spec:
-  accessModes:
-    - ReadWriteOnce
-  resources:
-    requests:
-      {{- if and .gitRepoConfig .gitRepoConfig.size }}
-      storage: {{ .gitRepoConfig.size }}
-      {{- else }}
-      storage: 1G
-      {{- end }}
----
-apiVersion: batch/v1
-kind: CronJob
-metadata:
-  name: {{ .name | lower }}
-  labels:
-    beamline: {{ $.Values.beamline }}
-    revision: {{ $.Values.targetRevision }}
-spec:
-  schedule: "{{ .schedule }}"
-  concurrencyPolicy: Replace
-  failedJobsHistoryLimit: 1
-  jobTemplate:
-    spec:
-      template:
-        metadata:
-          labels:
-            app.kubernetes.io/name: {{ .name | lower }}
-            beamline: {{ $.Values.beamline }}
-            revision: {{ $.Values.targetRevision }}
-        spec:
-          serviceAccountName: {{ .serviceaccount | default "default" }}
-          restartPolicy: Never
+  project: {{ $.Values.argocdProject | default "default" }}
+  source:
+    repoURL: {{ .Values.cronjobs.charturl }}
+    {{- if $value.chart}}
+    chart: {{$value.chart}}
+    {{- else}}
+    path: .
+    {{- end}}
+    {{- if $value.targetRevision }}
+    targetRevision: {{$value.targetRevision}}
+    {{- else }}
+    targetRevision: {{$.Values.targetRevision}}
+    {{- end }}
+    helm:
+      releaseName: {{ $key | lower }}
+      values: |
+          svcname: {{ $key }}
+          {{- if $value.nfsMounts }}
+          nfsMounts:
+          {{- toYaml $value.nfsMounts | nindent 10 }}
+          {{- else }}
+          {{- if $.Values.nfsMounts }}
+          nfsMounts:
+          {{- toYaml $.Values.nfsMounts | nindent 10 }}
+          {{- end}}
+          {{- end}}
+          {{- if $value.nfsBackups }}
+          nfsBackups:
+          {{- toYaml $value.nfsBackups | nindent 10 }}
+          {{- else }}
+          {{- if $.Values.nfsBackups }}
+          nfsBackups:
+          {{- toYaml $.Values.nfsBackups | nindent 10 }}
+          {{- end}}
+          {{- end}}
+          
+          {{- toYaml . | nindent 10 }}
+          {{- if $.Values.epik8s_secrets}}
+          epik8s_secrets: {{$.Values.epik8s_secrets}}
+          {{- end }}
+          http_proxy: {{ $.Values.http_proxy | quote }}
+          https_proxy: {{ $.Values.https_proxy | quote }}
+          no_proxy: {{ $.Values.no_proxy | quote }}
+          {{- if $.Values.template }}
+          template: {{ $.Values.template | quote }}
+          {{- else }}
+          {{- if and (not $.Values.gitRepoConfig) (or $value.gitinit $value.gitpath) }}
+          gitRepoConfig:
+            url: {{$.Values.giturl}}
+            {{- if $value.gitpath }}
+            path: {{ $value.gitpath }}
+            {{- else }}
+            path: config/services/{{$key}}
+            {{- end }}
+            {{- if $value.gitrev }}
+            branch: {{$value.gitrev}}
+            {{- else }}
+            branch: {{$.Values.gitrev}}
+            {{- end }}
+            {{- if $value.token }}
+            token: {{$value.token}}
+            {{- else }}
+            token: {{$.Values.token}}
+            {{- end }}
+            {{- if $value.exec }}
+            exec: {{$value.exec}}
+            {{- end }}  
+          {{- end }}
+          {{- end }}
+          {{- if $.Values.serviceAccountName }}
+          serviceAccount:
+            create: false
+            annotations: {}
+            name: {{$.Values.serviceAccountName}}
+          {{- end }}
+          
+          {{- if or $value.enable_ingress $value.ingress }}
+          {{- if $value.ingress }}
+          ingress:
+          {{- toYaml $value.ingress | nindent 12 }}
+          {{- else }}
+          ingress:
+            enabled: true
+            {{- if $.Values.ingressClassName }}
+            className: {{$.Values.ingressClassName}}
+            {{- end }}
+            {{- if $value.secure }}
+            secure: true
+            {{- end }}
+            hosts:
+              - host: {{ printf "%s-%s.%s" $.Values.beamline ($key | lower) $.Values.epik8namespace }}
+                paths:
+                  - path: /
+                    pathType: Prefix
+          {{- end }}
+          {{- end}}
+          {{- if not $value.resources }}
+          resources:
+            limits:
+              cpu: 999m
+              memory: 2Gi
+            requests:
+              cpu: 100m
+              memory: 100Mi
+          {{- end }}
+          {{- if $value.auto_security }}
           securityContext:
+            {{- if or $.Values.openshift $value.privileged }}
+            privileged: true
+            {{- end }}
             runAsUser: 1000
             runAsGroup: 1000
-            fsGroup: 1000
-          initContainers:
-            - name: init-config-container-git
-              image: baltig.infn.it:4567/epics-containers/container-init
-              securityContext:
-                runAsUser: 1000
-                runAsGroup: 1000
-                # fsGroup: 1000
-              command:
-                - sh
-                - -c
-                - |
-                  id=$(id)
-                  cd /tmp
-                  url={{$.Values.giturl}}
-                  path=config/cronjobs/{{.name}}
-                  branch={{$.Values.gitrev}}
-                  exec="start.sh"
-                  {{- if .gitrev }}
-                  branch={{.gitrev}}
-                  {{- end }}
-                  {{- if .exec }}
-                  exec={{.exec}}
-                  {{- end }}
-                  echo "ID $id config repository $url path: $path"
+          {{- end }}
+          {{- if $.Values.epicsConfiguration.name }}
+          epicsConfiguration:
+            name: {{ $.Values.epicsConfiguration.name | quote}}
+            {{- if $value.usegateway }}
+            gateway: gateway.{{ $.Values.namespace }}.svc
+            pvagateway: pvagateway.{{ $.Values.namespace }}.svc
+            {{- end }}
+            ca_addr_list: "{{ include "iocnames"  (dict "iocs" $.Values.epicsConfiguration.iocs "domain" $.Values.namespace) }}"
+            pva_addr_list: "{{ include "pvaiocnames"  (dict "iocs" $.Values.epicsConfiguration.iocs "domain" $.Values.namespace) }}"
 
-                  echo "#!/bin/sh" > k8sreplace.sh
-                  chmod +x k8sreplace.sh
-                  {{- range $.Values.nfsMounts }}
-                  echo 'sed -i "s|__{{ .name | upper }}_DIR__|{{ .mountPath }}|g" $1' >> k8sreplace.sh
-                  {{- end }}
-                  if [ -d temp-config ]; then
-                    rm -rf temp-config
-                  fi
-                  if [ -n "$branch" ]; then
-                    git clone -b $branch $url --recurse-submodules temp-config
-                  else
-                    git clone $url --recurse-submodules temp-config
-                  fi
-                  find temp-config/ -type f -exec ./k8sreplace.sh {} \;
-                  if [ -d temp-config/$path ]; then
-                    if [ "$path" == "." ]; then
-                      mv temp-config/* /tmp/
-                    else
-                      mv temp-config/$path/* /tmp/
-                      rm -rf temp-config
-                    fi
-                  else
-                    mv temp-config/* /tmp/
-                  fi
-              imagePullPolicy: IfNotPresent
-              volumeMounts:
-                - name: config-volume
-                  mountPath: /tmp
-            {{- if .gitRepoApp.url }}
-            - name: init-app-container-git
-              image: baltig.infn.it:4567/epics-containers/container-init
-              securityContext:
-                runAsUser: 1000
-                runAsGroup: 1000
-                # fsGroup: 1000
-              command:
-                - sh
-                - -c
-                - |
-                  id=$(id)
-                  cd /tmp
-                  url={{.gitRepoApp.url}}
-                  path={{.gitRepoApp.path}}
-                  branch={{.gitRepoApp.branch}}
-                  echo "ID $id repository application $url "
-                  if [ -n "$branch" ]; then
-                    git clone -b $branch $url --recurse-submodules temp-config
-                  else
-                    git clone $url --recurse-submodules temp-config
-                  fi
-                  if [ -d temp-config/$path ]; then
-                    if [ "$path" == "." ]; then
-                      mv temp-config/* /tmp/
-                    else
-                      mv temp-config/$path/* /tmp/
-                      rm -rf temp-config
-                    fi
-                  else
-                    mv temp-config/* /tmp/
-                  fi
-                  ls /tmp
-                  
-              imagePullPolicy: IfNotPresent
-              volumeMounts:
-                - name: app-volume
-                  mountPath: /tmp
-            {{- end }}
-          containers:
-            - name: {{ .name | lower }}
-              image: "{{ .image }}"
-              imagePullPolicy: IfNotPresent
-              {{- if $.Values.epicsConfiguration.name }}
-              envFrom:
-                - configMapRef:
-                    name: {{ $.Values.epicsConfiguration.name }}
+          {{- end }}
+  
+          
+          {{- if $.Values.backend }}
+          {{- if and $.Values.backend.mongo $value.mongodb}}
+          mongo:
+            host: {{ $.Values.backend.mongo.host }}.{{ $.Values.backend.namespace}}.svc
+            database: {{$value.mongodb}}
+            port: {{ $.Values.backend.mongo.port}}
+          {{- end }}
+          {{- if $.Values.backend.elasticsearch}}
+          elasticsearch:
+          {{- toYaml $.Values.backend.elasticsearch | nindent 12 }}
+
+            network:
+              {{- if and $.Values.backend.elasticsearch.host $.Values.backend.elasticsearch.port}}
+              host: {{$.Values.backend.elasticsearch.host}}.{{ $.Values.backend.namespace}}.svc
+              port: {{ $.Values.backend.elasticsearch.port}}
               {{- end }}
-              env:
-                {{- range $.Values.nfsMounts }}
-                - name: {{ .name | upper }}_SERVER
-                  value: {{ .server | quote }}
-                - name: {{ .name | upper }}_SERVER_PATH
-                  value: {{ .path | quote }}
-                - name: {{ .name | upper }}_DIR
-                  value: {{ .mountPath | quote }}
-                {{- end }}
-              command:
-                - sh
-                - -c
-                - |
-                  cd /app
-                  ls -latr /app /config
-                  {{- if .gitRepoApp.exec }}
-                  {{ .gitRepoApp.exec }}
-                  {{- else}}
-                  /config/start.sh
-                  {{- end }}
-              volumeMounts:
-                {{- range $.Values.nfsMounts }}
-                - name: {{ .name | lower }}
-                  mountPath: {{ .mountPath }}
-                {{- end }}
-                {{- if .gitRepoApp.url }}
-                - name: app-volume
-                  mountPath: /app
-                {{- end }}
-                - name: config-volume
-                  mountPath: /config
-              ports:
-                {{- if .service }}
-                {{- range .service.ports }}
-                - name: {{ .targetname }}
-                  containerPort: {{ .targetport }}
-                  protocol: {{ .protocol }}
-                {{- end }}
-                {{- end }}
-              resources:
-                {{- if .resources }}
-                {{ toYaml .resources | nindent 12 }}
-                {{- else }}
-                limits:
-                  cpu: 500m
-                  memory: 256Mi
-                requests:
-                  cpu: 100m
-                  memory: 64Mi
-                {{- end }}
-          volumes:
-            {{- range $.Values.nfsMounts }}
-            - name: {{ .name | lower }}
-              nfs:
-                server: {{ .server }}
-                path: {{ .path }}
-            {{- end }}
-            - name: config-volume
-              persistentVolumeClaim:
-                claimName: {{ .name | lower }}-cron-config
-            {{- if .gitRepoApp.url }}
-            - name: app-volume
-              persistentVolumeClaim:
-                claimName: {{ .name | lower }}-cron-app
-            {{- end }}
-## END {{ .name | lower }}
+
+          {{- end }}
+          {{- if $.Values.backend.kafka}}
+          {{- if and $.Values.backend.kafka.host $.Values.backend.kafka.port}}
+          kafka:
+              host: {{$.Values.backend.kafka.host}}.{{ $.Values.backend.namespace}}.svc
+              port: {{ $.Values.backend.kafka.port}}
+
+              {{- end }}
+          {{- end }}
+          {{- end }}
+          
+      parameters:
+        - name: beamline
+          value: {{ $.Values.beamline | quote }}
+        - name: epik8namespace
+          value: {{ $.Values.epik8namespace | quote }}
+       
+        {{- if $value.loadbalancer }}
+        - name: service.type
+          value: "LoadBalancer"
+        - name: service.loadBalancerIP
+          value: {{$value.loadbalancer}}
+        {{- end }}
+        {{- if $value.nodePort }}
+        - name: service.type
+          value: "NodePort"
+        - name: service.nodePort
+          value: "{{$value.nodePort}}"
+        {{- end }}
+        {{- if and $value.service $value.service.port }}
+        - name: service.port
+          value: "{{$value.service.port}}"
+        {{- end }}
+    
+        {{- if $value.mysql }}
+        - name: mysql.host
+          value: {{$value.mysql.host}}
+        {{- end }}
+    
+  destination:
+    server: 'https://kubernetes.default.svc'
+    namespace: {{ $.Values.namespace | quote }}
+  {{- if $value.autosync }}
+  syncPolicy:
+    automated:
+      prune: true  # Optional: Automatically remove resources not specified in Helm chart
+      selfHeal: true
+  {{- end }}
+  info: 
+  {{- if $value.info }}
+    - name: message
+      value: "{{ $value.info }}"
+  {{- end }}
+  {{- if $value.asset }}
+    - name: asset
+      value: "{{ $value.asset }}"
+  {{- end }}
+
+## END {{$key | lower}} 
 {{- else }}
-## not deployed {{ .name | lower }}
+## not deplyed {{ $key | lower }}
 {{- end }}
+
 ---
 {{- end }}

@@ -41,7 +41,9 @@ backend:
   kafka:
     host: kafka-controller-headless
     port: 9092
-
+cronjobs:
+  charturl: 'https://baltig.infn.it/epics-containers/generic-application-chart.git'
+  
 syncPolicy:
     automated:
       prune: true  # Optional: Automatically remove resources not specified in Helm chart
