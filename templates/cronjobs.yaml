@@ -1,11 +1,11 @@
 {{- range $key, $value := .Values.cronjobs }}
 {{- if or ( not $value.disable) ( eq $value.disable false) }}
 
-# Service {{$key | lower}}
+# Service {{$value.name | lower}}
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: {{$.Values.beamline}}-{{ $key | lower }}-cronjoob
+  name: {{$.Values.beamline}}-{{ $value.name | lower }}-cronjoob
   {{- if $.Values.argocdNamespace }}
   namespace: {{ .Values.argocdNamespace }}
   {{- else }}
@@ -16,12 +16,12 @@ metadata:
     rootappver: {{ $.Chart.Version }}
     beamline: {{ $.Values.beamline | quote }}
     revision: {{$.Values.targetRevision}}
-    service: {{ $key | lower}}
-    type: "service"
+    cronjob: {{ $value.name | lower}}
+    type: "cronjob"
 spec:
   project: {{ $.Values.argocdProject | default "default" }}
   source:
-    repoURL: {{ .Values.cronjobs.charturl }}
+    repoURL: {{ $value.charturl }}
     {{- if $value.chart}}
     chart: {{$value.chart}}
     {{- else}}
@@ -33,9 +33,9 @@ spec:
     targetRevision: {{$.Values.targetRevision}}
     {{- end }}
     helm:
-      releaseName: {{ $key | lower }}
+      releaseName: {{ $value.name | lower }}
       values: |
-          svcname: {{ $key }}
+          svcname: {{ $value.name }}
           {{- if $value.nfsMounts }}
           nfsMounts:
           {{- toYaml $value.nfsMounts | nindent 10 }}
@@ -71,7 +71,7 @@ spec:
             {{- if $value.gitpath }}
             path: {{ $value.gitpath }}
             {{- else }}
-            path: config/services/{{$key}}
+            path: config/services/{{$value.name}}
             {{- end }}
             {{- if $value.gitrev }}
             branch: {{$value.gitrev}}
@@ -109,7 +109,7 @@ spec:
             secure: true
             {{- end }}
             hosts:
-              - host: {{ printf "%s-%s.%s" $.Values.beamline ($key | lower) $.Values.epik8namespace }}
+              - host: {{ printf "%s-%s.%s" $.Values.beamline ($value.name | lower) $.Values.epik8namespace }}
                 paths:
                   - path: /
                     pathType: Prefix
@@ -220,9 +220,9 @@ spec:
       value: "{{ $value.asset }}"
   {{- end }}
 
-## END {{$key | lower}} 
+## END {{$value.name | lower}} 
 {{- else }}
-## not deplyed {{ $key | lower }}
+## not deplyed {{ $value.name | lower }}
 {{- end }}
 
 ---
