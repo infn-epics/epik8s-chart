@@ -5,7 +5,7 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: {{$.Values.beamline}}-{{ $value.name | lower }}-cronjoob
+  name: {{$.Values.beamline}}-{{ $value.name | lower }}-cronjob
   {{- if $.Values.argocdNamespace }}
   namespace: {{ .Values.argocdNamespace }}
   {{- else }}
