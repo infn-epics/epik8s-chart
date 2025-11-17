@@ -71,12 +71,8 @@ data:
   CONSOLE: 'http://{{- include "console-url" . }}'
   
   {{ .Values.beamline }}-configuration.yaml: |
-    epicsConfiguration:
-    {{- toYaml .Values.epicsConfiguration | nindent 8 }}
+    {{- toYaml .Values | nindent 8 }}
   
-  {{ .Values.beamline }}-backend.yaml: |
-    epicsConfiguration:
-    {{- toYaml .Values.backend | nindent 8 }}
     
   phoebus_settings.ini: |
     
