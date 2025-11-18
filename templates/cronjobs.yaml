@@ -1,5 +1,5 @@
 {{- range $key, $value := .Values.cronjobs }}
-{{- if or ( not $value.disable) ( eq $value.disable false) }}
+{{- if not (default false $value.disable) }}
 
 # Service {{$value.name | lower}}
 apiVersion: argoproj.io/v1alpha1
