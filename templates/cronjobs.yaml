@@ -220,9 +220,7 @@ spec:
       value: "{{ $value.asset }}"
   {{- end }}
 
-## END {{$value.name | lower}} 
 {{- else }}
-## not deplyed {{ $value.name | lower }}
 {{- end }}
 
 ---
