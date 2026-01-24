@@ -6,6 +6,12 @@ ingressClassName: "nginx"
 targetRevision: "devel"
 serviceAccountName: "default"
 openshift: false
+
+# ArgoCD RBAC resources - Enable only on ONE deployment to avoid SharedResourceWarning
+# These are cluster-scoped resources and should only be created once
+argocdRbac:
+  enabled: false
+
 ## parameter for static ip allocations
 ## baseIP
 baseIp:
