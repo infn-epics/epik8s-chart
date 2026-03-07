@@ -210,7 +210,8 @@ spec:
       prune: true  # Optional: Automatically remove resources not specified in Helm chart
       selfHeal: true
   {{- end }}
-  info: 
+  {{- if or $value.info $value.asset }}
+  info:
   {{- if $value.info }}
     - name: message
       value: "{{ $value.info }}"
@@ -218,6 +219,7 @@ spec:
   {{- if $value.asset }}
     - name: asset
       value: "{{ $value.asset }}"
+  {{- end }}
   {{- end }}
 
 {{- else }}

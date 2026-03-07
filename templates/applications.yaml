@@ -100,7 +100,8 @@ spec:
     {{- end}}
   syncPolicy:
     {{- toYaml $.Values.syncPolicy | nindent 10 }}
-  info: 
+  {{- if or .info .asset }}
+  info:
   {{- if .info }}
     - name: message
       value: "{{ .info }}"
@@ -108,6 +109,7 @@ spec:
   {{- if .asset }}
     - name: asset
       value: "{{ .asset }}"
+  {{- end }}
   {{- end }}
 ## END {{.name | lower}}
 {{- else }}
