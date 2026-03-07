@@ -1,10 +1,17 @@
 {{- range .Values.epicsConfiguration.iocs }}
-## IOC  {{.name | lower }}
-{{- if or ( not .disable) ( eq .disable false) }}
+{{- $ioc := . }}
+{{- if $.Values.iocDefaults }}
+  {{- $tmpl := .template | default .devtype | default "" }}
+  {{- if and $tmpl (hasKey $.Values.iocDefaults $tmpl) }}
+    {{- $ioc = mustMergeOverwrite (deepCopy (index $.Values.iocDefaults $tmpl)) . }}
+  {{- end }}
+{{- end }}
+## IOC  {{$ioc.name | lower }}
+{{- if or ( not $ioc.disable) ( eq $ioc.disable false) }}
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: {{$.Values.beamline}}-{{.name | lower}}-ioc
+  name: {{$.Values.beamline}}-{{$ioc.name | lower}}-ioc
   {{- if $.Values.argocdNamespace }}
   namespace: {{ $.Values.argocdNamespace }}
   {{- else }}
@@ -15,41 +22,41 @@ metadata:
     rootappver: {{ $.Chart.Version }}
     beamline: {{ $.Values.beamline | quote }}
     revision: {{$.Values.targetRevision}}
-    iocname: {{.name | lower}}
+    iocname: {{$ioc.name | lower}}
     type: "ioc"
-    {{- if .host }}
-    iochost: {{.host}}
+    {{- if $ioc.host }}
+    iochost: {{$ioc.host}}
     {{- end }}
-    {{- if .devtype }}
-    devtype: {{.devtype}}
+    {{- if $ioc.devtype }}
+    devtype: {{$ioc.devtype}}
     {{- else }}
-    devtype: "{{ .iocdir }}"
+    devtype: "{{ $ioc.iocdir }}"
     {{- end }}
-    {{- if .devgroup }}
-    devgroup: "{{ .devgroup }}"
+    {{- if $ioc.devgroup }}
+    devgroup: "{{ $ioc.devgroup }}"
     {{- end }}
-    {{- if .template }}
-    template: "{{ .template }}"
+    {{- if $ioc.template }}
+    template: "{{ $ioc.template }}"
     {{- end }}
     
 spec:
   project: {{ $.Values.argocdProject | default "default" }}
   source:
-    repoURL: {{.charturl}}
+    repoURL: {{$ioc.charturl}}
     path: .
-    {{- if .targetRevision }}
-    targetRevision: {{.targetRevision}}
+    {{- if $ioc.targetRevision }}
+    targetRevision: {{$ioc.targetRevision}}
 
     {{- else }}
     targetRevision: {{$.Values.targetRevision}}
     {{- end }}
     helm:
-      releaseName: {{ .name | lower }}
+      releaseName: {{ $ioc.name | lower }}
       values: |
-          {{- toYaml . | nindent 10 }}
-          {{- if .nfsMounts }}
+          {{- toYaml $ioc | nindent 10 }}
+          {{- if $ioc.nfsMounts }}
           nfsMounts:
-          {{- toYaml .nfsMounts | nindent 10 }}
+          {{- toYaml $ioc.nfsMounts | nindent 10 }}
           {{- else }}
           {{- if $.Values.nfsMounts }}
           nfsMounts:
@@ -57,16 +64,16 @@ spec:
           {{- end}}
           {{- end}}
 
-          {{- if and $.Values.ioc_version (not .image) }}
+          {{- if and $.Values.ioc_version (not $ioc.image) }}
           ioc_version: {{ $.Values.ioc_version }}
           {{- end }}
 
           beamline: {{ $.Values.beamline | quote }}
-          iocname: "{{ .name | lower }}"
+          iocname: "{{ $ioc.name | lower }}"
           
 
           {{- if $.Values.baseIp }}
-          staticIP: {{ include "allocateIpFromName" (dict "name" .name "namespace" $.Values.namespace "baseIp" $.Values.baseIp "startIp" $.Values.startIp) }}
+          staticIP: {{ include "allocateIpFromName" (dict "name" $ioc.name "namespace" $.Values.namespace "baseIp" $.Values.baseIp "startIp" $.Values.startIp) }}
           {{- end }}
           {{- if $.Values.epik8s_secrets}}
           epik8s_secrets: {{$.Values.epik8s_secrets}}
@@ -74,14 +81,14 @@ spec:
           http_proxy: {{ $.Values.http_proxy | quote }}
           https_proxy: {{ $.Values.https_proxy | quote }}
           no_proxy: {{ $.Values.no_proxy | quote }}
-          {{- if .enable_ingress }}
+          {{- if $ioc.enable_ingress }}
           ingress:
             enabled: true
             {{- if $.Values.ingressClassName }}
             className: {{$.Values.ingressClassName}}
             {{- end }}
             hosts:
-              - host: {{ printf "%s-%s.%s" $.Values.beamline (.name | lower) $.Values.epik8namespace }}
+              - host: {{ printf "%s-%s.%s" $.Values.beamline ($ioc.name | lower) $.Values.epik8namespace }}
                 paths:
                   - path: /
                     pathType: Prefix
@@ -90,38 +97,38 @@ spec:
           {{- if $.Values.epicsConfiguration.name }}
           epicsConfiguration:
             name: {{ $.Values.epicsConfiguration.name | quote}}
-            {{- if .usegateway }}
+            {{- if $ioc.usegateway }}
             gateway: gateway.{{ $.Values.namespace }}.svc
             {{- end }}
           {{- end }}
-          {{- if and (not $.Values.gitRepoConfig) (or .gitinit .gitpath .host)}}
+          {{- if and (not $.Values.gitRepoConfig) (or $ioc.gitinit $ioc.gitpath $ioc.host)}}
           gitRepoConfig:
             url: {{$.Values.giturl}}
-            {{- if .gitpath }}
-            path: {{ .gitpath }}
+            {{- if $ioc.gitpath }}
+            path: {{ $ioc.gitpath }}
             {{- else }}
-            {{- if .iocdir }}
-            path: config/iocs/{{.iocdir}}
+            {{- if $ioc.iocdir }}
+            path: config/iocs/{{$ioc.iocdir}}
             {{- else }}
-            path: config/iocs/{{.name}}
+            path: config/iocs/{{$ioc.name}}
             {{- end }}
             {{- end }}
-            {{- if .gitrev }}
-            branch: {{.gitrev}}
+            {{- if $ioc.gitrev }}
+            branch: {{$ioc.gitrev}}
             {{- else }}
             branch: {{$.Values.gitrev}}
             {{- end }}
-            {{- if .token }}
-            token: {{.token}}
+            {{- if $ioc.token }}
+            token: {{$ioc.token}}
             {{- else }}
             token: {{$.Values.token}}
             {{- end }}
-            {{- if .exec }}
-            exec: {{.exec}}
+            {{- if $ioc.exec }}
+            exec: {{$ioc.exec}}
             {{- end }} 
           {{- end }}
-          {{- if not .resources }}
-          {{- if eq .devtype  "development" }}
+          {{- if not $ioc.resources }}
+          {{- if eq ($ioc.devtype | default "") "development" }}
           resources:
             limits:
               cpu: 1000m
@@ -147,27 +154,27 @@ spec:
             annotations: {}
             name: {{$.Values.serviceAccountName}}
           {{- end }}
-          {{- if .host }}
+          {{- if $ioc.host }}
           ssh:
-            host: {{.host}}
-            {{- if .ssh_options}}
-            options: {{.ssh_options}}
+            host: {{$ioc.host}}
+            {{- if $ioc.ssh_options}}
+            options: {{$ioc.ssh_options}}
             {{- end }}
-            {{- if .user }}
-            user: {{.user}}
+            {{- if $ioc.user }}
+            user: {{$ioc.user}}
             {{- else }}
             user: root
             {{- end }}
-            {{- if .workdir }}
-            workdir: {{.workdir}}
+            {{- if $ioc.workdir }}
+            workdir: {{$ioc.workdir}}
             {{- else }}
-            workdir: "workdir-{{.name}}"
+            workdir: "workdir-{{$ioc.name}}"
             {{- end }}
-            {{- if .scpoptions }}
-            scpoptions: {{.scpoptions}}
+            {{- if $ioc.scpoptions }}
+            scpoptions: {{$ioc.scpoptions}}
             {{- end }}
-            {{- if .initcmd }}
-            initcmd: {{.initcmd}}
+            {{- if $ioc.initcmd }}
+            initcmd: {{$ioc.initcmd}}
             {{- end }}
           {{- end }}
 
@@ -175,46 +182,46 @@ spec:
   destination:
     server: 'https://kubernetes.default.svc'
     namespace: {{ $.Values.namespace | quote }}
-  {{- if .autosync }}
+  {{- if $ioc.autosync }}
   syncPolicy:
     automated:
       prune: true  # Optional: Automatically remove resources not specified in Helm chart
       selfHeal: true
   {{- end }}
   info:
-    {{- if .iocname }}
+    {{- if $ioc.iocname }}
     - name: iocname
-      value: "{{.iocname}}"
+      value: "{{$ioc.iocname}}"
     {{- else }}
     - name: iocname
-      value: "{{.name | lower}}"
+      value: "{{$ioc.name | lower}}"
     {{- end}}
-    {{- if .iocprefix }}
+    {{- if $ioc.iocprefix }}
     - name: iocprefix
-      value: "{{ .iocprefix }}"
+      value: "{{ $ioc.iocprefix }}"
     {{- end }}
-    {{- if .iocroot }}
+    {{- if $ioc.iocroot }}
     - name: iocroot
-      value: "{{ .iocroot }}"
+      value: "{{ $ioc.iocroot }}"
     {{- end }}
-    {{- if .workdir }}
+    {{- if $ioc.workdir }}
     - name: workdir
-      value: "{{.workdir}}"
+      value: "{{$ioc.workdir}}"
     {{- end}}
 
-    {{- if .asset }}
+    {{- if $ioc.asset }}
     - name: asset
-      value: "{{ .asset }}"
+      value: "{{ $ioc.asset }}"
     {{- end }}
-    {{- if .info }}
+    {{- if $ioc.info }}
     - name: message
-      value: "{{ .info }}"
+      value: "{{ $ioc.info }}"
     {{- end }}
     
     
-## END  {{ .name | lower}}
+## END  {{ $ioc.name | lower}}
 {{- else }}
-## not deployed {{ .name | lower }}
+## not deployed {{ $ioc.name | lower }}
 {{- end }}
 
 ---

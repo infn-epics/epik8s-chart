@@ -29,6 +29,15 @@ epicsConfiguration:
 
 usegateway: true # by default use gateway
 
+## iocDefaults: per-template defaults merged into each IOC before rendering.
+## Keys match the IOC's 'template' field (or 'devtype' as fallback).
+## IOC-specific values always override defaults.
+# iocDefaults:
+#   agilent-vac:
+#     charturl: 'https://github.com/infn-epics/ioc-chart.git'
+#     template: "agilent-vac"
+#     autosync: false
+
 http_proxy:
 https_proxy:
 no_proxy:
