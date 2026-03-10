@@ -1,16 +1,24 @@
 {{- define "pvaiocnames" -}}
 {{- $list := .iocs }}
 {{- $domain := printf "%s" .domain}}
+{{- $defaults := .defaults }}
 
 {{- $commaSeparatedString := "" }}
 
 {{- range $index, $element := $list }}
+  {{- $ioc := $element }}
+  {{- if $defaults }}
+    {{- $tmpl := $element.template | default $element.devtype | default "" }}
+    {{- if and $tmpl (hasKey $defaults $tmpl) }}
+      {{- $ioc = mustMergeOverwrite (deepCopy (index $defaults $tmpl)) $element }}
+    {{- end }}
+  {{- end }}
 
-  {{- if and (not $element.disable) ($element.pva) }}
-    {{- if $element.host }}
+  {{- if and (not $ioc.disable) ($ioc.pva) }}
+    {{- if $ioc.host }}
       {{- $ips := 0 }}
-      {{- if $element.networks }}
-      {{- range $element.networks}}
+      {{- if $ioc.networks }}
+      {{- range $ioc.networks}}
         {{- if .ip }}
             {{- $commaSeparatedString = printf "%s %s" .ip $commaSeparatedString}}
             {{- $ips := 1 }}
@@ -18,19 +26,19 @@
         {{- end}}
       {{- end}}
       {{- else }}
-      {{- if $element.pva_server_port }}
-        {{- $portAsString := int $element.pva_server_port }}
-        {{- $commaSeparatedString = printf "%s:%d %s" $element.host $portAsString $commaSeparatedString }}
+      {{- if $ioc.pva_server_port }}
+        {{- $portAsString := int $ioc.pva_server_port }}
+        {{- $commaSeparatedString = printf "%s:%d %s" $ioc.host $portAsString $commaSeparatedString }}
       {{- else }}
-        {{- $commaSeparatedString = printf "%s %s" $element.host $commaSeparatedString }}
+        {{- $commaSeparatedString = printf "%s %s" $ioc.host $commaSeparatedString }}
       {{- end }}
       {{- end }}
     {{- else }}
-      {{- if $element.pva_server_port }}
-        {{- $portAsString := int $element.pva_server_port }}
-          {{- $commaSeparatedString = printf "%s.%s.svc:%d %s" $element.name $domain $portAsString $commaSeparatedString }}
+      {{- if $ioc.pva_server_port }}
+        {{- $portAsString := int $ioc.pva_server_port }}
+          {{- $commaSeparatedString = printf "%s.%s.svc:%d %s" $ioc.name $domain $portAsString $commaSeparatedString }}
       {{- else }}
-        {{- $commaSeparatedString = printf "%s.%s.svc %s" $element.name $domain $commaSeparatedString }}
+        {{- $commaSeparatedString = printf "%s.%s.svc %s" $ioc.name $domain $commaSeparatedString }}
       {{- end }}
     {{- end }}
   {{- end }}
