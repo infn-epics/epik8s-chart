@@ -36,9 +36,9 @@
     {{- else }}
       {{- if $ioc.pva_server_port }}
         {{- $portAsString := int $ioc.pva_server_port }}
-          {{- $commaSeparatedString = printf "%s.%s.svc:%d %s" $ioc.name $domain $portAsString $commaSeparatedString }}
+          {{- $commaSeparatedString = printf "%s.%s.svc:%d %s" ($ioc.name | lower) $domain $portAsString $commaSeparatedString }}
       {{- else }}
-        {{- $commaSeparatedString = printf "%s.%s.svc %s" $ioc.name $domain $commaSeparatedString }}
+        {{- $commaSeparatedString = printf "%s.%s.svc %s" ($ioc.name | lower) $domain $commaSeparatedString }}
       {{- end }}
     {{- end }}
   {{- end }}
@@ -234,9 +234,9 @@
     {{- if $element.ca_server_port }}
       {{- $portAsString := int $element.ca_server_port }}
 
-      {{- $commaSeparatedString = printf "%s.%s.svc:%d %s" $element.name $domain $portAsString $commaSeparatedString }}
+      {{- $commaSeparatedString = printf "%s.%s.svc:%d %s" ($element.name | lower) $domain $portAsString $commaSeparatedString }}
     {{- else }}
-      {{- $commaSeparatedString = printf "%s.%s.svc %s" $element.name $domain $commaSeparatedString }}
+      {{- $commaSeparatedString = printf "%s.%s.svc %s" ($element.name | lower) $domain $commaSeparatedString }}
     {{- end }}
   {{- end }}
   {{- end}}
