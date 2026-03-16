@@ -32,7 +32,7 @@ data:
 {{- if .Values.no_proxy }}
   NO_PROXY: {{.Values.no_proxy | quote}}
 {{- end}}
-  EPICS_CA_ADDR_LIST: "{{ .Values.epicsConfiguration.address_list }} {{ include "iocnames" (dict "domain" .Values.namespace "iocs" .Values.epicsConfiguration.iocs ) }}"
+  EPICS_CA_ADDR_LIST: "{{ list .Values.epicsConfiguration.address_list (include "iocnames" (dict "domain" .Values.namespace "iocs" .Values.epicsConfiguration.iocs)) | compact | join " " }}"
   EPICS_PVA_ADDR_LIST: "{{ include "pvaiocnames" (dict "domain" .Values.namespace "iocs" .Values.epicsConfiguration.iocs "defaults" .Values.iocDefaults) }}"
   EPICS_PVA_AUTO_ADDR_LIST: "NO"
   EPICS_CA_REPEATER_AUTO_START: "NO"
