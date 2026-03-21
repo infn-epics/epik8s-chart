@@ -1,0 +1,495 @@
+{{- if .Values.backend.install | default false }}
+#############################################################################
+# Backend Infrastructure Installation
+# This section creates the backend namespace and deploys infrastructure services
+#############################################################################
+
+---
+# Backend Namespace
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: {{ .Values.backend.namespace | default "backend" }}
+  labels:
+    app.kubernetes.io/managed-by: epik8s-chart
+    epik8s.infn.it/component: backend
+
+{{- if .Values.backend.secrets.enabled | default false }}
+---
+# EPIK8S Secrets for Git tokens, SSH keys, etc.
+apiVersion: v1
+kind: Secret
+metadata:
+  name: epik8s-secrets
+  namespace: {{ .Values.backend.namespace | default "backend" }}
+type: Opaque
+data:
+  {{- if .Values.backend.secrets.git_token }}
+  git_token: {{ .Values.backend.secrets.git_token | b64enc }}
+  {{- end }}
+  {{- if .Values.backend.secrets.id_rsa }}
+  id_rsa: {{ .Values.backend.secrets.id_rsa | b64enc }}
+  {{- end }}
+  {{- if .Values.backend.secrets.id_rsa_pub }}
+  id_rsa.pub: {{ .Values.backend.secrets.id_rsa_pub | b64enc }}
+  {{- end }}
+{{- end }}
+
+{{- if .Values.backend.mongodb.enabled | default false }}
+#############################################################################
+# MongoDB
+#############################################################################
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mongodb
+  namespace: {{ .Values.backend.namespace | default "backend" }}
+  labels:
+    app: mongodb
+    epik8s.infn.it/component: backend
+spec:
+  ports:
+    - port: 27017
+      targetPort: 27017
+  selector:
+    app: mongodb
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: mongodb-data
+  namespace: {{ .Values.backend.namespace | default "backend" }}
+spec:
+  accessModes:
+    - ReadWriteOnce
+  {{- if .Values.backend.mongodb.storageClass }}
+  storageClassName: {{ .Values.backend.mongodb.storageClass }}
+  {{- end }}
+  resources:
+    requests:
+      storage: {{ .Values.backend.mongodb.storage | default "10Gi" }}
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: mongodb
+  namespace: {{ .Values.backend.namespace | default "backend" }}
+spec:
+  serviceName: mongodb
+  replicas: {{ .Values.backend.mongodb.replicas | default 1 }}
+  selector:
+    matchLabels:
+      app: mongodb
+  template:
+    metadata:
+      labels:
+        app: mongodb
+    spec:
+      containers:
+      - name: mongodb
+        image: mongo:7.0
+        ports:
+        - containerPort: 27017
+        volumeMounts:
+        - name: mongodb-data
+          mountPath: /data/db
+        resources:
+          limits:
+            cpu: {{ .Values.backend.mongodb.resources.limits.cpu | default "2" }}
+            memory: {{ .Values.backend.mongodb.resources.limits.memory | default "2Gi" }}
+          requests:
+            cpu: {{ .Values.backend.mongodb.resources.requests.cpu | default "500m" }}
+            memory: {{ .Values.backend.mongodb.resources.requests.memory | default "512Mi" }}
+        {{- if .Values.backend.mongodb.auth.enabled | default false }}
+        env:
+        - name: MONGO_INITDB_ROOT_USERNAME
+          value: {{ .Values.backend.mongodb.auth.rootUser | default "root" | quote }}
+        - name: MONGO_INITDB_ROOT_PASSWORD
+          value: {{ .Values.backend.mongodb.auth.rootPassword | default "changeme" | quote }}
+        {{- if .Values.backend.mongodb.auth.database }}
+        - name: MONGO_INITDB_DATABASE
+          value: {{ .Values.backend.mongodb.auth.database | quote }}
+        {{- end }}
+        {{- end }}
+      volumes:
+      - name: mongodb-data
+        persistentVolumeClaim:
+          claimName: mongodb-data
+{{- end }}
+
+{{- if .Values.backend.elasticsearch.enabled | default false }}
+#############################################################################
+# Elasticsearch (via ArgoCD Application using Elastic Helm Chart)
+#############################################################################
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: backend-elasticsearch
+  {{- if $.Values.argocdNamespace }}
+  namespace: {{ $.Values.argocdNamespace }}
+  {{- else }}
+  namespace: argocd
+  {{- end }}
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: default
+  source:
+    repoURL: 'https://helm.elastic.co'
+    targetRevision: {{ .Values.backend.elasticsearch.chartVersion | default "8.5.1" | quote }}
+    chart: elasticsearch
+    helm:
+      values: |
+        clusterName: "elasticsearch"
+        image: "docker.elastic.co/elasticsearch/elasticsearch"
+        imageTag: "8.15.3"
+        replicas: {{ .Values.backend.elasticsearch.replicas | default 1 }}
+        minimumMasterNodes: 1
+        protocol: http
+        createCert: false
+        secret:
+          enabled: false
+        extraEnvs:
+          - name: ELASTIC_PASSWORD
+            value: "dummynotused"
+        esConfig:
+          elasticsearch.yml: |
+            xpack.security.enabled: false
+            xpack.security.http.ssl.enabled: false
+            xpack.security.transport.ssl.enabled: false
+        resources:
+          limits:
+            cpu: {{ .Values.backend.elasticsearch.resources.limits.cpu | default "4" }}
+            memory: {{ .Values.backend.elasticsearch.resources.limits.memory | default "4Gi" }}
+          requests:
+            cpu: {{ .Values.backend.elasticsearch.resources.requests.cpu | default "1" }}
+            memory: {{ .Values.backend.elasticsearch.resources.requests.memory | default "2Gi" }}
+        volumeClaimTemplate:
+          accessModes: [ "ReadWriteOnce" ]
+          resources:
+            requests:
+              storage: {{ .Values.backend.elasticsearch.storage | default "10Gi" | quote }}
+        service:
+          type: ClusterIP
+          port: 9200
+        {{- if .Values.backend.elasticsearch.ingress.enabled | default false }}
+        ingress:
+          enabled: true
+          {{- if .Values.ingressClassName }}
+          className: {{ .Values.ingressClassName | quote }}
+          {{- end }}
+          hosts:
+            - host: elasticsearch.{{ .Values.backend.domain | default .Values.epik8namespace }}
+              paths:
+                - path: /
+        {{- end }}
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: {{ .Values.backend.namespace | default "backend" }}
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+{{- end }}
+
+{{- if .Values.backend.kafka.enabled | default false }}
+#############################################################################
+# Kafka (Strimzi Operator)
+#############################################################################
+---
+# Strimzi Kafka Operator
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: backend-strimzi-operator
+  {{- if $.Values.argocdNamespace }}
+  namespace: {{ $.Values.argocdNamespace }}
+  {{- else }}
+  namespace: argocd
+  {{- end }}
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: default
+  source:
+    repoURL: 'https://strimzi.io/charts/'
+    targetRevision: {{ .Values.backend.kafka.strimzi.operatorVersion | default "0.48.0" | quote }}
+    chart: strimzi-kafka-operator
+    helm:
+      values: |
+        watchNamespaces: []
+        resources:
+          limits:
+            cpu: {{ .Values.backend.kafka.strimzi.resources.limits.cpu | default "1000m" }}
+            memory: {{ .Values.backend.kafka.strimzi.resources.limits.memory | default "768Mi" }}
+          requests:
+            cpu: {{ .Values.backend.kafka.strimzi.resources.requests.cpu | default "200m" }}
+            memory: {{ .Values.backend.kafka.strimzi.resources.requests.memory | default "512Mi" }}
+        livenessProbe:
+          timeoutSeconds: {{ .Values.backend.kafka.strimzi.livenessProbe.timeoutSeconds | default 10 }}
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: {{ .Values.backend.namespace | default "backend" }}
+  syncPolicy:
+    automated:
+      prune: false
+      selfHeal: false
+    syncOptions:
+      - CreateNamespace=true
+---
+# Kafka Node Pool (KRaft mode)
+apiVersion: kafka.strimzi.io/v1beta2
+kind: KafkaNodePool
+metadata:
+  name: {{ .Values.backend.kafka.clusterName | default "epics-kafka" }}-pool
+  namespace: {{ .Values.backend.namespace | default "backend" }}
+  labels:
+    strimzi.io/cluster: {{ .Values.backend.kafka.clusterName | default "epics-kafka" }}
+  annotations:
+    argocd.argoproj.io/sync-wave: "10"
+spec:
+  replicas: {{ .Values.backend.kafka.replicas | default 3 }}
+  roles:
+    - controller
+    - broker
+  storage:
+    type: {{ .Values.backend.kafka.storage.type | default "ephemeral" }}
+    {{- if eq (.Values.backend.kafka.storage.type | default "ephemeral") "persistent-claim" }}
+    size: {{ .Values.backend.kafka.storage.size | default "10Gi" }}
+    deleteClaim: {{ .Values.backend.kafka.storage.deleteClaim | default false }}
+    {{- if .Values.backend.kafka.storage.storageClass }}
+    class: {{ .Values.backend.kafka.storage.storageClass }}
+    {{- end }}
+    {{- end }}
+  resources:
+    limits:
+      cpu: {{ .Values.backend.kafka.resources.limits.cpu | default "2" }}
+      memory: {{ .Values.backend.kafka.resources.limits.memory | default "4Gi" }}
+    requests:
+      cpu: {{ .Values.backend.kafka.resources.requests.cpu | default "1" }}
+      memory: {{ .Values.backend.kafka.resources.requests.memory | default "2Gi" }}
+---
+# Kafka Cluster
+apiVersion: kafka.strimzi.io/v1beta2
+kind: Kafka
+metadata:
+  name: {{ .Values.backend.kafka.clusterName | default "epics-kafka" }}
+  namespace: {{ .Values.backend.namespace | default "backend" }}
+  annotations:
+    argocd.argoproj.io/sync-wave: "10"
+spec:
+  kafka:
+    version: {{ .Values.backend.kafka.version | default "4.1.0" }}
+    listeners:
+      - name: plain
+        port: 9092
+        type: internal
+        tls: false
+    config:
+      offsets.topic.replication.factor: {{ min 3 (.Values.backend.kafka.replicas | default 3 | int) }}
+      transaction.state.log.replication.factor: {{ min 3 (.Values.backend.kafka.replicas | default 3 | int) }}
+      transaction.state.log.min.isr: {{ min 2 (.Values.backend.kafka.replicas | default 3 | int) }}
+      default.replication.factor: {{ min 3 (.Values.backend.kafka.replicas | default 3 | int) }}
+      min.insync.replicas: {{ min 2 (.Values.backend.kafka.replicas | default 3 | int) }}
+  entityOperator:
+    topicOperator:
+      resources:
+        limits:
+          cpu: 500m
+          memory: 512Mi
+        requests:
+          cpu: 200m
+          memory: 512Mi
+    userOperator:
+      resources:
+        limits:
+          cpu: 500m
+          memory: 512Mi
+        requests:
+          cpu: 200m
+          memory: 512Mi
+{{- end }}
+
+{{- if .Values.backend.argocd.install | default false }}
+#############################################################################
+# ArgoCD Installation
+#############################################################################
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: backend-argocd
+  namespace: argocd
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: default
+  source:
+    repoURL: 'https://argoproj.github.io/argo-helm'
+    targetRevision: {{ .Values.backend.argocd.chartVersion | default "5.51.6" | quote }}
+    chart: argo-cd
+    helm:
+      values: |
+        server:
+          extraArgs:
+            - --insecure
+        {{- if .Values.backend.argocd.ingress.enabled | default false }}
+          ingress:
+            enabled: true
+            {{- if .Values.ingressClassName }}
+            ingressClassName: {{ .Values.ingressClassName | quote }}
+            {{- end }}
+            hosts:
+              - argocd.{{ .Values.backend.domain | default .Values.epik8namespace }}
+        {{- end }}
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: argocd
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+{{- end }}
+
+{{- if .Values.backend.metallb.enabled | default false }}
+#############################################################################
+# MetalLB (Load Balancer for bare-metal)
+#############################################################################
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: backend-metallb
+  {{- if $.Values.argocdNamespace }}
+  namespace: {{ $.Values.argocdNamespace }}
+  {{- else }}
+  namespace: argocd
+  {{- end }}
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: default
+  source:
+    repoURL: 'https://metallb.github.io/metallb'
+    targetRevision: {{ .Values.backend.metallb.chartVersion | default "0.13.12" | quote }}
+    chart: metallb
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: metallb-system
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+{{- if .Values.backend.metallb.addressPool }}
+---
+# MetalLB IP Address Pool
+apiVersion: metallb.io/v1beta1
+kind: IPAddressPool
+metadata:
+  name: default-pool
+  namespace: metallb-system
+spec:
+  addresses:
+  {{- range .Values.backend.metallb.addressPool }}
+    - {{ . }}
+  {{- end }}
+---
+# MetalLB L2 Advertisement
+apiVersion: metallb.io/v1beta1
+kind: L2Advertisement
+metadata:
+  name: default-advertisement
+  namespace: metallb-system
+spec:
+  ipAddressPools:
+    - default-pool
+{{- end }}
+{{- end }}
+
+{{- if .Values.backend.nfsStorageClass.enabled | default false }}
+#############################################################################
+# NFS Storage Class (nfs-subdir-external-provisioner)
+#############################################################################
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: backend-nfs-provisioner
+  {{- if $.Values.argocdNamespace }}
+  namespace: {{ $.Values.argocdNamespace }}
+  {{- else }}
+  namespace: argocd
+  {{- end }}
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: default
+  source:
+    repoURL: 'https://kubernetes-sigs.github.io/nfs-subdir-external-provisioner'
+    targetRevision: {{ .Values.backend.nfsStorageClass.chartVersion | default "4.0.18" | quote }}
+    chart: nfs-subdir-external-provisioner
+    helm:
+      values: |
+        nfs:
+          server: {{ .Values.backend.nfsStorageClass.server | quote }}
+          path: {{ .Values.backend.nfsStorageClass.path | quote }}
+        storageClass:
+          name: {{ .Values.backend.nfsStorageClass.name | default "nfs-client" }}
+          defaultClass: {{ .Values.backend.nfsStorageClass.defaultClass | default false }}
+          reclaimPolicy: {{ .Values.backend.nfsStorageClass.reclaimPolicy | default "Retain" }}
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: nfs-provisioner
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+{{- end }}
+
+{{- if .Values.backend.multus.enabled | default false }}
+#############################################################################
+# Multus CNI
+#############################################################################
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: backend-multus
+  {{- if $.Values.argocdNamespace }}
+  namespace: {{ $.Values.argocdNamespace }}
+  {{- else }}
+  namespace: argocd
+  {{- end }}
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: default
+  source:
+    repoURL: 'https://k8snetworkplumbingwg.github.io/helm-charts'
+    targetRevision: {{ .Values.backend.multus.chartVersion | default "4.0.2" | quote }}
+    chart: multus
+    helm:
+      values: |
+        image:
+          repository: ghcr.io/k8snetworkplumbingwg/multus-cni
+          tag: {{ .Values.backend.multus.imageTag | default "v4.0.2" }}
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: kube-system
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+{{- end }}
+
+{{- end }}

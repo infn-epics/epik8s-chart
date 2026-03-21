@@ -1,0 +1,193 @@
+{{- if .Values.beamlines }}
+#############################################################################
+# Beamline-specific Resources (Mode 1)
+# For each beamline: namespace, ArgoCD project, user, git credentials,
+# and optionally a root app pointing to the beamline's deploy chart
+#############################################################################
+
+{{- range .Values.beamlines }}
+{{- $beamlineName := .name | lower }}
+{{- $beamlineNamespace := .namespace | default $beamlineName }}
+{{- $argocdNs := $.Values.argocdNamespace | default "argocd" }}
+
+---
+# Namespace for beamline {{ $beamlineName }}
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: {{ $beamlineNamespace }}
+  labels:
+    app.kubernetes.io/managed-by: epik8s-chart
+    epik8s.infn.it/beamline: {{ $beamlineName }}
+    epik8s.infn.it/component: beamline
+
+{{- if $.Values.backend.secrets.enabled | default false }}
+---
+# Copy EPIK8S Secrets to beamline namespace
+apiVersion: v1
+kind: Secret
+metadata:
+  name: epik8s-secrets
+  namespace: {{ $beamlineNamespace }}
+type: Opaque
+data:
+  {{- if $.Values.backend.secrets.git_token }}
+  git_token: {{ $.Values.backend.secrets.git_token | b64enc }}
+  {{- end }}
+  {{- if $.Values.backend.secrets.id_rsa }}
+  id_rsa: {{ $.Values.backend.secrets.id_rsa | b64enc }}
+  {{- end }}
+  {{- if $.Values.backend.secrets.id_rsa_pub }}
+  id_rsa.pub: {{ $.Values.backend.secrets.id_rsa_pub | b64enc }}
+  {{- end }}
+{{- end }}
+
+{{- if .gitPAT }}
+---
+# ArgoCD Repository Credential for beamline {{ $beamlineName }}
+# Stored in argocd namespace so ArgoCD can use it for private repo access
+apiVersion: v1
+kind: Secret
+metadata:
+  name: repo-creds-{{ $beamlineName }}
+  namespace: {{ $argocdNs }}
+  labels:
+    app.kubernetes.io/managed-by: epik8s-chart
+    epik8s.infn.it/beamline: {{ $beamlineName }}
+    argocd.argoproj.io/secret-type: repo-creds
+type: Opaque
+stringData:
+  type: git
+  url: {{ .gitURL | default "" }}
+  password: {{ .gitPAT }}
+  username: {{ .gitUsername | default "git" }}
+{{- end }}
+
+---
+# ArgoCD AppProject for beamline {{ $beamlineName }}
+apiVersion: argoproj.io/v1alpha1
+kind: AppProject
+metadata:
+  name: {{ $beamlineName }}
+  namespace: {{ $argocdNs }}
+  labels:
+    epik8s.infn.it/beamline: {{ $beamlineName }}
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  description: "Project for beamline {{ $beamlineName }}"
+  
+  # Allow deploying to the beamline's dedicated namespace
+  destinations:
+    - namespace: {{ $beamlineNamespace }}
+      server: https://kubernetes.default.svc
+    - namespace: {{ $argocdNs }}
+      server: https://kubernetes.default.svc
+  
+  # Allow any source repository
+  sourceRepos:
+    - '*'
+  
+  # Cluster resources that can be managed
+  clusterResourceWhitelist:
+    - group: ''
+      kind: Namespace
+    - group: ''
+      kind: PersistentVolume
+  
+  # Namespace-scoped resources that can be managed
+  namespaceResourceWhitelist:
+    - group: '*'
+      kind: '*'
+  
+  # Roles for this project
+  roles:
+    - name: admin
+      description: "Admin role for beamline {{ $beamlineName }}"
+      policies:
+        - p, proj:{{ $beamlineName }}:admin, applications, *, {{ $beamlineName }}/*, allow
+        - p, proj:{{ $beamlineName }}:admin, repositories, *, *, allow
+        - p, proj:{{ $beamlineName }}:admin, clusters, *, *, allow
+      groups:
+        - {{ $beamlineName }}-admins
+    
+    - name: developer
+      description: "Developer role for beamline {{ $beamlineName }}"
+      policies:
+        - p, proj:{{ $beamlineName }}:developer, applications, get, {{ $beamlineName }}/*, allow
+        - p, proj:{{ $beamlineName }}:developer, applications, sync, {{ $beamlineName }}/*, allow
+        - p, proj:{{ $beamlineName }}:developer, applications, action/*, {{ $beamlineName }}/*, allow
+      groups:
+        - {{ $beamlineName }}-developers
+
+---
+# ArgoCD ConfigMap patch for beamline user {{ $beamlineName }}
+# Note: This creates the user account. Password is set via argocd CLI or Secret
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: argocd-cm-{{ $beamlineName }}
+  namespace: {{ $argocdNs }}
+  labels:
+    app.kubernetes.io/part-of: argocd
+    epik8s.infn.it/beamline: {{ $beamlineName }}
+  annotations:
+    argocd.argoproj.io/config-management-plugin: "true"
+data:
+  accounts.{{ $beamlineName }}: "apiKey, login"
+  accounts.{{ $beamlineName }}.enabled: "true"
+
+---
+# RBAC ConfigMap for beamline user {{ $beamlineName }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: argocd-rbac-{{ $beamlineName }}
+  namespace: {{ $argocdNs }}
+  labels:
+    app.kubernetes.io/part-of: argocd
+    epik8s.infn.it/beamline: {{ $beamlineName }}
+data:
+  policy.{{ $beamlineName }}.csv: |
+    p, {{ $beamlineName }}, applications, *, {{ $beamlineName }}/*, allow
+    p, {{ $beamlineName }}, repositories, get, *, allow
+    p, {{ $beamlineName }}, clusters, get, *, allow
+    p, {{ $beamlineName }}, projects, get, {{ $beamlineName }}, allow
+    g, {{ $beamlineName }}, proj:{{ $beamlineName }}:admin
+
+{{- if .repoURL }}
+---
+# Beamline Root App - deploys beamline chart as app-of-apps (Mode 2)
+# This creates the ArgoCD Application that points to the beamline's
+# deploy Helm chart (e.g., epik8s-sparc/deploy), which in turn uses
+# epik8s-chart to deploy IOCs, services, and applications
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: {{ $beamlineName }}-deploy-all
+  namespace: {{ $argocdNs }}
+  labels:
+    epik8s.infn.it/beamline: {{ $beamlineName }}
+    epik8s.infn.it/component: root-app
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: {{ $beamlineName }}
+  source:
+    repoURL: {{ .repoURL }}
+    path: {{ .path | default "deploy" }}
+    targetRevision: {{ .targetRevision | default "HEAD" }}
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: {{ $beamlineNamespace }}
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+      - Prune=true
+{{- end }}
+
+{{- end }}
+{{- end }}

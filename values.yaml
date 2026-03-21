@@ -56,9 +56,24 @@ backend:
   kafka:
     host: kafka-controller-headless
     port: 9092
+## Dashboard backend — K8s/ArgoCD API proxy per beamline
+dashboard:
+  backend:
+    enabled: false
+    image: "ghcr.io/infn-epics/epik8s-dashboard/k8s-backend:latest"
+    # argocdUrl: "https://argocd-server.argocd.svc"  # auto-detected
+    # argocdToken: ""  # optional, falls back to SA token
+    # allowedOrigins: "*"
+    # replicas: 1
+    # ingress: true
+    # tls: true
+
 cronjobs:
   charturl: 'https://baltig.infn.it/epics-containers/generic-application-chart.git'
-  
+
+iocs:
+  charturl: 'https://github.com/infn-epics/ioc-chart.git'
+
 syncPolicy:
     automated:
       prune: true  # Optional: Automatically remove resources not specified in Helm chart
