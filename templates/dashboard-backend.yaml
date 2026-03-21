@@ -120,7 +120,7 @@ spec:
       containers:
         - name: backend
           image: {{ .Values.dashboard.backend.image | default "ghcr.io/infn-epics/epik8s-dashboard/k8s-backend:latest" }}
-          imagePullPolicy: {{ .Values.dashboard.backend.imagePullPolicy | default "IfNotPresent" }}
+          imagePullPolicy: {{ .Values.dashboard.backend.imagePullPolicy | default "Always" }}
           ports:
             - containerPort: 3001
               name: http
