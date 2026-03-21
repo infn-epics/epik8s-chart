@@ -142,6 +142,12 @@ spec:
                 secretKeyRef:
                   name: epik8s-dashboard-backend-secret
                   key: argocd-token
+            {{- else if .Values.dashboard.backend.argocdTokenSecret }}
+            - name: ARGOCD_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.dashboard.backend.argocdTokenSecret.name }}
+                  key: {{ .Values.dashboard.backend.argocdTokenSecret.key | default "token" }}
             {{- end }}
             - name: ALLOWED_ORIGINS
               valueFrom:
