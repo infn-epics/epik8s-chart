@@ -67,6 +67,38 @@ roleRef:
   name: epik8s-dashboard-backend
 
 ---
+# ClusterRole — read/patch ArgoCD Application CRDs (lives in argocd namespace)
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: epik8s-dashboard-backend-{{ .Values.namespace }}
+  labels:
+    app.kubernetes.io/name: epik8s-dashboard-backend
+    epik8s.infn.it/beamline: {{ .Values.beamline }}
+rules:
+  - apiGroups: ["argoproj.io"]
+    resources: ["applications"]
+    verbs: ["get", "list", "patch", "delete"]
+
+---
+# ClusterRoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: epik8s-dashboard-backend-{{ .Values.namespace }}
+  labels:
+    app.kubernetes.io/name: epik8s-dashboard-backend
+    epik8s.infn.it/beamline: {{ .Values.beamline }}
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: epik8s-dashboard-backend-{{ .Values.namespace }}
+subjects:
+  - kind: ServiceAccount
+    name: epik8s-dashboard-backend
+    namespace: {{ .Values.namespace }}
+
+---
 # ConfigMap
 apiVersion: v1
 kind: ConfigMap
@@ -76,7 +108,6 @@ metadata:
   labels:
     app.kubernetes.io/name: epik8s-dashboard-backend
 data:
-  argocd-url: {{ .Values.dashboard.backend.argocdUrl | default (printf "https://argocd-server.%s.svc" (.Values.argocdNamespace | default "argocd")) | quote }}
   allowed-origins: {{ .Values.dashboard.backend.allowedOrigins | default "*" | quote }}
 
 {{- if .Values.dashboard.backend.argocdToken }}
@@ -131,11 +162,8 @@ spec:
               valueFrom:
                 fieldRef:
                   fieldPath: metadata.namespace
-            - name: ARGOCD_URL
-              valueFrom:
-                configMapKeyRef:
-                  name: epik8s-dashboard-backend-config
-                  key: argocd-url
+            - name: ARGOCD_NAMESPACE
+              value: {{ .Values.argocdNamespace | default "argocd" | quote }}
             {{- if .Values.dashboard.backend.argocdToken }}
             - name: ARGOCD_TOKEN
               valueFrom:
@@ -154,16 +182,6 @@ spec:
                 configMapKeyRef:
                   name: epik8s-dashboard-backend-config
                   key: allowed-origins
-            - name: NODE_TLS_REJECT_UNAUTHORIZED
-              value: "0"
-            {{- if .Values.http_proxy }}
-            - name: HTTP_PROXY
-              value: {{ .Values.http_proxy | quote }}
-            - name: HTTPS_PROXY
-              value: {{ .Values.https_proxy | default .Values.http_proxy | quote }}
-            - name: NO_PROXY
-              value: {{ .Values.no_proxy | default "" | quote }}
-            {{- end }}
           livenessProbe:
             httpGet:
               path: /healthz
