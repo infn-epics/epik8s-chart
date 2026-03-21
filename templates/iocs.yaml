@@ -42,7 +42,7 @@ metadata:
 spec:
   project: {{ $.Values.argocdProject | default "default" }}
   source:
-    repoURL: {{$ioc.charturl | default $.Values.iocs.charturl}}
+    repoURL: {{$ioc.charturl }}
     path: .
     {{- if $ioc.targetRevision }}
     targetRevision: {{$ioc.targetRevision}}
