@@ -43,10 +43,10 @@ rules:
     verbs: ["get", "list"]
   - apiGroups: ["apps"]
     resources: ["deployments"]
-    verbs: ["get", "list", "patch"]
+    verbs: ["get", "list", "patch", "delete"]
   - apiGroups: ["apps"]
     resources: ["statefulsets"]
-    verbs: ["get", "list"]
+    verbs: ["get", "list", "patch", "delete"]
 
 ---
 # RoleBinding
@@ -79,6 +79,12 @@ rules:
   - apiGroups: ["argoproj.io"]
     resources: ["applications"]
     verbs: ["get", "list", "patch", "delete"]
+  - apiGroups: [""]
+    resources: ["nodes"]
+    verbs: ["get", "list"]
+  - apiGroups: ["metrics.k8s.io"]
+    resources: ["nodes", "pods"]
+    verbs: ["get", "list"]
 
 ---
 # ClusterRoleBinding
