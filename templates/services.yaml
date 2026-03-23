@@ -67,6 +67,8 @@ spec:
           http_proxy: {{ $.Values.http_proxy | quote }}
           https_proxy: {{ $.Values.https_proxy | quote }}
           no_proxy: {{ $.Values.no_proxy | quote }}
+          giturl: {{ $.Values.giturl | quote }}
+          gitrev: {{ $.Values.gitrev | quote }}
           {{- if $.Values.template }}
           template: {{ $.Values.template | quote }}
           {{- else }}
