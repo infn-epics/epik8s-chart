@@ -1,0 +1,172 @@
+{{- range $key, $value := .Values.softiocs }}
+{{- $softioc := $value }}
+{{- if and (kindIs "map" $softioc) (not (default false $softioc.disable)) }}
+{{- $iocName := $softioc.name | default $key | lower }}
+
+## SoftIOC {{ $iocName }}
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: {{ $.Values.beamline }}-{{ $iocName }}-softioc
+  {{- if $.Values.argocdNamespace }}
+  namespace: {{ $.Values.argocdNamespace }}
+  {{- else }}
+  namespace: argocd
+  {{- end }}
+  labels:
+    rootapp: {{ $.Chart.Name }}
+    rootappver: {{ $.Chart.Version }}
+    beamline: {{ $.Values.beamline | quote }}
+    revision: {{ $.Values.targetRevision }}
+    iocname: {{ $iocName }}
+    type: "softioc"
+    devtype: "softioc"
+    {{- if $softioc.module }}
+    module: {{ $softioc.module | quote }}
+    {{- end }}
+    {{- if $softioc.softiocType }}
+    softioc-type: {{ $softioc.softiocType | quote }}
+    {{- end }}
+    {{- if $softioc.devgroup }}
+    devgroup: {{ $softioc.devgroup | quote }}
+    {{- end }}
+spec:
+  project: {{ $.Values.argocdProject | default "default" }}
+  source:
+    repoURL: {{ $softioc.charturl | default $.Values.softiocs.charturl | default $.Values.iocs.charturl }}
+    path: .
+    {{- if $softioc.targetRevision }}
+    targetRevision: {{ $softioc.targetRevision }}
+    {{- else }}
+    targetRevision: {{ $.Values.targetRevision }}
+    {{- end }}
+    helm:
+      releaseName: {{ $iocName }}
+      values: |
+          {{- toYaml $softioc | nindent 10 }}
+
+          beamline: {{ $.Values.beamline | quote }}
+          iocname: {{ $iocName | quote }}
+          devtype: "softioc"
+
+          {{- if not $softioc.image }}
+          image: {{ $.Values.softiocs.image | default "ghcr.io/infn-epics/epik8s-beamline-controller" }}
+          {{- end }}
+
+          {{- if not $softioc.start }}
+          start: /epics/ioc/config/start.sh
+          {{- end }}
+
+          {{- if $softioc.nfsMounts }}
+          nfsMounts:
+          {{- toYaml $softioc.nfsMounts | nindent 10 }}
+          {{- else }}
+          {{- if $.Values.nfsMounts }}
+          nfsMounts:
+          {{- toYaml $.Values.nfsMounts | nindent 10 }}
+          {{- end }}
+          {{- end }}
+
+          {{- if $.Values.baseIp }}
+          staticIP: {{ include "allocateIpFromName" (dict "name" $iocName "namespace" $.Values.namespace "baseIp" $.Values.baseIp "startIp" $.Values.startIp) }}
+          {{- end }}
+          {{- if $.Values.epik8s_secrets }}
+          epik8s_secrets: {{ $.Values.epik8s_secrets }}
+          {{- end }}
+          http_proxy: {{ $.Values.http_proxy | quote }}
+          https_proxy: {{ $.Values.https_proxy | quote }}
+          no_proxy: {{ $.Values.no_proxy | quote }}
+
+          {{- if $softioc.enable_ingress }}
+          ingress:
+            enabled: true
+            {{- if $.Values.ingressClassName }}
+            className: {{ $.Values.ingressClassName }}
+            {{- end }}
+            hosts:
+              - host: {{ printf "%s-%s.%s" $.Values.beamline $iocName $.Values.epik8namespace }}
+                paths:
+                  - path: /
+                    pathType: Prefix
+          service:
+            http:
+              enable: true
+              port: 8080
+          {{- end }}
+
+          {{- if $.Values.epicsConfiguration.name }}
+          epicsConfiguration:
+            name: {{ $.Values.epicsConfiguration.name | quote }}
+            {{- if $softioc.usegateway }}
+            gateway: gateway.{{ $.Values.namespace }}.svc
+            {{- end }}
+          {{- end }}
+
+          {{- if not $softioc.gitRepoConfig }}
+          {{- if or $softioc.gitinit $softioc.gitpath }}
+          gitRepoConfig:
+            url: {{ $.Values.giturl }}
+            {{- if $softioc.gitpath }}
+            path: {{ $softioc.gitpath }}
+            {{- else }}
+            path: config/softiocs/{{ $iocName }}
+            {{- end }}
+            {{- if $softioc.gitrev }}
+            branch: {{ $softioc.gitrev }}
+            {{- else }}
+            branch: {{ $.Values.gitrev }}
+            {{- end }}
+            {{- if $softioc.token }}
+            token: {{ $softioc.token }}
+            {{- else }}
+            token: {{ $.Values.token }}
+            {{- end }}
+          {{- end }}
+          {{- end }}
+
+          {{- if not $softioc.resources }}
+          resources:
+            limits:
+              cpu: 500m
+              memory: 256Mi
+            requests:
+              cpu: 100m
+              memory: 64Mi
+          {{- end }}
+
+          {{- if $.Values.serviceAccountName }}
+          serviceAccount:
+            create: false
+            annotations: {}
+            name: {{ $.Values.serviceAccountName }}
+          {{- end }}
+
+  destination:
+    server: 'https://kubernetes.default.svc'
+    namespace: {{ $.Values.namespace | quote }}
+  {{- if $softioc.autosync }}
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+  {{- end }}
+  info:
+    - name: iocname
+      value: {{ $iocName | quote }}
+    {{- if $softioc.iocprefix }}
+    - name: iocprefix
+      value: {{ $softioc.iocprefix | quote }}
+    {{- end }}
+    {{- if $softioc.description }}
+    - name: description
+      value: {{ $softioc.description | quote }}
+    {{- end }}
+    {{- if $softioc.softiocType }}
+    - name: softiocType
+      value: {{ $softioc.softiocType | quote }}
+    {{- end }}
+
+{{- end }}
+
+---
+{{- end }}
