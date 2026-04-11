@@ -7,14 +7,22 @@
 
 {{- range $index, $element := $list }}
   {{- $ioc := $element }}
+  {{- $pva := true }}
   {{- if $defaults }}
     {{- $tmpl := $element.template | default $element.devtype | default "" }}
     {{- if and $tmpl (hasKey $defaults $tmpl) }}
-      {{- $ioc = mustMergeOverwrite (deepCopy (index $defaults $tmpl)) $element }}
+      {{- $defMap := index $defaults $tmpl }}
+      {{- $ioc = mustMergeOverwrite (deepCopy $defMap) $element }}
+      {{- if hasKey $defMap "pva" }}
+        {{- $pva = index $defMap "pva" }}
+      {{- end }}
     {{- end }}
   {{- end }}
+  {{- if hasKey $element "pva" }}
+    {{- $pva = $element.pva }}
+  {{- end }}
 
-  {{- if and (not $ioc.disable) (ne $ioc.pva false) }}
+  {{- if and (not $ioc.disable) $pva }}
     {{- if $ioc.host }}
       {{- $ips := 0 }}
       {{- if $ioc.networks }}
