@@ -89,7 +89,7 @@ data:
     {{- if .Values.epicsConfiguration.services.pvagateway }}
       org.phoebus.pv.pva/epics_pva_name_servers={{- include "pvagateway-service" . }}
     {{- else }}
-      org.phoebus.pv.pva/epics_pva_name_servers={{ include "pvaiocnames" (dict "domain" .Values.namespace "iocs" .Values.epicsConfiguration.iocs ) }}
+      org.phoebus.pv.pva/epics_pva_name_servers={{ include "pvaiocnames" (dict "domain" .Values.namespace "iocs" .Values.epicsConfiguration.iocs "defaults" .Values.iocDefaults) }}
     {{- end }}
     org.phoebus.pva/pva_auto_addr_list=false
 
