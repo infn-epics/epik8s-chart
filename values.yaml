@@ -68,9 +68,11 @@ dashboard:
     # ingress: true
     # tls: true
 
-softiocs:
+softiocDefaults:
   charturl: 'https://github.com/infn-epics/ioc-chart.git'
-  image: 'ghcr.io/infn-epics/epik8s-beamline-controller'
+  image: 'ghcr.io/infn-epics/epik8s-softioc-mng'
+
+softiocs: []
 
 cronjobs:
   charturl: 'https://baltig.infn.it/epics-containers/generic-application-chart.git'

@@ -1,7 +1,10 @@
-{{- range $key, $value := .Values.softiocs }}
-{{- $softioc := $value }}
-{{- if and (kindIs "map" $softioc) (not (default false $softioc.disable)) }}
-{{- $iocName := $softioc.name | default $key | lower }}
+{{- range .Values.softiocs }}
+{{- $softioc := . }}
+{{- if $.Values.softiocDefaults }}
+  {{- $softioc = mustMergeOverwrite (deepCopy $.Values.softiocDefaults) . }}
+{{- end }}
+{{- if or (not $softioc.disable) (eq $softioc.disable false) }}
+{{- $iocName := $softioc.name | lower }}
 
 ## SoftIOC {{ $iocName }}
 apiVersion: argoproj.io/v1alpha1
@@ -33,7 +36,7 @@ metadata:
 spec:
   project: {{ $.Values.argocdProject | default "default" }}
   source:
-    repoURL: {{ $softioc.charturl | default $.Values.softiocs.charturl | default $.Values.iocs.charturl }}
+    repoURL: {{ $softioc.charturl | default $.Values.iocs.charturl }}
     path: .
     {{- if $softioc.targetRevision }}
     targetRevision: {{ $softioc.targetRevision }}
@@ -50,7 +53,7 @@ spec:
           devtype: "softioc"
 
           {{- if not $softioc.image }}
-          image: {{ $.Values.softiocs.image | default "ghcr.io/infn-epics/epik8s-beamline-controller" }}
+          image: ghcr.io/infn-epics/epik8s-softioc-mng
           {{- end }}
 
           {{- if not $softioc.start }}
