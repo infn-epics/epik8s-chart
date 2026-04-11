@@ -14,7 +14,7 @@
     {{- end }}
   {{- end }}
 
-  {{- if and (not $ioc.disable) ($ioc.pva) }}
+  {{- if and (not $ioc.disable) (ne $ioc.pva false) }}
     {{- if $ioc.host }}
       {{- $ips := 0 }}
       {{- if $ioc.networks }}
