@@ -98,7 +98,12 @@ spec:
           epicsConfiguration:
             name: {{ $.Values.epicsConfiguration.name | quote}}
             {{- if $ioc.usegateway }}
-            gateway: gateway.{{ $.Values.namespace }}.svc
+            {{- if $.Values.epicsConfiguration.services.gateway }}
+            gateway: {{- include "gateway-service" . }}.{{ $.Values.namespace }}.svc
+            {{- end }}
+            {{- if $.Values.epicsConfiguration.services.pvagateway }}
+            pvagateway: {{- include "pvagateway-service" . }}.{{ $.Values.namespace }}.svc
+            {{- end }}
             {{- end }}
           {{- end }}
           {{- if and (not $.Values.gitRepoConfig) (or $ioc.gitinit $ioc.gitpath $ioc.host)}}
