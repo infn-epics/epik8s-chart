@@ -143,8 +143,12 @@ spec:
           epicsConfiguration:
             name: {{ $.Values.epicsConfiguration.name | quote}}
             {{- if $value.usegateway }}
-            gateway: gateway.{{ $.Values.namespace }}.svc
-            pvagateway: pvagateway.{{ $.Values.namespace }}.svc
+            {{- if $.Values.epicsConfiguration.services.gateway }}
+            gateway: {{ include "gateway-service" $ }}
+            {{- end }}
+            {{- if $.Values.epicsConfiguration.services.pvagateway }}
+            pvagateway: {{ include "pvagateway-service" $ }}
+            {{- end }}
             {{- end }}
             ca_addr_list: "{{ include "iocnames"  (dict "iocs" $.Values.epicsConfiguration.iocs "domain" $.Values.namespace) }}"
             pva_addr_list: "{{ include "pvaiocnames"  (dict "iocs" $.Values.epicsConfiguration.iocs "domain" $.Values.namespace "defaults" $.Values.iocDefaults "softiocs" $.Values.softiocs) }}"
