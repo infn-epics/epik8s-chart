@@ -1,0 +1,92 @@
+---
+# ServiceAccount for the PVA discovery controller
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: pva-discovery
+  labels:
+    app.kubernetes.io/name: pva-discovery
+    app.kubernetes.io/component: controller
+
+---
+# Role: watch/list pods, read/update ConfigMaps, patch Deployments/StatefulSets
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: pva-discovery
+rules:
+  - apiGroups: [""]
+    resources: [pods]
+    verbs: [get, list, watch]
+  - apiGroups: [""]
+    resources: [configmaps]
+    verbs: [get, list, create, update, patch]
+  - apiGroups: [apps]
+    resources: [deployments, statefulsets]
+    verbs: [get, list, patch]
+
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: pva-discovery
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: pva-discovery
+subjects:
+  - kind: ServiceAccount
+    name: pva-discovery
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: pva-discovery
+  labels:
+    app.kubernetes.io/name: pva-discovery
+    app.kubernetes.io/component: controller
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: pva-discovery
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: pva-discovery
+    spec:
+      serviceAccountName: pva-discovery
+      containers:
+        - name: controller
+          image: ghcr.io/infn-epics/pva-discovery:latest  # adjust to your registry
+          env:
+            # NAMESPACE is auto-detected from the service-account mount
+            - name: CONFIGMAP_NAME
+              value: "epics-configuration"
+            - name: CONFIGMAP_KEY
+              value: "EPICS_PVA_NAME_SERVERS"
+            - name: LABEL_SELECTOR
+              value: "epics-pva=true"
+            # Space-separated static entries (e.g. external hosts)
+            - name: EXTRA_NAME_SERVERS
+              value: ""
+            # Set to "true" to rolling-restart consumers when the list changes
+            - name: TRIGGER_ROLLOUT
+              value: "false"
+            # Label selector for Deployments/StatefulSets to restart
+            - name: ROLLOUT_LABELS
+              value: "epics-pva-consumer=true"
+            - name: LOG_LEVEL
+              value: "INFO"
+          resources:
+            requests:
+              cpu: 10m
+              memory: 32Mi
+            limits:
+              cpu: 100m
+              memory: 64Mi
+          securityContext:
+            runAsNonRoot: true
+            readOnlyRootFilesystem: true
+            allowPrivilegeEscalation: false
