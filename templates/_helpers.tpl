@@ -2,6 +2,7 @@
 {{- $list := .iocs }}
 {{- $domain := printf "%s" .domain}}
 {{- $defaults := .defaults }}
+{{- $softiocs := .softiocs }}
 
 {{- $commaSeparatedString := "" }}
 
@@ -48,6 +49,17 @@
       {{- else }}
         {{- $commaSeparatedString = printf "%s.%s.svc %s" ($ioc.name | lower) $domain $commaSeparatedString }}
       {{- end }}
+    {{- end }}
+  {{- end }}
+{{- end }}
+
+{{- range $index, $softioc := $softiocs }}
+  {{- if not $softioc.disable }}
+    {{- if $softioc.pva_server_port }}
+      {{- $portAsString := int $softioc.pva_server_port }}
+      {{- $commaSeparatedString = printf "%s.%s.svc:%d %s" ($softioc.name | lower) $domain $portAsString $commaSeparatedString }}
+    {{- else }}
+      {{- $commaSeparatedString = printf "%s.%s.svc %s" ($softioc.name | lower) $domain $commaSeparatedString }}
     {{- end }}
   {{- end }}
 {{- end }}

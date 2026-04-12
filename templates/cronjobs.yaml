@@ -140,7 +140,7 @@ spec:
             pvagateway: pvagateway.{{ $.Values.namespace }}.svc
             {{- end }}
             ca_addr_list: "{{ include "iocnames"  (dict "iocs" $.Values.epicsConfiguration.iocs "domain" $.Values.namespace) }}"
-            pva_addr_list: "{{ include "pvaiocnames"  (dict "iocs" $.Values.epicsConfiguration.iocs "domain" $.Values.namespace "defaults" $.Values.iocDefaults) }}"
+            pva_addr_list: "{{ include "pvaiocnames"  (dict "iocs" $.Values.epicsConfiguration.iocs "domain" $.Values.namespace "defaults" $.Values.iocDefaults "softiocs" $.Values.softiocs) }}"
 
           {{- end }}
   
