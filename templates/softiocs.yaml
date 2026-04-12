@@ -102,10 +102,10 @@ spec:
             name: {{ $.Values.epicsConfiguration.name | quote }}
             {{- if $softioc.usegateway }}
             {{- if $.Values.epicsConfiguration.services.gateway }}
-            gateway: {{- include "gateway-service" $ }}.{{ $.Values.namespace }}.svc
+            gateway: {{ include "gateway-service" $ }}
             {{- end }}
             {{- if $.Values.epicsConfiguration.services.pvagateway }}
-            pvagateway: {{- include "pvagateway-service" $ }}.{{ $.Values.namespace }}.svc
+            pvagateway: {{ include "pvagateway-service" $ }}
             {{- end }}
             {{- end }}
           {{- end }}
