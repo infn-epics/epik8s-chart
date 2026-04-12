@@ -100,7 +100,7 @@ spec:
           {{- if $.Values.epicsConfiguration.name }}
           epicsConfiguration:
             name: {{ $.Values.epicsConfiguration.name | quote }}
-            {{- if $sofioc.usegateway }}
+            {{- if $softioc.usegateway }}
             {{- if $.Values.epicsConfiguration.services.gateway }}
             gateway: {{- include "gateway-service" . }}.{{ $.Values.namespace }}.svc
             {{- end }}
