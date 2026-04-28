@@ -188,6 +188,20 @@ spec:
                 configMapKeyRef:
                   name: epik8s-dashboard-backend-config
                   key: allowed-origins
+            {{- with (.Values.dashboard.backend.filesBasePath | default "/nfs") }}
+            - name: FILES_BASE_PATH
+              value: {{ . | quote }}
+            {{- end }}
+          {{- if or .Values.dashboard.backend.nfsMounts .Values.nfsMounts }}
+          volumeMounts:
+            {{- range (.Values.dashboard.backend.nfsMounts | default .Values.nfsMounts) }}
+            - name: nfs-{{ .name }}
+              mountPath: {{ .mountPath }}
+              {{- if .readOnly }}
+              readOnly: {{ .readOnly }}
+              {{- end }}
+            {{- end }}
+          {{- end }}
           livenessProbe:
             httpGet:
               path: /healthz
@@ -211,6 +225,15 @@ spec:
               cpu: 200m
               memory: 256Mi
             {{- end }}
+      {{- if or .Values.dashboard.backend.nfsMounts .Values.nfsMounts }}
+      volumes:
+        {{- range (.Values.dashboard.backend.nfsMounts | default .Values.nfsMounts) }}
+        - name: nfs-{{ .name }}
+          nfs:
+            server: {{ .server | quote }}
+            path: {{ .path | quote }}
+        {{- end }}
+      {{- end }}
 
 ---
 # Service
