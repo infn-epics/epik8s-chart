@@ -116,6 +116,8 @@ data:
     {{- end}}
     {{- if .Values.epicsConfiguration.services.saveandrestore }}
     org.phoebus.applications.saveandrestore.client/jmasar.service.url=http://{{- include "saveandrestore-url" . }}/save-restore
+    org.phoebus.applications.saveandrestore.client.api/username=epics
+    org.phoebus.applications.saveandrestore.client.api/password=epics
     {{- end}}
     {{- if .Values.epicsConfiguration.services.scanserver }}
     org.csstudio.scan.client/host=http://{{- include "scanserver-url" . }}
