@@ -146,6 +146,8 @@ spec:
             {{- if $.Values.epicsConfiguration.services.gateway }}
             gateway: {{ include "gateway-service" $ }}
             {{- end }}
+            {{- end }}
+            {{- if or $value.usegateway $value.pva }}
             {{- if $.Values.epicsConfiguration.services.pvagateway }}
             pvagateway: {{ include "pvagateway-service" $ }}
             {{- end }}
