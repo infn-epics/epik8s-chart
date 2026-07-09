@@ -118,6 +118,11 @@ data:
     org.phoebus.applications.saveandrestore.client/jmasar.service.url=http://{{- include "saveandrestore-url" . }}/save-restore
     org.phoebus.applications.saveandrestore.client.api/username=epics
     org.phoebus.applications.saveandrestore.client.api/password=epics
+    {{- if and .Values.epicsConfiguration.services.saveandrestore.oauth2 .Values.epicsConfiguration.services.saveandrestore.oauth2.enabled }}
+    org.phoebus.security/enable_oauth2=true
+    org.phoebus.security/oauth2_auth_url={{ .Values.epicsConfiguration.services.saveandrestore.oauth2.issueUri }}
+    org.phoebus.security/oauth2_realm={{ base .Values.epicsConfiguration.services.saveandrestore.oauth2.issueUri }}
+    {{- end}}
     {{- end}}
     {{- if .Values.epicsConfiguration.services.scanserver }}
     org.csstudio.scan.client/host=http://{{- include "scanserver-url" . }}
