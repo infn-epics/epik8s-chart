@@ -72,7 +72,47 @@ spec:
           {{- if $.Values.template }}
           template: {{ $.Values.template | quote }}
           {{- else }}
-          {{- if and (not $.Values.gitRepoConfig) (or $value.gitinit $value.gitpath) }}
+          {{- if $value.gitRepoConfig }}
+          gitRepoConfig:
+            {{- if $value.gitRepoConfig.url }}
+            url: {{ $value.gitRepoConfig.url }}
+            {{- else }}
+            url: {{ $.Values.giturl }}
+            {{- end }}
+            {{- if $value.gitRepoConfig.path }}
+            path: {{ $value.gitRepoConfig.path }}
+            {{- else if $value.gitpath }}
+            path: {{ $value.gitpath }}
+            {{- else }}
+            path: config/services/{{$key}}
+            {{- end }}
+            {{- if $value.gitRepoConfig.branch }}
+            branch: {{ $value.gitRepoConfig.branch }}
+            {{- else if $value.gitrev }}
+            branch: {{ $value.gitrev }}
+            {{- else }}
+            branch: {{ $.Values.gitrev }}
+            {{- end }}
+            {{- if $value.gitRepoConfig.token }}
+            token: {{ $value.gitRepoConfig.token }}
+            {{- else if $value.token }}
+            token: {{ $value.token }}
+            {{- else }}
+            token: {{ $.Values.token }}
+            {{- end }}
+            {{- if $value.gitRepoConfig.exec }}
+            exec: {{ $value.gitRepoConfig.exec }}
+            {{- end }}
+            {{- if $value.gitRepoConfig.ansiblePlaybook }}
+            ansiblePlaybook: {{ $value.gitRepoConfig.ansiblePlaybook }}
+            {{- end }}
+            {{- if hasKey $value.gitRepoConfig "init" }}
+            init: {{ $value.gitRepoConfig.init }}
+            {{- end }}
+            {{- if $value.gitRepoConfig.claim }}
+            claim: {{ $value.gitRepoConfig.claim }}
+            {{- end }}
+          {{- else if and (not $.Values.gitRepoConfig) (or $value.gitinit $value.gitpath) }}
           gitRepoConfig:
             url: {{$.Values.giturl}}
             {{- if $value.gitpath }}
@@ -92,7 +132,7 @@ spec:
             {{- end }}
             {{- if $value.exec }}
             exec: {{$value.exec}}
-            {{- end }}  
+            {{- end }}
           {{- end }}
           {{- end }}
           {{- if $.Values.serviceAccountName }}
@@ -146,6 +186,8 @@ spec:
             {{- if $.Values.epicsConfiguration.services.gateway }}
             gateway: {{ include "gateway-service" $ }}
             {{- end }}
+            {{- end }}
+            {{- if or $value.usegateway $value.pva }}
             {{- if $.Values.epicsConfiguration.services.pvagateway }}
             pvagateway: {{ include "pvagateway-service" $ }}
             {{- end }}

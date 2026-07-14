@@ -1,10 +1,18 @@
 {{- range .Values.epicsConfiguration.iocs }}
 {{- $ioc := . }}
+{{- $pva := true }}
 {{- if $.Values.iocDefaults }}
   {{- $tmpl := .template | default .devtype | default "" }}
   {{- if and $tmpl (hasKey $.Values.iocDefaults $tmpl) }}
-    {{- $ioc = mustMergeOverwrite (deepCopy (index $.Values.iocDefaults $tmpl)) . }}
+    {{- $defMap := index $.Values.iocDefaults $tmpl }}
+    {{- $ioc = mustMergeOverwrite (deepCopy $defMap) . }}
+    {{- if hasKey $defMap "pva" }}
+      {{- $pva = index $defMap "pva" }}
+    {{- end }}
   {{- end }}
+{{- end }}
+{{- if hasKey . "pva" }}
+  {{- $pva = .pva }}
 {{- end }}
 ## IOC  {{$ioc.name | lower }}
 {{- if or ( not $ioc.disable) ( eq $ioc.disable false) }}
@@ -72,7 +80,7 @@ spec:
           iocname: "{{ $ioc.name | lower }}"
           
 
-          {{- if $.Values.baseIp }}
+          {{- if and $.Values.baseIp (or (not $pva) $ioc.staticIp) }}
           staticIP: {{ include "allocateIpFromName" (dict "name" $ioc.name "namespace" $.Values.namespace "baseIp" $.Values.baseIp "startIp" $.Values.startIp) }}
           {{- end }}
           {{- if $.Values.epik8s_secrets}}

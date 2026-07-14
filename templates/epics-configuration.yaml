@@ -69,13 +69,14 @@ data:
 
   {{- if .Values.epicsConfiguration.services.console }}
   CONSOLE: 'http://{{- include "console-url" . }}'
-  
+  {{- end }}
+
   {{ .Values.beamline }}-configuration.yaml: |
     {{- toYaml .Values | nindent 8 }}
-  
-    
+
+  {{- if .Values.epicsConfiguration.services.console }}
   phoebus_settings.ini: |
-    
+
     {{- if .Values.epicsConfiguration.services.gateway }}
     org.phoebus.pv.ca/addr_list={{- include "gateway-service" . }}
     org.phoebus.pv.ca/auto_addr_list=false

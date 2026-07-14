@@ -70,7 +70,7 @@ spec:
           {{- end }}
           {{- end }}
 
-          {{- if $.Values.baseIp }}
+          {{- if and $.Values.baseIp $softioc.staticIp }}
           staticIP: {{ include "allocateIpFromName" (dict "name" $iocName "namespace" $.Values.namespace "baseIp" $.Values.baseIp "startIp" $.Values.startIp) }}
           {{- end }}
           {{- if $.Values.epik8s_secrets }}
