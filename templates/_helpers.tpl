@@ -150,6 +150,61 @@
 {{- end }}
 {{- end }}
 
+{{/*
+argus-computed: dynamically-derived defaults for the "argus" service,
+reusing the same address helpers every other Phoebus-facing service in
+this chart already relies on (gateway-service, pvagateway-service,
+archiver-url, channelfinder-url, olog-url). Emits YAML text merged via
+fromYaml in templates/services.yaml -- each field is only emitted when its
+backing service is actually present in this beamline, so an absent
+backend is simply omitted rather than emitted empty/null.
+*/}}
+{{- define "argus-computed" -}}
+argusMcp:
+  backends:
+    kubernetes:
+      namespaceDefault: {{ .Values.namespace | quote }}
+    {{- if or (hasKey .Values.epicsConfiguration.services "gateway") (hasKey .Values.epicsConfiguration.services "pvagateway") }}
+    epics:
+      {{- if hasKey .Values.epicsConfiguration.services "gateway" }}
+      caAddrList: {{ include "gateway-service" . | quote }}
+      {{- end }}
+      {{- if hasKey .Values.epicsConfiguration.services "pvagateway" }}
+      pvaAddrList: {{ include "pvagateway-service" . | quote }}
+      {{- end }}
+    {{- end }}
+    {{- if hasKey .Values.epicsConfiguration.services "archiver" }}
+    archiver:
+      baseUrl: {{ printf "http://%s" (include "archiver-url" .) | quote }}
+    {{- end }}
+    {{- if hasKey .Values.epicsConfiguration.services "channelfinder" }}
+    channelfinder:
+      baseUrl: {{ printf "http://%s" (include "channelfinder-url" .) | quote }}
+    {{- end }}
+    {{- if hasKey .Values.epicsConfiguration.services "olog" }}
+    logbook:
+      baseUrl: {{ printf "http://%s" (include "olog-url" .) | quote }}
+    {{- end }}
+librechat:
+  ingress:
+    hosts:
+      - host: {{ printf "%s-argus.%s" .Values.beamline .Values.epik8namespace | quote }}
+        paths:
+          - path: /
+            pathType: ImplementationSpecific
+  librechat:
+    configEnv:
+      {{- if .Values.http_proxy }}
+      HTTP_PROXY: {{ .Values.http_proxy | quote }}
+      {{- end }}
+      {{- if .Values.https_proxy }}
+      HTTPS_PROXY: {{ .Values.https_proxy | quote }}
+      {{- end }}
+      {{- if .Values.no_proxy }}
+      NO_PROXY: {{ .Values.no_proxy | quote }}
+      {{- end }}
+{{- end -}}
+
 
 
 {{- define "allocateIpFromName" -}}

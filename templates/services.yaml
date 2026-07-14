@@ -1,4 +1,9 @@
 {{- range $key, $value := .Values.epicsConfiguration.services }}
+{{- if eq ($key | lower) "argus" }}
+{{- $computed := fromYaml (include "argus-computed" $) }}
+{{- $merged := mustMergeOverwrite (deepCopy (default dict $.Values.argusDefaults)) $computed }}
+{{- $value = mustMergeOverwrite $merged (default dict $value) }}
+{{- end }}
 {{- if or ( not $value.disable) ( eq $value.disable false) }}
 
 # Service {{$key | lower}}
@@ -55,7 +60,7 @@ spec:
           {{- end}}
           {{- end}}
           
-          {{- toYaml . | nindent 10 }}
+          {{- toYaml $value | nindent 10 }}
           {{- if $.Values.epik8s_secrets}}
           epik8s_secrets: {{$.Values.epik8s_secrets}}
           {{- end }}

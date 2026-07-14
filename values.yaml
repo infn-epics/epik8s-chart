@@ -38,6 +38,32 @@ usegateway: true # by default use gateway
 #     template: "agilent-vac"
 #     autosync: false
 
+## argusDefaults: chart-wide defaults for the "argus" service (ARGUS MCP +
+## LibreChat). Applied only when a beamline defines
+## epicsConfiguration.services.argus — that block's own values always win
+## over these (mustMergeOverwrite, same pattern as iocDefaults above).
+## Backend addresses (EPICS gateway, archiver, channelfinder, olog) and the
+## LibreChat ingress host / proxy env vars are computed per-beamline instead
+## (see the "argus-computed" helper + the "argus" branch in
+## templates/services.yaml) and merged in underneath these static defaults.
+argusDefaults:
+  charturl: 'https://github.com/infn-epics/argus-helm-chart.git'
+  targetRevision: main
+  autosync: false
+  enable_ingress: true
+  auth:
+    mode: basic
+    basic:
+      allowRegistration: true
+      allowPasswordReset: true
+  argusMcp:
+    enabled: true
+    image:
+      repository: ghcr.io/infn-epics/argus-mcp-server
+      tag: latest
+    rbac:
+      clusterWide: false
+
 http_proxy:
 https_proxy:
 no_proxy:
