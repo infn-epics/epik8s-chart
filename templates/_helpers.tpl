@@ -154,10 +154,10 @@
 argus-computed: dynamically-derived defaults for the "argus" service,
 reusing the same address helpers every other Phoebus-facing service in
 this chart already relies on (gateway-service, pvagateway-service,
-archiver-url, channelfinder-url, olog-url). Emits YAML text merged via
-fromYaml in templates/services.yaml -- each field is only emitted when its
-backing service is actually present in this beamline, so an absent
-backend is simply omitted rather than emitted empty/null.
+archiver-url, channelfinder-url, olog-url, saveandrestore-url). Emits YAML
+text merged via fromYaml in templates/services.yaml -- each field is only
+emitted when its backing service is actually present in this beamline, so
+an absent backend is simply omitted rather than emitted empty/null.
 */}}
 {{- define "argus-computed" -}}
 argusMcp:
@@ -184,6 +184,10 @@ argusMcp:
     {{- if hasKey .Values.epicsConfiguration.services "olog" }}
     logbook:
       baseUrl: {{ printf "http://%s" (include "olog-url" .) | quote }}
+    {{- end }}
+    {{- if hasKey .Values.epicsConfiguration.services "saveandrestore" }}
+    saverestore:
+      baseUrl: {{ printf "http://%s/save-restore" (include "saveandrestore-url" .) | quote }}
     {{- end }}
 librechat:
   ingress:
