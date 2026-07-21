@@ -63,6 +63,17 @@ argusDefaults:
       tag: latest
     rbac:
       clusterWide: false
+    backends:
+      # The platform's shared Loki instance (epik8s-platform's "logging"
+      # domain) is one cluster-wide instance, not one per beamline -- unlike
+      # archiver/channelfinder/olog below, which are computed per-beamline in
+      # the "argus-computed" helper, this is a static default so every
+      # beamline's argus-mcp gets pod log history with zero per-beamline
+      # config. Only meaningful on clusters that actually deployed that
+      # domain; harmless (argus-mcp just treats Loki as unconfigured) where
+      # it hasn't been.
+      loki:
+        baseUrl: "http://epik8s-platform-loki.logging.svc.cluster.local:3100"
 
 http_proxy:
 https_proxy:
