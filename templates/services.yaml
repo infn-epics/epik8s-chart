@@ -4,7 +4,7 @@
 {{- $merged := mustMergeOverwrite (deepCopy (default dict $.Values.argusDefaults)) $computed }}
 {{- $value = mustMergeOverwrite $merged (default dict $value) }}
 {{- end }}
-{{- if or ( not $value.disable) ( eq $value.disable false) }}
+{{- if and (or ( not $value.disable) ( eq $value.disable false)) $value.charturl }}
 
 # Service {{$key | lower}}
 apiVersion: argoproj.io/v1alpha1
@@ -26,7 +26,7 @@ metadata:
 spec:
   project: {{ $.Values.argocdProject | default "default" }}
   source:
-    repoURL: {{ $value.charturl }} 
+    repoURL: {{ $value.charturl | quote }}
     {{- if $value.chart}}
     chart: {{$value.chart}}
     {{- else}}
