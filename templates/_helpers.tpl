@@ -96,57 +96,57 @@
 
 {{- define "archiver-url" -}}
 {{- if hasKey .Values.epicsConfiguration.services "archiver" }}
-{{- printf "%s-archiver.%s" .Values.beamline .Values.epik8namespace }}
+{{- printf "%s-archiver.%s" (.Values.beamline | lower) .Values.epik8namespace }}
 {{- end }}
 {{- end }}
 
 
 {{- define "channelfinder-url" -}}
 {{- if hasKey .Values.epicsConfiguration.services "channelfinder" }}
-{{- printf "%s-channelfinder.%s" .Values.beamline .Values.epik8namespace }}
+{{- printf "%s-channelfinder.%s" (.Values.beamline | lower) .Values.epik8namespace }}
 {{- end }}
 {{- end }}
 
 {{- define "saveandrestore-url" -}}
 {{- if hasKey .Values.epicsConfiguration.services "saveandrestore" }}
-{{- printf "%s-saveandrestore.%s" .Values.beamline .Values.epik8namespace }}
+{{- printf "%s-saveandrestore.%s" (.Values.beamline | lower) .Values.epik8namespace }}
 {{- end }}
 {{- end }}
 
 {{- define "console-url" -}}
 {{- if hasKey .Values.epicsConfiguration.services "console" }}
-{{- printf "%s-console.%s" .Values.beamline .Values.epik8namespace }}
+{{- printf "%s-console.%s" (.Values.beamline | lower) .Values.epik8namespace }}
 {{- end }}
 {{- end }}
 
 {{- define "olog-url" -}}
 {{- if hasKey .Values.epicsConfiguration.services "olog" }}
-{{- printf "%s-olog.%s" .Values.beamline .Values.epik8namespace }}
+{{- printf "%s-olog.%s" (.Values.beamline | lower) .Values.epik8namespace }}
 {{- end }}
 {{- end }}
 
 {{- define "scanserver-url" -}}
 {{- if hasKey .Values.epicsConfiguration.services "scanserver" }}
-{{- printf "%s-scanserver.%s" .Values.beamline .Values.epik8namespace }}
+{{- printf "%s-scanserver.%s" (.Values.beamline | lower) .Values.epik8namespace }}
 {{- end }}
 {{- end }}
 
 
 {{- define "notebook-url" -}}
 {{- if hasKey .Values.epicsConfiguration.services "notebook" }}
-{{- printf "%s-notebook.%s" .Values.beamline .Values.epik8namespace }}
+{{- printf "%s-notebook.%s" (.Values.beamline | lower) .Values.epik8namespace }}
 {{- end }}
 {{- end }}
 
 {{- define "alarmserver-url" -}}
 {{- if hasKey .Values.epicsConfiguration.services "alarmserver" }}
-{{- printf "%s-alarmserver.%s" .Values.beamline .Values.epik8namespace }}
+{{- printf "%s-alarmserver.%s" (.Values.beamline | lower) .Values.epik8namespace }}
 {{- end }}
 {{- end }}
 
 {{- define "alarmlogger-url" -}}
 {{- if hasKey .Values.epicsConfiguration.services "alarmlogger" }}
-{{- printf "%s-alarmlogger.%s" .Values.beamline .Values.epik8namespace }}
+{{- printf "%s-alarmlogger.%s" (.Values.beamline | lower) .Values.epik8namespace }}
 {{- end }}
 {{- end }}
 
@@ -192,7 +192,7 @@ argusMcp:
 librechat:
   ingress:
     hosts:
-      - host: {{ printf "%s-argus.%s" .Values.beamline .Values.epik8namespace | quote }}
+      - host: {{ printf "%s-argus.%s" (.Values.beamline | lower) .Values.epik8namespace | quote }}
         paths:
           - path: /
             pathType: ImplementationSpecific

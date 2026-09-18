@@ -10,7 +10,7 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: {{$.Values.beamline}}-{{ $key | lower }}-service
+  name: {{$.Values.beamline | lower}}-{{ $key | lower }}-service
   {{- if $.Values.argocdNamespace }}
   namespace: {{ .Values.argocdNamespace }}
   {{- else }}
@@ -161,7 +161,7 @@ spec:
             secure: true
             {{- end }}
             hosts:
-              - host: {{ printf "%s-%s.%s" $.Values.beamline ($key | lower) $.Values.epik8namespace }}
+              - host: {{ printf "%s-%s.%s" ($.Values.beamline | lower) ($key | lower) $.Values.epik8namespace }}
                 paths:
                   - path: /
                     pathType: Prefix

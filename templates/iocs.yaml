@@ -19,7 +19,7 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: {{$.Values.beamline}}-{{$ioc.name | lower}}-ioc
+  name: {{$.Values.beamline | lower}}-{{$ioc.name | lower}}-ioc
   {{- if $.Values.argocdNamespace }}
   namespace: {{ $.Values.argocdNamespace }}
   {{- else }}
@@ -96,7 +96,7 @@ spec:
             className: {{$.Values.ingressClassName}}
             {{- end }}
             hosts:
-              - host: {{ printf "%s-%s.%s" $.Values.beamline ($ioc.name | lower) $.Values.epik8namespace }}
+              - host: {{ printf "%s-%s.%s" ($.Values.beamline | lower) ($ioc.name | lower) $.Values.epik8namespace }}
                 paths:
                   - path: /
                     pathType: Prefix

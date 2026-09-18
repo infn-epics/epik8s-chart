@@ -5,7 +5,7 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: {{$.Values.beamline}}-{{ $value.name | lower }}-cronjob
+  name: {{$.Values.beamline | lower}}-{{ $value.name | lower }}-cronjob
   {{- if $.Values.argocdNamespace }}
   namespace: {{ .Values.argocdNamespace }}
   {{- else }}
@@ -109,7 +109,7 @@ spec:
             secure: true
             {{- end }}
             hosts:
-              - host: {{ printf "%s-%s.%s" $.Values.beamline ($value.name | lower) $.Values.epik8namespace }}
+              - host: {{ printf "%s-%s.%s" ($.Values.beamline | lower) ($value.name | lower) $.Values.epik8namespace }}
                 paths:
                   - path: /
                     pathType: Prefix
