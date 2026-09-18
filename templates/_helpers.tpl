@@ -319,10 +319,6 @@ librechat:
     {{- end }}
   {{- end }}
   {{- end}}
-
-  {{- if ne $index (sub (len $list) 1) }}
-    {{- $commaSeparatedString = printf "%s " $commaSeparatedString }}
-  {{- end }} 
 {{- end }}
 
 {{- trim $commaSeparatedString }}
