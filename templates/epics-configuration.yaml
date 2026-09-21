@@ -71,8 +71,15 @@ data:
   CONSOLE: 'http://{{- include "console-url" . }}'
   {{- end }}
 
+  {{ .Values.beamline | lower }}-configuration.yaml: |
+    {{- toYaml .Values | nindent 8 }}
+  {{- if ne .Values.beamline (.Values.beamline | lower) }}
+  {{- /* Workloads render their volume key from the raw beamline (ioc-chart,
+         generic-application-chart) or from a previous lowercase value: keep
+         both spellings mounted so neither breaks on restart. */}}
   {{ .Values.beamline }}-configuration.yaml: |
     {{- toYaml .Values | nindent 8 }}
+  {{- end }}
 
   {{- if .Values.epicsConfiguration.services.console }}
   phoebus_settings.ini: |
