@@ -198,6 +198,14 @@ spec:
               value: {{ .audience | default "epik8s-services" | quote }}
             - name: BEAMLINE
               value: {{ $.Values.beamline | quote }}
+            {{- with $.Values.https_proxy }}
+            - name: HTTPS_PROXY
+              value: {{ . | quote }}
+            {{- end }}
+            {{- with $.Values.no_proxy }}
+            - name: NO_PROXY
+              value: {{ . | quote }}
+            {{- end }}
             {{- with .gitRepoUrl }}
             - name: GIT_REPO_URL
               value: {{ . | quote }}
