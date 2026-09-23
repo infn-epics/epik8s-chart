@@ -188,6 +188,29 @@ spec:
                 configMapKeyRef:
                   name: epik8s-dashboard-backend-config
                   key: allowed-origins
+            {{- with .Values.dashboard.backend.oidc }}
+            {{- if .issuer }}
+            ## Keycloak login: every /api/v1 call needs a valid token; Git goes
+            ## through the backend with a server-held credential.
+            - name: OIDC_ISSUER
+              value: {{ .issuer | quote }}
+            - name: OIDC_AUDIENCE
+              value: {{ .audience | default "epik8s-services" | quote }}
+            - name: BEAMLINE
+              value: {{ $.Values.beamline | quote }}
+            {{- with .gitRepoUrl }}
+            - name: GIT_REPO_URL
+              value: {{ . | quote }}
+            {{- end }}
+            {{- with .gitTokenSecret }}
+            - name: GIT_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .name }}
+                  key: {{ .key | default "token" }}
+            {{- end }}
+            {{- end }}
+            {{- end }}
             {{- with (.Values.dashboard.backend.filesBasePath | default "/nfs") }}
             - name: FILES_BASE_PATH
               value: {{ . | quote }}
