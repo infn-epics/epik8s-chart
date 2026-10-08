@@ -64,6 +64,9 @@ spec:
           {{- if $.Values.epik8s_secrets}}
           epik8s_secrets: {{$.Values.epik8s_secrets}}
           {{- end }}
+          {{- if and $.Values.git_credentials_secret (not (hasKey $value "git_credentials_secret")) }}
+          git_credentials_secret: {{ $.Values.git_credentials_secret }}
+          {{- end }}
 
           {{- if and $.Values.baseIp $value.staticIp }}
           staticIP: {{ include "allocateIpFromName" (dict "name" $key "namespace" $.Values.namespace "baseIp" $.Values.baseIp "startIp" $.Values.startIp) }}

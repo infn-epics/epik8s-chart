@@ -75,6 +75,9 @@ argusDefaults:
       loki:
         baseUrl: "http://epik8s-platform-loki.logging.svc.cluster.local:3100"
 
+## Private Git: Secret with one token per Git URL prefix, passed to every
+## IOC/app (entries may override, "" disables). See README "Private Git repositories".
+# git_credentials_secret: epik8s-git-credentials
 http_proxy:
 https_proxy:
 no_proxy:

@@ -86,6 +86,9 @@ spec:
           {{- if $.Values.epik8s_secrets}}
           epik8s_secrets: {{$.Values.epik8s_secrets}}
           {{- end }}
+          {{- if and $.Values.git_credentials_secret (not (hasKey $ioc "git_credentials_secret")) }}
+          git_credentials_secret: {{ $.Values.git_credentials_secret }}
+          {{- end }}
           http_proxy: {{ $.Values.http_proxy | quote }}
           https_proxy: {{ $.Values.https_proxy | quote }}
           no_proxy: {{ $.Values.no_proxy | quote }}
