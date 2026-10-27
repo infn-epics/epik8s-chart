@@ -47,7 +47,7 @@ usegateway: true # by default use gateway
 ## (see the "argus-computed" helper + the "argus" branch in
 ## templates/services.yaml) and merged in underneath these static defaults.
 argusDefaults:
-  charturl: 'https://github.com/infn-epics/argus-helm-chart.git'
+  charturl: 'https://github.com/infn-argus/argus-helm-chart.git'
   targetRevision: main
   autosync: false
   enable_ingress: true
@@ -59,7 +59,7 @@ argusDefaults:
   argusMcp:
     enabled: true
     image:
-      repository: ghcr.io/infn-epics/argus-mcp-server
+      repository: ghcr.io/infn-argus/argus-mcp-server
       tag: latest
     rbac:
       clusterWide: false
