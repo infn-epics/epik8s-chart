@@ -114,6 +114,12 @@ spec:
             {{- if $value.gitRepoConfig.ansiblePlaybook }}
             ansiblePlaybook: {{ $value.gitRepoConfig.ansiblePlaybook }}
             {{- end }}
+            {{- if $value.gitRepoConfig.archiveUrl }}
+            archiveUrl: {{ $value.gitRepoConfig.archiveUrl | quote }}
+            {{- end }}
+            {{- if $value.gitRepoConfig.archiveCredentialUrl }}
+            archiveCredentialUrl: {{ $value.gitRepoConfig.archiveCredentialUrl | quote }}
+            {{- end }}
             {{- if hasKey $value.gitRepoConfig "init" }}
             init: {{ $value.gitRepoConfig.init }}
             {{- end }}
