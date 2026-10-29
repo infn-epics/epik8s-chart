@@ -114,6 +114,9 @@ spec:
             {{- if $value.gitRepoConfig.ansiblePlaybook }}
             ansiblePlaybook: {{ $value.gitRepoConfig.ansiblePlaybook }}
             {{- end }}
+            {{- if $value.gitRepoConfig.opiMain }}
+            opiMain: {{ $value.gitRepoConfig.opiMain | quote }}
+            {{- end }}
             {{- if $value.gitRepoConfig.archiveUrl }}
             archiveUrl: {{ $value.gitRepoConfig.archiveUrl | quote }}
             {{- end }}
