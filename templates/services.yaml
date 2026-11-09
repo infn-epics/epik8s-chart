@@ -4,6 +4,10 @@
 {{- $merged := mustMergeOverwrite (deepCopy (default dict $.Values.argusDefaults)) $computed }}
 {{- $value = mustMergeOverwrite $merged (default dict $value) }}
 {{- end }}
+{{- if $value.keepOnDelete }}
+{{- $keep := dict "service" (dict "annotations" (dict "argocd.argoproj.io/sync-options" "Delete=false,Prune=false")) }}
+{{- $value = mustMergeOverwrite (deepCopy (default dict $value)) $keep }}
+{{- end }}
 {{- if and (or ( not $value.disable) ( eq $value.disable false)) $value.charturl }}
 
 # Service {{$key | lower}}
