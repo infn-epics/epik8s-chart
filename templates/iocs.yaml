@@ -46,7 +46,20 @@ metadata:
     {{- if $ioc.template }}
     template: "{{ $ioc.template }}"
     {{- end }}
-    
+    {{- /* one label per device so apps can be filtered by device name: device.epik8s.io/<NAME>=true */}}
+    {{- $devs := list }}
+    {{- range ($ioc.devices | default list) }}
+    {{- if and (kindIs "map" .) .name }}
+    {{- $dn := regexReplaceAll "[^A-Za-z0-9_.-]" (toString .name) "_" | trunc 63 | trimAll "_.-" }}
+    {{- if $dn }}
+    {{- $devs = append $devs $dn }}
+    {{- end }}
+    {{- end }}
+    {{- end }}
+    {{- range ($devs | uniq) }}
+    device.epik8s.io/{{ . }}: "true"
+    {{- end }}
+
 spec:
   project: {{ $.Values.argocdProject | default "default" }}
   source:
