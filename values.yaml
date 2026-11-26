@@ -74,6 +74,20 @@ argusDefaults:
       # it hasn't been.
       loki:
         baseUrl: "http://epik8s-platform-loki.logging.svc.cluster.local:3100"
+      # Same reasoning: the platform's kube-prometheus-stack (monitoring
+      # domain) is cluster-wide. node-exporter/cAdvisor metrics for
+      # inspect_pod/inspect_node (node and pod network rates, drops, UDP
+      # buffer overflows, CPU); argus-mcp treats it as unconfigured where
+      # it isn't deployed.
+      prometheus:
+        baseUrl: "http://prometheus-kube-prometheus-prometheus.monitoring.svc.cluster.local:9090"
+      # This chart's ioc-chart labels IOC pods app.kubernetes.io/instance=<ioc>;
+      # argus-helm-chart's own default (app=ioc,device=...) matches none of
+      # them, so list_iocs/device_status/diagnose_device found no pod.
+      # namespaceDefault is computed per beamline (argus-computed) and merged
+      # next to this.
+      kubernetes:
+        iocLabelSelectorTemplate: "app.kubernetes.io/instance={ioc_name}"
 
 ## Private Git: Secret with one token per Git URL prefix, passed to every
 ## IOC/app (entries may override, "" disables). See README "Private Git repositories".
