@@ -63,6 +63,10 @@ argusDefaults:
       tag: latest
     rbac:
       clusterWide: false
+      # pods/exec in the beamline namespace for check_connectivity: it pings
+      # an IOC's devices from inside the IOC's own pod, the only place devices
+      # on private networks (power-supply LANs, camera VLANs) can be reached.
+      iocExec: true
     backends:
       # The platform's shared Loki instance (epik8s-platform's "logging"
       # domain) is one cluster-wide instance, not one per beamline -- unlike
