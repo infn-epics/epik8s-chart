@@ -67,6 +67,9 @@ argusDefaults:
       # an IOC's devices from inside the IOC's own pod, the only place devices
       # on private networks (power-supply LANs, camera VLANs) can be reached.
       iocExec: true
+      # remove_leftover_ioc: scale to 0 or delete IOC workloads whose ArgoCD
+      # app is gone (always confirmed; refuses managed IOCs).
+      leftoverCleanup: true
     backends:
       # The platform's shared Loki instance (epik8s-platform's "logging"
       # domain) is one cluster-wide instance, not one per beamline -- unlike
